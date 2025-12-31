@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket</title>
+    <link rel="stylesheet" href="./styles/index.css">
+</head>
+<body>
+    <main class="container">
+
+    <!-- Registrar Sucursal -->
+    <section class="card">
+      <h2>Registrar Sucursal</h2>
+
+      <label for="direccionSucursal">Dirección de la sucursal</label>
+      <input
+        type="text"
+        id="direccionSucursal"
+        name="direccion"
+        placeholder="Av. Siempre Viva 742"
+      />
+
+      <button id="btnGuardarSucursal">
+        Guardar Sucursal
+      </button>
+    </section>
+
+    <!-- Registrar Producto -->
+    <section class="card">
+      <h2>Registrar Producto</h2>
+
+      <label for="nombreProducto">Nombre del producto</label>
+      <input
+        type="text"
+        id="nombreProducto"
+        name="nombre"
+        placeholder="Yerba Mate"
+      />
+
+      <label for="precioProducto">Precio</label>
+      <input
+        type="number"
+        id="precioProducto"
+        name="precio"
+        step="0.01"
+        placeholder="0.00"
+      />
+
+      <button id="btnGuardarProducto">
+        Guardar Producto
+      </button>
+    </section>
+
+    <!-- Registrar Venta -->
+    <section class="card">
+      <h2>Registrar Venta</h2>
+
+      <label for="sucursalVenta">ID de la sucursal</label>
+      <input
+        type="number"
+        id="sucursalVenta"
+        name="sucursalId"
+        placeholder="1"
+      />
+
+      <button id="btnRegistrarVenta">
+        Registrar Venta
+      </button>
+    </section>
+
+    <!-- Agregar Producto a Venta -->
+    <section class="card">
+      <h2>Agregar Producto a Venta</h2>
+
+      <label for="ventaId">ID de la venta</label>
+      <input
+        type="number"
+        id="ventaId"
+        name="ventaId"
+        placeholder="1"
+      />
+
+      <label for="productoId">ID del producto</label>
+      <input
+        type="number"
+        id="productoId"
+        name="productoId"
+        placeholder="10"
+      />
+
+      <label for="cantidadProducto">Cantidad</label>
+      <input
+        type="number"
+        id="cantidadProducto"
+        name="cantidad"
+        placeholder="1"
+      />
+
+      <button id="btnAgregarProducto">
+        Añadir a la Venta
+      </button>
+    </section>
+
+  </main>
+    <script src="js/script.js"></script>
+</body>
+</html>
