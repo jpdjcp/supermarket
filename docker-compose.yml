@@ -31,7 +31,7 @@ services:
       retries: 10
 
     supermarket_frontend:
-      build: ./frontend
+      build: supermarket_frontend
       container_name: supermarket_frontend
       restart: unless-stopped
       depends_on:
