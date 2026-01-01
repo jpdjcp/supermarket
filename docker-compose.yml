@@ -30,9 +30,9 @@ services:
       timeout: 10s
       retries: 10
 
-  supermarket_frontend:
-    build: supermarket_frontend
-    container_name: supermarket_frontend
+  supermarket-frontend:
+    build: supermarket-frontend
+    container_name: supermarket-frontend
     restart: unless-stopped
     depends_on:
       - supermarket-api
