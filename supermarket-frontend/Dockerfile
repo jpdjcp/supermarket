@@ -1,15 +1,5 @@
-FROM node:18-alpine
+FROM nginx:alpine
 
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm ci
-
-COPY . .
-
-RUN npm run build
+COPY . /usr/share/nginx/html
 
 EXPOSE 80
-
-CMD ["npm", "start"]
