@@ -35,7 +35,7 @@ services:
       container_name: supermarket_frontend
       restart: unless-stopped
       depends_on:
-        - supermarket_api
+        - supermarket-api
       ports:
         - "80:80"
 
