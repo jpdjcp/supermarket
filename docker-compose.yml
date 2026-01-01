@@ -30,14 +30,14 @@ services:
       timeout: 10s
       retries: 10
 
-    supermarket_frontend:
-      build: supermarket_frontend
-      container_name: supermarket_frontend
-      restart: unless-stopped
-      depends_on:
-        - supermarket-api
-      ports:
-        - "80:80"
+  supermarket_frontend:
+    build: supermarket_frontend
+    container_name: supermarket_frontend
+    restart: unless-stopped
+    depends_on:
+      - supermarket-api
+    ports:
+      - "80:80"
 
   volumes:
     mysql_data
