@@ -10,7 +10,10 @@ branchRegisterBtn.addEventListener('click', async () => {
         const branchAddress = document.querySelector('#direccionSucursal').value;
         const response = await fetch(API_URL + '/branch/create', {
             method: 'POST',
-            headers: {'Content-Type' : 'application/json'},
+            headers: {
+                'Content-Type' : 'application/json',
+                'Accept' : 'application/json'
+            },
             body: JSON.stringify({address : branchAddress})
         });
 
