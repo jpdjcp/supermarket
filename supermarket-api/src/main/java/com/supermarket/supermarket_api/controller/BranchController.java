@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/branch")
+@RequestMapping("/api/branch")
 public class BranchController {
 
     @Autowired
     private BranchService service;
 
-    @GetMapping("/api/list")
+    @GetMapping("/list")
     public ResponseEntity<List<BranchDTO>> list() {
         return ResponseEntity.ok(service.list());
     }
