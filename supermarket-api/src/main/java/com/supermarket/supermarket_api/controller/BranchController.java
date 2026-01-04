@@ -15,7 +15,7 @@ public class BranchController {
     @Autowired
     private BranchService service;
 
-    @GetMapping("/list")
+    @GetMapping("/api/list")
     public ResponseEntity<List<BranchDTO>> list() {
         return ResponseEntity.ok(service.list());
     }
