@@ -1,4 +1,4 @@
-const API_URL = 'http://api.supermarket.local:8080';
+const API_URL = '/api';
 const branchRegisterBtn = document.querySelector('#btnGuardarSucursal');
 const productRegisterBtn = document.querySelector('#btnGuardarProducto');
 const saleRegisterBtn = document.querySelector('#btnRegistrarVenta');
