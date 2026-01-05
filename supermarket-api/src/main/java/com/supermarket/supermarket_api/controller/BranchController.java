@@ -1,7 +1,9 @@
 package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.BranchDTO;
+import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.service.BranchService;
+import com.supermarket.supermarket_api.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +14,12 @@ import java.util.List;
 @RequestMapping("/api/v1/branches")
 public class BranchController {
 
-    @Autowired
     private final BranchService service;
+    private final SaleService saleService;
 
-    public BranchController(BranchService service) {
+    public BranchController(BranchService service, SaleService saleService) {
         this.service = service;
+        this.saleService = saleService;
     }
 
     @GetMapping
@@ -44,5 +47,10 @@ public class BranchController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/branches/sales?branchId={branchId}")
+    public ResponseEntity<List<SaleDTO>> getSalesByBranch(@PathVariable Long branchId) {
+        return ResponseEntity.ok(saleService.getSalesByBranch(branchId));
     }
 }

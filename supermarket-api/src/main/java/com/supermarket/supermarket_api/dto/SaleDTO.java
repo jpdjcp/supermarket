@@ -5,6 +5,6 @@ import java.util.List;
 public record SaleDTO(
         Long id,
         Long branchId,
-        List<ItemDTO> items,
+        List<SaleItemDTO> items,
         Double total)
 { }

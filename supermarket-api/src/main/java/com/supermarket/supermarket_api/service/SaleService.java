@@ -1,10 +1,14 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
+import com.supermarket.supermarket_api.dto.ProductDTO;
 import com.supermarket.supermarket_api.dto.SaleDTO;
+import com.supermarket.supermarket_api.dto.SaleItemDTO;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
+import com.supermarket.supermarket_api.mapper.ItemMapper;
 import com.supermarket.supermarket_api.mapper.ProductMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
+import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.model.SaleItem;
 import com.supermarket.supermarket_api.model.Sale;
 import com.supermarket.supermarket_api.repository.SaleRepository;
@@ -72,23 +76,38 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleDTO addItem(Long saleId, AddItemRequest request) {
-        if (request.quantity() < 1) throw new RuntimeException("Quantity must be greater than 0");
-        var sale = repository.findById(saleId);
-        var productDTO = productService.get(request.productId());
-        if (sale.isEmpty()) throw new RuntimeException("Sale not found");
-        if (productDTO == null) return null;
+    public SaleItemDTO addItem(Long saleId, AddItemRequest request) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
 
-        var item = new SaleItem(
+        ProductDTO productDTO = productService.get(request.productId());
+        if (productDTO == null) throw new RuntimeException("Product not found");
+
+        SaleItem item = new SaleItem(
                 null,
-                sale.get(),
+                sale,
                 ProductMapper.mapToProduct(productDTO),
                 request.quantity(),
                 productDTO.price()* request.quantity()
         );
 
-        sale.get().getSaleItems().add(item);
-        sale.get().setTotal(sale.get().getTotal() + item.getSubtotal());
-        return saleMapper.mapToDTO(repository.save(sale.get()));
+        sale.getSaleItems().add(item);
+        sale.setTotal(sale.getTotal() + item.getSubtotal());
+
+        repository.save(sale);
+
+        return ItemMapper.mapToDTO(item);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleItemDTO> getItemsBySale(Long saleId) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
+
+        return sale.getSaleItems()
+                .stream()
+                .map(ItemMapper::mapToDTO)
+                .toList();
     }
 }

@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.dto;
 
-public record ItemDTO(
+public record SaleItemDTO(
         Long id,
         Long saleId,
         Long productId,
