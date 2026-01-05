@@ -8,7 +8,7 @@ import lombok.*;
 
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 public class Product {
     @Id
