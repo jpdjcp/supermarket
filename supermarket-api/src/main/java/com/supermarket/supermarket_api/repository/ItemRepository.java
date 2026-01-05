@@ -1,7 +1,7 @@
 package com.supermarket.supermarket_api.repository;
 
-import com.supermarket.supermarket_api.model.Item;
+import com.supermarket.supermarket_api.model.ItemItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<ItemItem, Long> {
 }

@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Item {
+public class ItemItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -24,7 +24,7 @@ public class Sale {
     private Branch branch;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Item> items = new ArrayList<>();
+    private List<ItemItem> saleItems = new ArrayList<>();
 
     private Double price;
 }

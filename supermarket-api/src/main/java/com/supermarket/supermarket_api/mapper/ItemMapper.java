@@ -1,23 +1,23 @@
 package com.supermarket.supermarket_api.mapper;
 
 import com.supermarket.supermarket_api.dto.ItemDTO;
-import com.supermarket.supermarket_api.model.Item;
+import com.supermarket.supermarket_api.model.ItemItem;
 import com.supermarket.supermarket_api.model.Product;
 
 public class ItemMapper {
 
-    public static ItemDTO mapToDTO(Item item) {
+    public static ItemDTO mapToDTO(ItemItem saleItem) {
         return new ItemDTO(
-                item.getId(),
-                item.getSale().getId(),
-                item.getProduct().getId(),
-                item.getQuantity(),
-                item.getSubtotal());
+                saleItem.getId(),
+                saleItem.getSale().getId(),
+                saleItem.getProduct().getId(),
+                saleItem.getQuantity(),
+                saleItem.getSubtotal());
     }
 
     // dto -> model
-    public static Item mapToItem(ItemDTO dto, Product product) {
-        return new Item(
+    public static ItemItem mapToItem(ItemDTO dto, Product product) {
+        return new ItemItem(
                 dto.id(),
                 null,
                 product,

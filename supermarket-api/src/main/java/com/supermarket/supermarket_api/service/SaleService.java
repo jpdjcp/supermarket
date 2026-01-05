@@ -5,7 +5,7 @@ import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.mapper.ProductMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
-import com.supermarket.supermarket_api.model.Item;
+import com.supermarket.supermarket_api.model.ItemItem;
 import com.supermarket.supermarket_api.model.Sale;
 import com.supermarket.supermarket_api.repository.SaleRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +79,7 @@ public class SaleService implements ISaleService {
         if (sale.isEmpty()) throw new RuntimeException("Sale not found");
         if (productDTO == null) return null;
 
-        var item = new Item(
+        var item = new ItemItem(
                 null,
                 sale.get(),
                 ProductMapper.mapToProduct(productDTO),
@@ -87,7 +87,7 @@ public class SaleService implements ISaleService {
                 productDTO.price()* request.quantity()
         );
 
-        sale.get().getItems().add(item);
+        sale.get().getSaleItems().add(item);
         sale.get().setPrice(sale.get().getPrice() + item.getSubtotal());
         return saleMapper.mapToDTO(repository.save(sale.get()));
     }
