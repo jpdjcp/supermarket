@@ -13,32 +13,36 @@ import java.util.List;
 public class BranchController {
 
     @Autowired
-    private BranchService service;
+    private final BranchService service;
 
-    @GetMapping("/list")
+    public BranchController(BranchService service) {
+        this.service = service;
+    }
+
+    @GetMapping
     public ResponseEntity<List<BranchDTO>> list() {
         return ResponseEntity.ok(service.list());
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<BranchDTO> save(@RequestBody BranchDTO dto) {
-        var result = service.save(dto);
+    @PostMapping
+    public ResponseEntity<BranchDTO> create(@RequestBody BranchDTO dto) {
+        BranchDTO result = service.save(dto);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BranchDTO> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.get(id));
     }
 
-    @PutMapping("/addItem/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BranchDTO> update(@PathVariable Long id, @RequestBody BranchDTO dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
