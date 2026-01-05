@@ -23,7 +23,7 @@ public class SaleMapper {
                 sale.getId(),
                 sale.getBranch().getId(),
                 sale.getSaleItems().stream().map(ItemMapper::mapToDTO).toList(),
-                sale.getPrice()
+                sale.getTotal()
         );
     }
 
