@@ -88,7 +88,7 @@ public class SaleService implements ISaleService {
         );
 
         sale.get().getSaleItems().add(item);
-        sale.get().setPrice(sale.get().getPrice() + item.getSubtotal());
+        sale.get().setTotal(sale.get().getTotal() + item.getSubtotal());
         return saleMapper.mapToDTO(repository.save(sale.get()));
     }
 }
