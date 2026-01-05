@@ -26,5 +26,5 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> saleItems = new ArrayList<>();
 
-    private Double price;
+    private Double total;
 }
