@@ -53,13 +53,11 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
-        Optional<Product> result = repository.findById(id);
-        if (result.isPresent()) {
-            Product product = result.get();
-            product.changePrice(dto.price());
-            return ProductMapper.mapToDTO(repository.save(product));
-        }
-        return null;
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.changePrice(dto.price());
+        return ProductMapper.mapToDTO(product);
     }
 
     @Override
