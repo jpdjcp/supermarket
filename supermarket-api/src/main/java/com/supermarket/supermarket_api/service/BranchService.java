@@ -1,17 +1,13 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.BranchDTO;
-import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.exception.BranchNotFoundException;
 import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.repository.BranchRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
