@@ -25,7 +25,16 @@ public class Sale {
     private List<SaleItem> saleItems = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private final LocalDateTime createdAt = LocalDateTime.now();
+
+    public void addItem(Product product, int quantity) {
+        SaleItem saleItem = new SaleItem(this, product, quantity);
+        this.saleItems.add(saleItem);
+    }
+
+    public void removeItem(SaleItem item) {
+        saleItems.remove(item);
+    }
 
     @Transient
     public BigDecimal getTotal() {
