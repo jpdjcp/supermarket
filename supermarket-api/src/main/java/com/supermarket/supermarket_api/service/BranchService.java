@@ -22,14 +22,6 @@ public class BranchService implements IBranchService {
         this.mapper = mapper;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<BranchDTO> list() {
-        return repository.findAll().stream()
-                .map(mapper::mapToDTO)
-                .toList();
-    }
-
     @Transactional
     @Override
     public BranchDTO save(BranchDTO branchDTO) {
@@ -46,6 +38,14 @@ public class BranchService implements IBranchService {
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<BranchDTO> list() {
+        return repository.findAll().stream()
+                .map(mapper::mapToDTO)
+                .toList();
+    }
+    
     @Transactional(readOnly = true)
     public Branch getEntity(Long id) {
         return repository.findById(id)
