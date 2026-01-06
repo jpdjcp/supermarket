@@ -3,7 +3,7 @@ package com.supermarket.supermarket_api.service;
 import com.supermarket.supermarket_api.dto.AddItemRequest;
 import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.dto.SaleItemDTO;
-import com.supermarket.supermarket_api.mapper.BranchMapper;
+import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.ItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
 import com.supermarket.supermarket_api.model.Branch;
@@ -13,11 +13,8 @@ import com.supermarket.supermarket_api.model.Sale;
 import com.supermarket.supermarket_api.repository.SaleRepository;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +52,7 @@ public class SaleService implements ISaleService {
     public SaleDTO getById(Long id) {
         return repository.findById(id)
                 .map(saleMapper::mapToDTO)
-                .orElseThrow(() -> new RuntimeException("Sale not found"));
+                .orElseThrow(() -> new SaleNotFoundException(id));
     }
 
     @Override
@@ -80,7 +77,7 @@ public class SaleService implements ISaleService {
     public List<SaleItemDTO> getItemsBySale(Long saleId) {
 
         Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Sale not found"));
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         return sale.getSaleItems()
                 .stream()
@@ -93,7 +90,7 @@ public class SaleService implements ISaleService {
     public SaleItemDTO addItem(Long saleId, AddItemRequest request) {
 
         Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Sale not found"));
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         Product product = productService.getEntityById(request.productId());
         SaleItem item = sale.addItem(product, request.quantity());
