@@ -37,6 +37,7 @@ public class ProductService implements IProductService {
         return ProductMapper.mapToDTO(product);
     }
 
+    @Transactional(readOnly = true)
     public Product getRequiredById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
