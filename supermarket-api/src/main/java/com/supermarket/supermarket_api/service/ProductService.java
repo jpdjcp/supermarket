@@ -1,6 +1,7 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.ProductDTO;
+import com.supermarket.supermarket_api.exception.ProductNotFoundException;
 import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.mapper.ProductMapper;
 import com.supermarket.supermarket_api.repository.ProductRepository;
@@ -37,7 +38,8 @@ public class ProductService implements IProductService {
     @Transactional(readOnly = true)
     public ProductDTO get(Long id) {
         Optional<Product> result = repository.findById(id);
-        return result.map(ProductMapper::mapToDTO).orElse(null);
+        return result.map(ProductMapper::mapToDTO)
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
@@ -61,6 +63,6 @@ public class ProductService implements IProductService {
 
     public Product getEntityById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }
