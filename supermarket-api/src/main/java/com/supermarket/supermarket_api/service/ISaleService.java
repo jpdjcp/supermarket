@@ -7,9 +7,9 @@ import com.supermarket.supermarket_api.dto.SaleItemDTO;
 import java.util.List;
 
 public interface ISaleService {
-    List<SaleDTO> list();
+    List<SaleDTO> findAll();
     SaleDTO createSale(Long branchId);
-    SaleDTO get(Long id);
+    SaleDTO getById(Long id);
     List<SaleDTO> getSalesByBranch(Long branchId);
     SaleItemDTO addItem(Long saleId, AddItemRequest request);
     List<SaleItemDTO> getItemsBySale(Long saleId);

@@ -23,7 +23,7 @@ public class SaleController {
     }
 
     @GetMapping
-    public List<SaleDTO> list() { return service.list(); }
+    public List<SaleDTO> list() { return service.findAll(); }
 
     @PostMapping
     public ResponseEntity<SaleDTO> create(@RequestBody @Valid SaleCreateDTO dto) {
@@ -34,7 +34,7 @@ public class SaleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SaleDTO> get(@PathVariable Long id) {
-        return ResponseEntity.ok(service.get(id));
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping("/{saleId}/items")

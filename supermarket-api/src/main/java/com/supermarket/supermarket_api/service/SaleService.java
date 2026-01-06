@@ -30,7 +30,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDTO> list() {
+    public List<SaleDTO> findAll() {
         return repository.findAll().stream()
                 .map(saleMapper::mapToDTO)
                 .toList();
@@ -60,7 +60,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public SaleDTO get(Long id) {
+    public SaleDTO getById(Long id) {
         return repository.findById(id)
                 .map(saleMapper::mapToDTO)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
@@ -94,6 +94,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional(readOnly = true)
     public List<SaleItemDTO> getItemsBySale(Long saleId) {
+
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
