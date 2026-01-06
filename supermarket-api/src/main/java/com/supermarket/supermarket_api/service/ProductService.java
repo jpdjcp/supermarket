@@ -16,27 +16,29 @@ import java.util.Optional;
 @Service
 public class ProductService implements IProductService {
 
-    @Autowired
-    private ProductRepository repository;
+    private final ProductRepository repository;
+
+    public ProductService(ProductRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
+    @Transactional
+    public ProductDTO create(ProductDTO dto) {
+        Product result = repository.save(ProductMapper.mapToProduct(dto));
+        return ProductMapper.mapToDTO(result);
+    }
+    @Override
     @Transactional(readOnly = true)
-    public List<ProductDTO> list() {
+    public List<ProductDTO> findAll() {
         return repository.findAll().stream()
                 .map(ProductMapper::mapToDTO)
                 .toList();
     }
 
     @Override
-    @Transactional
-    public ProductDTO save(ProductDTO dto) {
-        Product result = repository.save(ProductMapper.mapToProduct(dto));
-        return ProductMapper.mapToDTO(result);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public ProductDTO get(Long id) {
+    public ProductDTO getById(Long id) {
         Optional<Product> result = repository.findById(id);
         return result.map(ProductMapper::mapToDTO)
                 .orElseThrow(() -> new ProductNotFoundException(id));

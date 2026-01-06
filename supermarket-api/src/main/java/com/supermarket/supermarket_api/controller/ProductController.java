@@ -17,17 +17,17 @@ public class ProductController {
 
     @GetMapping("/list")
     public ResponseEntity<List<ProductDTO>> list() {
-        return ResponseEntity.ok(service.list());
+        return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping("/create")
     public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO dto) {
-        return ResponseEntity.ok(service.save(dto));
+        return ResponseEntity.ok(service.create(dto));
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ProductDTO> get(@PathVariable Long id) {
-        return ResponseEntity.ok(service.get(id));
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PutMapping("/addItem/{id}")
