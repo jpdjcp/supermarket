@@ -40,7 +40,7 @@ public class BranchService implements IBranchService {
     }
 
     @Transactional(readOnly = true)
-    public Branch findEntityById(Long id) {
+    public Branch getRequiredById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }

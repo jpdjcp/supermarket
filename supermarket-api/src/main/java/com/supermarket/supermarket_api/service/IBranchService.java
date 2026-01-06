@@ -9,6 +9,6 @@ public interface IBranchService {
     List<BranchDTO> findAll();
     BranchDTO save(BranchDTO branchDTO);
     BranchDTO findById(Long id);
-    Branch findEntityById(Long id);
+    Branch getRequiredById(Long id);
     void delete(Long id);
 }
