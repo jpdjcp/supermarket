@@ -1,12 +1,10 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
-import com.supermarket.supermarket_api.dto.ProductDTO;
 import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.dto.SaleItemDTO;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.mapper.ItemMapper;
-import com.supermarket.supermarket_api.mapper.ProductMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
 import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.model.Product;
@@ -68,7 +66,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional(readOnly = true)
     public List<SaleDTO> getSalesByBranch(Long branchId) {
-        return repository.findAllByBranchId(branchId)
+        return repository.findByBranchId(branchId)
                 .stream()
                 .map(sale -> saleMapper.mapToDTO(sale))
                 .toList();
