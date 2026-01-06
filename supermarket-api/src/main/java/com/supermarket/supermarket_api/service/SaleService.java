@@ -8,6 +8,7 @@ import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.mapper.ItemMapper;
 import com.supermarket.supermarket_api.mapper.ProductMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
+import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.model.SaleItem;
 import com.supermarket.supermarket_api.model.Sale;
@@ -51,9 +52,8 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleDTO createSale(@NotNull Long branchId) {
-        if (branchService.get(branchId) == null) throw new RuntimeException("Branch not found");
-        var branch = branchMapper.mapToBranch(branchService.get(branchId));
-        var sale = new Sale(null, branch, new ArrayList<>(), 0.0);
+        Branch branch = branchService.getEntity(branchId);
+        Sale sale = new Sale(null, branch, new ArrayList<>(), 0.0);
         return saleMapper.mapToDTO(repository.save(sale));
     }
 
@@ -80,15 +80,14 @@ public class SaleService implements ISaleService {
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
-        ProductDTO productDTO = productService.get(request.productId());
-        if (productDTO == null) throw new RuntimeException("Product not found");
+        Product product = productService.getEntityById(request.productId());
 
         SaleItem item = new SaleItem(
                 null,
                 sale,
-                ProductMapper.mapToProduct(productDTO),
+                product,
                 request.quantity(),
-                productDTO.price()* request.quantity()
+                product.getPrice() * request.quantity()
         );
 
         sale.getSaleItems().add(item);

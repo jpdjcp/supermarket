@@ -61,6 +61,6 @@ public class ProductService implements IProductService {
 
     public Product getEntityById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
     }
 }

@@ -61,6 +61,12 @@ public class BranchService implements IBranchService {
                 .orElse(null);
     }
 
+    @Transactional(readOnly = true)
+    public Branch getEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Branch not found"));
+    }
+
     @Override
     @Transactional
     public BranchDTO update(Long id, BranchDTO dto) {
