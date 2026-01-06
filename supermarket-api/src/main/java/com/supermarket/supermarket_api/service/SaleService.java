@@ -28,14 +28,6 @@ public class SaleService implements ISaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<SaleDTO> findAll() {
-        return repository.findAll().stream()
-                .map(saleMapper::mapToDTO)
-                .toList();
-    }
-
     public SaleService(
             SaleRepository repository,
             BranchService branchService,
@@ -68,10 +60,31 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<SaleDTO> findAll() {
+        return repository.findAll().stream()
+                .map(saleMapper::mapToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<SaleDTO> getSalesByBranch(Long branchId) {
         return repository.findByBranchId(branchId)
                 .stream()
                 .map(saleMapper::mapToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleItemDTO> getItemsBySale(Long saleId) {
+
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
+
+        return sale.getSaleItems()
+                .stream()
+                .map(ItemMapper::mapToDTO)
                 .toList();
     }
 
@@ -89,18 +102,5 @@ public class SaleService implements ISaleService {
 
         SaleItem item = sale.getSaleItems().getLast();
         return ItemMapper.mapToDTO(item);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<SaleItemDTO> getItemsBySale(Long saleId) {
-
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("Sale not found"));
-
-        return sale.getSaleItems()
-                .stream()
-                .map(ItemMapper::mapToDTO)
-                .toList();
     }
 }
