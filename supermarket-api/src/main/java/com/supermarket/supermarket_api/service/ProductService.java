@@ -48,8 +48,7 @@ public class ProductService implements IProductService {
         Optional<Product> result = repository.findById(id);
         if (result.isPresent()) {
             Product product = result.get();
-            product.setName(dto.name());
-            product.setPrice(dto.price());
+            product.changePrice(dto.price());
             return ProductMapper.mapToDTO(repository.save(product));
         }
         return null;
