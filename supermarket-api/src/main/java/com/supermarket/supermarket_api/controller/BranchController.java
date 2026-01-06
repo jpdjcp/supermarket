@@ -23,7 +23,7 @@ public class BranchController {
 
     @GetMapping
     public ResponseEntity<List<BranchDTO>> list() {
-        return ResponseEntity.ok(service.list());
+        return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping

@@ -46,22 +46,10 @@ public class BranchService implements IBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BranchDTO> list() {
+    public List<BranchDTO> findAll() {
         return repository.findAll().stream()
                 .map(mapper::mapToDTO)
                 .toList();
-    }
-
-    @Override
-    @Transactional
-    public BranchDTO update(Long id, BranchDTO dto) {
-        Optional<Branch> result = repository.findById(id);
-        if (result.isPresent()) {
-            Branch branch = result.get();
-            branch.setAddress(dto.address());
-            return mapper.mapToDTO(repository.save(branch));
-        }
-        else throw new BranchNotFoundException(id);
     }
 
     public void delete(Long id) {
