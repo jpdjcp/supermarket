@@ -96,11 +96,9 @@ public class SaleService implements ISaleService {
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
         Product product = productService.getEntityById(request.productId());
-
-        sale.addItem(product, request.quantity());
+        SaleItem item = sale.addItem(product, request.quantity());
         repository.save(sale);
 
-        SaleItem item = sale.getSaleItems().getLast();
         return ItemMapper.mapToDTO(item);
     }
 }
