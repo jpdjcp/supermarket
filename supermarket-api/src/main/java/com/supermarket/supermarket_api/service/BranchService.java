@@ -2,6 +2,7 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.BranchDTO;
 import com.supermarket.supermarket_api.dto.SaleDTO;
+import com.supermarket.supermarket_api.exception.BranchNotFoundException;
 import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.repository.BranchRepository;
@@ -64,7 +65,7 @@ public class BranchService implements IBranchService {
     @Transactional(readOnly = true)
     public Branch getEntity(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Branch not found"));
+                .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
     @Override
