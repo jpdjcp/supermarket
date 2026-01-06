@@ -22,10 +22,14 @@ public class Sale {
     private Branch branch;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SaleItem> saleItems = new ArrayList<>();
+    private final List<SaleItem> saleItems = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private final LocalDateTime createdAt = LocalDateTime.now();
+
+    public Sale(Branch branch) {
+        this.branch = branch;
+    }
 
     public void addItem(Product product, int quantity) {
         SaleItem saleItem = new SaleItem(this, product, quantity);
