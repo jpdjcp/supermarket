@@ -63,6 +63,9 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+        Product product = repository.findById(id)
+                        .orElseThrow(() -> new ProductNotFoundException(id));
+
+        repository.delete(product);
     }
 }
