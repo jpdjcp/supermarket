@@ -36,22 +36,9 @@ public class BranchService implements IBranchService {
     @Transactional
     @Override
     public BranchDTO save(BranchDTO branchDTO) {
-        // Validación básica
-        if (branchDTO == null) {
-            throw new IllegalArgumentException("El DTO de sucursal no puede ser nulo");
-        }
 
-        if (branchDTO.address() == null || branchDTO.address().trim().isEmpty()) {
-            throw new IllegalArgumentException("La dirección de la sucursal es obligatoria");
-        }
-
-        try {
-            Branch branch = branchMapper.mapToBranch(branchDTO);
-            Branch createdBranch = repository.save(branch);
-            return branchMapper.mapToDTO(createdBranch);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al guardar la sucursal: " + e.getMessage(), e);
-        }
+        Branch branch = branchMapper.mapToBranch(branchDTO);
+        return branchMapper.mapToDTO(repository.save(branch));
     }
 
     @Override
