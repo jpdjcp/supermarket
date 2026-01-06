@@ -21,30 +21,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class SaleService implements ISaleService {
 
-    @Autowired
-    private SaleRepository repository;
-
-    @Autowired
-    private BranchService branchService;
-
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private SaleMapper saleMapper;
-
-    @Autowired
-    private BranchMapper branchMapper;
+    private final SaleRepository repository;
+    private final BranchService branchService;
+    private final ProductService productService;
+    private final SaleMapper saleMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<SaleDTO> list() {
         return repository.findAll().stream()
-                .map(sale -> saleMapper.mapToDTO(sale))
+                .map(saleMapper::mapToDTO)
                 .toList();
+    }
+
+    public SaleService(
+            SaleRepository repository,
+            BranchService branchService,
+            ProductService productService,
+            SaleMapper saleMapper) {
+        this.repository = repository;
+        this.branchService = branchService;
+        this.productService = productService;
+        this.saleMapper = saleMapper;
     }
 
     @Override
