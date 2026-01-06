@@ -54,6 +54,8 @@ public class BranchService implements IBranchService {
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        Branch branch = repository.findById(id)
+                        .orElseThrow(() -> new BranchNotFoundException(id));
+        repository.delete(branch);
     }
 }
