@@ -6,7 +6,6 @@ import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.repository.BranchRepository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +14,19 @@ import java.util.Optional;
 @Service
 public class BranchService implements IBranchService {
 
-    @Autowired
-    private BranchRepository repository;
+    private final BranchRepository repository;
+    private final BranchMapper mapper;
 
-    @Autowired
-    private BranchMapper branchMapper;
+    public BranchService(BranchRepository repository, BranchMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
     @Override
     @Transactional(readOnly = true)
     public List<BranchDTO> list() {
         return repository.findAll().stream()
-                .map(branchMapper::mapToDTO)
+                .map(mapper::mapToDTO)
                 .toList();
     }
 
@@ -33,15 +34,15 @@ public class BranchService implements IBranchService {
     @Override
     public BranchDTO save(BranchDTO branchDTO) {
 
-        Branch branch = branchMapper.mapToBranch(branchDTO);
-        return branchMapper.mapToDTO(repository.save(branch));
+        Branch branch = mapper.mapToBranch(branchDTO);
+        return mapper.mapToDTO(repository.save(branch));
     }
 
     @Override
     @Transactional(readOnly = true)
     public BranchDTO get(Long id) {
         return repository.findById(id)
-                .map(branchMapper::mapToDTO)
+                .map(mapper::mapToDTO)
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
@@ -58,7 +59,7 @@ public class BranchService implements IBranchService {
         if (result.isPresent()) {
             Branch branch = result.get();
             branch.setAddress(dto.address());
-            return branchMapper.mapToDTO(repository.save(branch));
+            return mapper.mapToDTO(repository.save(branch));
         }
         else throw new BranchNotFoundException(id);
     }
