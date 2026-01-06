@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IBranchService {
     List<BranchDTO> findAll();
-    BranchDTO save(BranchDTO branchDTO);
+    BranchDTO create(BranchDTO branchDTO);
     BranchDTO findById(Long id);
     Branch getRequiredById(Long id);
     void delete(Long id);

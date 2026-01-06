@@ -24,7 +24,7 @@ public class BranchService implements IBranchService {
 
     @Transactional
     @Override
-    public BranchDTO save(BranchDTO branchDTO) {
+    public BranchDTO create(BranchDTO branchDTO) {
 
         Branch branch = mapper.mapToBranch(branchDTO);
         return mapper.mapToDTO(repository.save(branch));

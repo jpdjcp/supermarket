@@ -28,7 +28,7 @@ public class BranchController {
 
     @PostMapping
     public ResponseEntity<BranchDTO> create(@RequestBody BranchDTO dto) {
-        BranchDTO result = service.save(dto);
+        BranchDTO result = service.create(dto);
         return ResponseEntity.ok(result);
     }
 
