@@ -38,18 +38,18 @@ public class BranchService implements IBranchService {
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
+    @Transactional(readOnly = true)
+    public Branch getEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new BranchNotFoundException(id));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<BranchDTO> list() {
         return repository.findAll().stream()
                 .map(mapper::mapToDTO)
                 .toList();
-    }
-    
-    @Transactional(readOnly = true)
-    public Branch getEntity(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
     @Override
