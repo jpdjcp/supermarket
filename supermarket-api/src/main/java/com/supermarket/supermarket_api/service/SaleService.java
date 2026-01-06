@@ -51,8 +51,11 @@ public class SaleService implements ISaleService {
     @Transactional
     public SaleDTO createSale(@NotNull Long branchId) {
         Branch branch = branchService.getEntity(branchId);
-        Sale sale = new Sale(null, branch, new ArrayList<>(), 0.0);
-        return saleMapper.mapToDTO(repository.save(sale));
+
+        Sale sale = new Sale(branch);
+        repository.save(sale);
+
+        return saleMapper.mapToDTO(sale);
     }
 
     @Override
