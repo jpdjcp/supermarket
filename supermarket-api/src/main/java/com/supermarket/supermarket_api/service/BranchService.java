@@ -32,14 +32,14 @@ public class BranchService implements IBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public BranchDTO get(Long id) {
+    public BranchDTO findById(Long id) {
         return repository.findById(id)
                 .map(mapper::mapToDTO)
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
     @Transactional(readOnly = true)
-    public Branch getEntity(Long id) {
+    public Branch findEntityById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }

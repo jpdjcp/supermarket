@@ -4,7 +4,6 @@ import com.supermarket.supermarket_api.dto.BranchDTO;
 import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.service.BranchService;
 import com.supermarket.supermarket_api.service.SaleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +34,7 @@ public class BranchController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BranchDTO> get(@PathVariable Long id) {
-        return ResponseEntity.ok(service.get(id));
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PutMapping("/{id}")
