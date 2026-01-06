@@ -31,9 +31,10 @@ public class ProductService implements IProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
-        Optional<Product> result = repository.findById(id);
-        return result.map(ProductMapper::mapToDTO)
+        Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
+
+        return ProductMapper.mapToDTO(product);
     }
 
     public Product getRequiredById(Long id) {
