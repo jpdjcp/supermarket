@@ -23,8 +23,9 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public ProductDTO create(ProductDTO dto) {
-        Product result = repository.save(ProductMapper.mapToProduct(dto));
-        return ProductMapper.mapToDTO(result);
+        Product product = ProductMapper.mapToProduct(dto);
+        Product saved = repository.save(product);
+        return ProductMapper.mapToDTO(saved);
     }
 
     @Override
