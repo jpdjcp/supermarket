@@ -31,9 +31,10 @@ public class Sale {
         this.branch = branch;
     }
 
-    public void addItem(Product product, int quantity) {
+    public SaleItem addItem(Product product, int quantity) {
         SaleItem saleItem = new SaleItem(this, product, quantity);
         this.saleItems.add(saleItem);
+        return saleItem;
     }
 
     public void removeItem(SaleItem item) {
