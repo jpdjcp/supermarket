@@ -39,7 +39,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleDTO createSale(@NotNull Long branchId) {
-        Branch branch = branchService.getEntity(branchId);
+        Branch branch = branchService.getRequiredById(branchId);
 
         Sale sale = new Sale(branch);
         repository.save(sale);
@@ -92,7 +92,7 @@ public class SaleService implements ISaleService {
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
-        Product product = productService.getEntityById(request.productId());
+        Product product = productService.getRequiredById(request.productId());
         SaleItem item = sale.addItem(product, request.quantity());
         repository.save(sale);
 

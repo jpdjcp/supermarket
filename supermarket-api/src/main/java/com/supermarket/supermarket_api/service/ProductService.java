@@ -28,20 +28,26 @@ public class ProductService implements IProductService {
         Product result = repository.save(ProductMapper.mapToProduct(dto));
         return ProductMapper.mapToDTO(result);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductDTO findById(Long id) {
+        Optional<Product> result = repository.findById(id);
+        return result.map(ProductMapper::mapToDTO)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
+    public Product getRequiredById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<ProductDTO> findAll() {
         return repository.findAll().stream()
                 .map(ProductMapper::mapToDTO)
                 .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public ProductDTO getById(Long id) {
-        Optional<Product> result = repository.findById(id);
-        return result.map(ProductMapper::mapToDTO)
-                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
     @Override
@@ -60,10 +66,5 @@ public class ProductService implements IProductService {
     @Transactional
     public void delete(Long id) {
         repository.deleteById(id);
-    }
-
-    public Product getEntityById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }
