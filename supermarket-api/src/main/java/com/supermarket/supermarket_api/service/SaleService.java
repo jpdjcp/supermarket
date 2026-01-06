@@ -78,24 +78,16 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleItemDTO addItem(Long saleId, AddItemRequest request) {
+
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
         Product product = productService.getEntityById(request.productId());
 
-        SaleItem item = new SaleItem(
-                null,
-                sale,
-                product,
-                request.quantity(),
-                product.getPrice() * request.quantity()
-        );
-
-        sale.getSaleItems().add(item);
-        sale.setTotal(sale.getTotal() + item.getSubtotal());
-
+        sale.addItem(product, request.quantity());
         repository.save(sale);
 
+        SaleItem item = sale.getSaleItems().getLast();
         return ItemMapper.mapToDTO(item);
     }
 
