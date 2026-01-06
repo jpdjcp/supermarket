@@ -46,7 +46,7 @@ public class BranchService implements IBranchService {
     public BranchDTO get(Long id) {
         return repository.findById(id)
                 .map(branchMapper::mapToDTO)
-                .orElse(null);
+                .orElseThrow(() -> new BranchNotFoundException(id));
     }
 
     @Transactional(readOnly = true)
