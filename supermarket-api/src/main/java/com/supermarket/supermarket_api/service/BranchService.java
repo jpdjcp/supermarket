@@ -64,7 +64,7 @@ public class BranchService implements IBranchService {
             branch.setAddress(dto.address());
             return branchMapper.mapToDTO(repository.save(branch));
         }
-        return null;
+        else throw new BranchNotFoundException(id);
     }
 
     public void delete(Long id) {
