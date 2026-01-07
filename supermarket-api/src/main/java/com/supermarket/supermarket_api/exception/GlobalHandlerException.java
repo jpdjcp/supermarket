@@ -14,7 +14,7 @@ public class GlobalHandlerException {
             BranchNotFoundException.class,
             ProductNotFoundException.class
     })
-    public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException exception) {
+    public ResponseEntity<ErrorResponse> handleNotFound(DomainException exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(exception.getMessage()));
