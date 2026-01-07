@@ -1,43 +1,57 @@
 package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.ProductCreateRequest;
+import com.supermarket.supermarket_api.dto.ProductResponse;
+import com.supermarket.supermarket_api.dto.ProductUpdateRequest;
 import com.supermarket.supermarket_api.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api/v1/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService service;
+    private final ProductService service;
 
-    @GetMapping("/list")
-    public ResponseEntity<List<ProductCreateRequest>> list() {
-        return ResponseEntity.ok(service.findAll());
+    public ProductController(ProductService service) {
+        this.service = service;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ProductCreateRequest> create(@RequestBody ProductCreateRequest dto) {
-        return ResponseEntity.ok(service.create(dto));
+    @PostMapping
+    public ResponseEntity<ProductResponse> create(@RequestBody @Valid ProductCreateRequest createRequest) {
+        ProductResponse response = service.create(createRequest);
+
+        return ResponseEntity
+                .created(URI.create("/api/v1/products/" + response.id()))
+                .body(response);
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<ProductCreateRequest> get(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> findById(@PathVariable @Positive Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @PutMapping("/addItem/{id}")
-    public ResponseEntity<ProductCreateRequest> update(@PathVariable Long id, @RequestBody ProductCreateRequest dto) {
-        return ResponseEntity.ok(service.update(id, dto));
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductResponse> updatePrice(
+            @PathVariable @Positive Long id,
+            @RequestBody @Valid ProductUpdateRequest updateRequest) {
+
+        return ResponseEntity.ok(service.updatePrice(id, updateRequest));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable @Positive Long id) {
         service.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

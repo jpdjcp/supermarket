@@ -16,28 +16,31 @@ import java.util.List;
 public class ProductService implements IProductService {
 
     private final ProductRepository repository;
+    private final ProductMapper mapper;
 
-    public ProductService(ProductRepository repository) {
+    public ProductService(ProductRepository repository, ProductMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Override
     @Transactional
-    public ProductCreateRequest create(ProductCreateRequest dto) {
-        Product product = ProductMapper.toProduct(dto);
+    public ProductResponse create(ProductCreateRequest dto) {
+        Product product = mapper.toProduct(dto);
         Product saved = repository.save(product);
-        return ProductMapper.toResponse(saved);
+        return mapper.toResponse(saved);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProductCreateRequest findById(Long id) {
+    public ProductResponse findById(Long id) {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        return ProductMapper.toResponse(product);
+        return mapper.toResponse(product);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Product findRequiredById(Long id) {
         return repository.findById(id)
@@ -46,25 +49,20 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductCreateRequest> findAll() {
+    public List<ProductResponse> findAll() {
         return repository.findAll().stream()
-                .map(ProductMapper::toResponse)
+                .map(mapper::toResponse)
                 .toList();
     }
 
     @Override
-    public ProductResponse updatePrice(Long id, ProductUpdateRequest request) {
-        return null;
-    }
-
-    @Override
     @Transactional
-    public ProductCreateRequest update(Long id, ProductCreateRequest dto) {
+    public ProductResponse updatePrice(Long id, ProductUpdateRequest dto) {
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
         product.changePrice(dto.price());
-        return ProductMapper.toResponse(product);
+        return mapper.toResponse(product);
     }
 
     @Override
