@@ -1,6 +1,7 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.BranchDTO;
+import com.supermarket.supermarket_api.dto.BranchCreateRequest;
+import com.supermarket.supermarket_api.dto.BranchResponse;
 import com.supermarket.supermarket_api.exception.BranchNotFoundException;
 import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
@@ -23,19 +24,19 @@ public class BranchService implements IBranchService {
 
     @Transactional
     @Override
-    public BranchDTO create(BranchDTO branchDTO) {
+    public BranchResponse create(BranchCreateRequest branchCreateRequest) {
 
-        Branch branch = mapper.mapToBranch(branchDTO);
-        return mapper.mapToDTO(repository.save(branch));
+        Branch branch = mapper.toBranch(branchCreateRequest);
+        return mapper.toResponse(repository.save(branch));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public BranchDTO findById(Long id) {
+    public BranchResponse findById(Long id) {
         Branch branch = repository.findById(id)
                 .orElseThrow(() -> new BranchNotFoundException(id));
 
-        return mapper.mapToDTO(branch);
+        return mapper.toResponse(branch);
     }
 
     @Transactional(readOnly = true)
@@ -46,15 +47,14 @@ public class BranchService implements IBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BranchDTO> findAll() {
+    public List<BranchResponse> findAll() {
         return repository.findAll().stream()
-                .map(mapper::mapToDTO)
+                .map(mapper::toResponse)
                 .toList();
     }
 
+    @Transactional
     public void delete(Long id) {
-        Branch branch = repository.findById(id)
-                        .orElseThrow(() -> new BranchNotFoundException(id));
-        repository.delete(branch);
+        repository.delete(getRequiredById(id));
     }
 }

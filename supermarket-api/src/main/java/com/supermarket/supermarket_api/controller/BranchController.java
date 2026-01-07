@@ -1,12 +1,16 @@
 package com.supermarket.supermarket_api.controller;
 
-import com.supermarket.supermarket_api.dto.BranchDTO;
+import com.supermarket.supermarket_api.dto.BranchCreateRequest;
+import com.supermarket.supermarket_api.dto.BranchResponse;
 import com.supermarket.supermarket_api.dto.SaleDTO;
 import com.supermarket.supermarket_api.service.BranchService;
 import com.supermarket.supermarket_api.service.SaleService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -21,35 +25,32 @@ public class BranchController {
         this.saleService = saleService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<BranchDTO>> list() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
     @PostMapping
-    public ResponseEntity<BranchDTO> create(@RequestBody BranchDTO dto) {
-        BranchDTO result = service.create(dto);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<BranchResponse> create(@Valid @RequestBody BranchCreateRequest dto) {
+        BranchResponse result = service.create(dto);
+        return ResponseEntity.created(
+                        URI.create("/api/v1/branches/" + result.id()))
+                .body(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BranchDTO> get(@PathVariable Long id) {
+    public ResponseEntity<BranchResponse> findById(@Positive @PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BranchDTO> update(@PathVariable Long id, @RequestBody BranchDTO dto) {
-        return ResponseEntity.ok(service.update(id, dto));
+    @GetMapping
+    public ResponseEntity<List<BranchResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@Positive @PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/branches/sales?branchId={branchId}")
-    public ResponseEntity<List<SaleDTO>> getSalesByBranch(@PathVariable Long branchId) {
-        return ResponseEntity.ok(saleService.getSalesByBranch(branchId));
+    @GetMapping("/{id}/sales")
+    public ResponseEntity<List<SaleDTO>> getSalesByBranch(@Positive @PathVariable Long id) {
+        return ResponseEntity.ok(saleService.getSalesByBranch(id));
     }
 }

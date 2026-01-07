@@ -21,4 +21,8 @@ public class Branch {
 
     @OneToMany(mappedBy = "branch")
     private List<Sale> sales = new ArrayList<>();
+
+    public Branch(String address) {
+        this.address = address;
+    }
 }

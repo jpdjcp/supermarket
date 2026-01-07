@@ -1,9 +1,18 @@
 package com.supermarket.supermarket_api.dto;
 
+import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 
 public record ProductDTO(
         Long id,
+
+        @NotBlank(message = "Product name cannot be blank")
+        @Size(max = 50, message = "Product name must be at most 50 characters long")
         String name,
+
+        @NotNull(message = "Product price is required")
+        @Positive(message = "Product price must be positive")
+        @Digits(integer = 10, fraction = 2, message = "Price must have up to 2 decimal places")
         BigDecimal price
 ) { }
