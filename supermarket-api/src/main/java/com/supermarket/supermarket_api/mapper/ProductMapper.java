@@ -1,21 +1,23 @@
 package com.supermarket.supermarket_api.mapper;
 
+import com.supermarket.supermarket_api.dto.ProductResponse;
 import com.supermarket.supermarket_api.model.Product;
-import com.supermarket.supermarket_api.dto.ProductDTO;
+import com.supermarket.supermarket_api.dto.ProductCreateRequest;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProductMapper {
 
-    public static ProductDTO mapToDTO(Product product) {
-        return new ProductDTO(
+    public ProductResponse toResponse(Product product) {
+        return new ProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getPrice()
         );
     }
 
-    public static Product mapToProduct(ProductDTO dto) {
+    public Product toProduct(ProductCreateRequest dto) {
         return new Product(
-                dto.id(),
                 dto.name(),
                 dto.price()
         );

@@ -21,7 +21,20 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    public Product(String name, BigDecimal price) {
+        if (name == null || name.isBlank())
+            throw new IllegalArgumentException("Product name cannot be blank");
+        if (price == null || price.signum() < 0)
+            throw new IllegalArgumentException("Product price must be positive");
+
+        this.name = name;
+        this.price = price;
+    }
+
     public void changePrice(BigDecimal newPrice) {
+        if (newPrice == null || newPrice.signum() < 0)
+            throw new IllegalArgumentException("Product price must be positive");
+
         this.price = newPrice;
     }
 }

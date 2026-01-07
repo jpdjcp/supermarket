@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.controller;
 
-import com.supermarket.supermarket_api.dto.ProductDTO;
+import com.supermarket.supermarket_api.dto.ProductCreateRequest;
 import com.supermarket.supermarket_api.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +16,22 @@ public class ProductController {
     private ProductService service;
 
     @GetMapping("/list")
-    public ResponseEntity<List<ProductDTO>> list() {
+    public ResponseEntity<List<ProductCreateRequest>> list() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO dto) {
+    public ResponseEntity<ProductCreateRequest> create(@RequestBody ProductCreateRequest dto) {
         return ResponseEntity.ok(service.create(dto));
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<ProductDTO> get(@PathVariable Long id) {
+    public ResponseEntity<ProductCreateRequest> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PutMapping("/addItem/{id}")
-    public ResponseEntity<ProductDTO> update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+    public ResponseEntity<ProductCreateRequest> update(@PathVariable Long id, @RequestBody ProductCreateRequest dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
 
