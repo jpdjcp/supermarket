@@ -40,7 +40,7 @@ public class BranchService implements IBranchService {
     }
 
     @Transactional(readOnly = true)
-    public Branch getRequiredById(Long id) {
+    public Branch findRequiredById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new BranchNotFoundException(id));
     }
@@ -55,6 +55,6 @@ public class BranchService implements IBranchService {
 
     @Transactional
     public void delete(Long id) {
-        repository.delete(getRequiredById(id));
+        repository.delete(findRequiredById(id));
     }
 }

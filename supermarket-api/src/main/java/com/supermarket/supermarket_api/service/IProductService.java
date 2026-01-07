@@ -10,8 +10,8 @@ import java.util.List;
 public interface IProductService {
     ProductResponse create(ProductCreateRequest request);
     ProductResponse findById(Long id);
-    Product getRequiredById(Long id);
+    Product findRequiredById(Long id);
     List<ProductResponse> findAll();
-    ProductResponse update(Long id, ProductUpdateRequest request);
+    ProductResponse updatePrice(Long id, ProductUpdateRequest request);
     void delete(Long id);
 }

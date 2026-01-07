@@ -9,7 +9,7 @@ import java.util.List;
 public interface IBranchService {
     BranchResponse create(BranchCreateRequest branchCreateRequest);
     BranchResponse findById(Long id);
-    Branch getRequiredById(Long id);
+    Branch findRequiredById(Long id);
     List<BranchResponse> findAll();
     void delete(Long id);
 }
