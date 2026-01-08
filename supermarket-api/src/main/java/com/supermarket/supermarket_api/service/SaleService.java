@@ -4,7 +4,7 @@ import com.supermarket.supermarket_api.dto.AddItemRequest;
 import com.supermarket.supermarket_api.dto.SaleResponse;
 import com.supermarket.supermarket_api.dto.SaleItemResponse;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
-import com.supermarket.supermarket_api.mapper.ItemMapper;
+import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
 import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.model.Product;
@@ -44,14 +44,14 @@ public class SaleService implements ISaleService {
         Sale sale = new Sale(branch);
         repository.save(sale);
 
-        return saleMapper.mapToDTO(sale);
+        return saleMapper.toResponse(sale);
     }
 
     @Override
     @Transactional(readOnly = true)
     public SaleResponse getById(Long id) {
         return repository.findById(id)
-                .map(saleMapper::mapToDTO)
+                .map(saleMapper::toResponse)
                 .orElseThrow(() -> new SaleNotFoundException(id));
     }
 
@@ -59,7 +59,7 @@ public class SaleService implements ISaleService {
     @Transactional(readOnly = true)
     public List<SaleResponse> findAll() {
         return repository.findAll().stream()
-                .map(saleMapper::mapToDTO)
+                .map(saleMapper::toResponse)
                 .toList();
     }
 
@@ -68,7 +68,7 @@ public class SaleService implements ISaleService {
     public List<SaleResponse> getSalesByBranch(Long branchId) {
         return repository.findByBranchId(branchId)
                 .stream()
-                .map(saleMapper::mapToDTO)
+                .map(saleMapper::toResponse)
                 .toList();
     }
 
@@ -81,7 +81,7 @@ public class SaleService implements ISaleService {
 
         return sale.getSaleItems()
                 .stream()
-                .map(ItemMapper::mapToDTO)
+                .map(SaleItemMapper::toResponse)
                 .toList();
     }
 
@@ -96,6 +96,6 @@ public class SaleService implements ISaleService {
         SaleItem item = sale.addSaleItem(product, request.quantity());
         repository.save(sale);
 
-        return ItemMapper.mapToDTO(item);
+        return SaleItemMapper.toResponse(item);
     }
 }
