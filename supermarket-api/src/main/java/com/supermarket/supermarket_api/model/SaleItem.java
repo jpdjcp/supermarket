@@ -26,12 +26,22 @@ public class SaleItem {
     private int quantity;
 
     public SaleItem(Sale sale, Product product, int quantity) {
+        if (sale == null)
+            throw new IllegalArgumentException("Sale cannot be null");
+        if (product == null)
+            throw new IllegalArgumentException("Product cannot be null");
+        if (quantity < 0)
+            throw new IllegalArgumentException("Quantity must be at least 1");
+
         this.sale = sale;
         this.product = product;
         this.quantity = quantity;
     }
 
     public void changeQuantity(int quantity) {
+        if (quantity < 0)
+            throw new IllegalArgumentException("Quantity must bbe at least 1");
+
         this.quantity = quantity;
     }
 
