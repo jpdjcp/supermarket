@@ -3,7 +3,7 @@ package com.supermarket.supermarket_api.controller;
 import com.supermarket.supermarket_api.dto.AddItemRequest;
 import com.supermarket.supermarket_api.dto.SaleCreateRequest;
 import com.supermarket.supermarket_api.dto.SaleResponse;
-import com.supermarket.supermarket_api.dto.SaleItemDTO;
+import com.supermarket.supermarket_api.dto.SaleItemResponse;
 import com.supermarket.supermarket_api.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -38,15 +38,15 @@ public class SaleController {
     }
 
     @PostMapping("/{saleId}/items")
-    public ResponseEntity<SaleItemDTO> addItem(@PathVariable Long saleId,
-                           @Valid @RequestBody AddItemRequest request) {
-        SaleItemDTO item = service.addItem(saleId, request);
+    public ResponseEntity<SaleItemResponse> addItem(@PathVariable Long saleId,
+                                                    @Valid @RequestBody AddItemRequest request) {
+        SaleItemResponse item = service.addItem(saleId, request);
         URI location = URI.create("/api/v1/sales/" + saleId + "/items/" + item.id());
         return ResponseEntity.created(location).body(item);
     }
 
     @GetMapping("/{saleId}/items")
-    public ResponseEntity<List<SaleItemDTO>> getItems(@PathVariable Long saleId) {
+    public ResponseEntity<List<SaleItemResponse>> getItems(@PathVariable Long saleId) {
         return ResponseEntity.ok(service.getItemsBySale(saleId));
     }
 }

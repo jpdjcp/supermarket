@@ -2,7 +2,7 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
 import com.supermarket.supermarket_api.dto.SaleResponse;
-import com.supermarket.supermarket_api.dto.SaleItemDTO;
+import com.supermarket.supermarket_api.dto.SaleItemResponse;
 
 import java.util.List;
 
@@ -11,6 +11,6 @@ public interface ISaleService {
     SaleResponse createSale(Long branchId);
     SaleResponse getById(Long id);
     List<SaleResponse> getSalesByBranch(Long branchId);
-    SaleItemDTO addItem(Long saleId, AddItemRequest request);
-    List<SaleItemDTO> getItemsBySale(Long saleId);
+    SaleItemResponse addItem(Long saleId, AddItemRequest request);
+    List<SaleItemResponse> getItemsBySale(Long saleId);
 }

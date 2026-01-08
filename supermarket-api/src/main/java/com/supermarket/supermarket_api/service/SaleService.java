@@ -2,7 +2,7 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
 import com.supermarket.supermarket_api.dto.SaleResponse;
-import com.supermarket.supermarket_api.dto.SaleItemDTO;
+import com.supermarket.supermarket_api.dto.SaleItemResponse;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.ItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
@@ -74,7 +74,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleItemDTO> getItemsBySale(Long saleId) {
+    public List<SaleItemResponse> getItemsBySale(Long saleId) {
 
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
@@ -87,7 +87,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleItemDTO addItem(Long saleId, AddItemRequest request) {
+    public SaleItemResponse addItem(Long saleId, AddItemRequest request) {
 
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
