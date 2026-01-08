@@ -1,7 +1,7 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
-import com.supermarket.supermarket_api.dto.SaleDTO;
+import com.supermarket.supermarket_api.dto.SaleResponse;
 import com.supermarket.supermarket_api.dto.SaleItemDTO;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.ItemMapper;
@@ -38,7 +38,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleDTO createSale(@NotNull Long branchId) {
+    public SaleResponse createSale(@NotNull Long branchId) {
         Branch branch = branchService.findRequiredById(branchId);
 
         Sale sale = new Sale(branch);
@@ -49,7 +49,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public SaleDTO getById(Long id) {
+    public SaleResponse getById(Long id) {
         return repository.findById(id)
                 .map(saleMapper::mapToDTO)
                 .orElseThrow(() -> new SaleNotFoundException(id));
@@ -57,7 +57,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDTO> findAll() {
+    public List<SaleResponse> findAll() {
         return repository.findAll().stream()
                 .map(saleMapper::mapToDTO)
                 .toList();
@@ -65,7 +65,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDTO> getSalesByBranch(Long branchId) {
+    public List<SaleResponse> getSalesByBranch(Long branchId) {
         return repository.findByBranchId(branchId)
                 .stream()
                 .map(saleMapper::mapToDTO)

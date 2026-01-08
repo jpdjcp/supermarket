@@ -1,8 +1,8 @@
 package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
-import com.supermarket.supermarket_api.dto.SaleCreateDTO;
-import com.supermarket.supermarket_api.dto.SaleDTO;
+import com.supermarket.supermarket_api.dto.SaleCreate;
+import com.supermarket.supermarket_api.dto.SaleResponse;
 import com.supermarket.supermarket_api.dto.SaleItemDTO;
 import com.supermarket.supermarket_api.service.SaleService;
 import jakarta.validation.Valid;
@@ -23,17 +23,17 @@ public class SaleController {
     }
 
     @GetMapping
-    public List<SaleDTO> list() { return service.findAll(); }
+    public List<SaleResponse> list() { return service.findAll(); }
 
     @PostMapping
-    public ResponseEntity<SaleDTO> create(@RequestBody @Valid SaleCreateDTO dto) {
-        SaleDTO sale = service.createSale(dto.branchId());
+    public ResponseEntity<SaleResponse> create(@RequestBody @Valid SaleCreate dto) {
+        SaleResponse sale = service.createSale(dto.branchId());
         URI location = URI.create("/api/v1/sales/" + sale.id());
         return ResponseEntity.created(location).body(sale);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SaleDTO> get(@PathVariable Long id) {
+    public ResponseEntity<SaleResponse> get(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 

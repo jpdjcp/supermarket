@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.mapper;
 
-import com.supermarket.supermarket_api.dto.SaleDTO;
+import com.supermarket.supermarket_api.dto.SaleResponse;
 import com.supermarket.supermarket_api.model.SaleItem;
 import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.model.Sale;
@@ -18,8 +18,8 @@ public class SaleMapper {
     @Autowired
     private static ProductService productService;
 
-    public final SaleDTO mapToDTO(Sale sale) {
-        return new SaleDTO(
+    public final SaleResponse mapToDTO(Sale sale) {
+        return new SaleResponse(
                 sale.getId(),
                 sale.getBranch().getId(),
                 sale.getSaleItems().stream().map(ItemMapper::mapToDTO).toList(),
@@ -28,7 +28,7 @@ public class SaleMapper {
     }
 
     // dto -> model
-    public Sale mapToSale(SaleDTO dto) {
+    public Sale mapToSale(SaleResponse dto) {
         Sale sale = new Sale(dto.id(), null, null, dto.total());
 
         if (dto.items() != null) {

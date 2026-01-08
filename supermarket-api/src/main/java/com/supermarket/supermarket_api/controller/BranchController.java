@@ -2,7 +2,7 @@ package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.BranchCreateRequest;
 import com.supermarket.supermarket_api.dto.BranchResponse;
-import com.supermarket.supermarket_api.dto.SaleDTO;
+import com.supermarket.supermarket_api.dto.SaleResponse;
 import com.supermarket.supermarket_api.service.BranchService;
 import com.supermarket.supermarket_api.service.SaleService;
 import jakarta.validation.Valid;
@@ -50,7 +50,7 @@ public class BranchController {
     }
 
     @GetMapping("/{id}/sales")
-    public ResponseEntity<List<SaleDTO>> getSalesByBranch(@Positive @PathVariable Long id) {
+    public ResponseEntity<List<SaleResponse>> getSalesByBranch(@Positive @PathVariable Long id) {
         return ResponseEntity.ok(saleService.getSalesByBranch(id));
     }
 }
