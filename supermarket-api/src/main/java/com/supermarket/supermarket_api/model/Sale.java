@@ -31,14 +31,22 @@ public class Sale {
         this.branch = branch;
     }
 
-    public SaleItem addItem(Product product, int quantity) {
+    public SaleItem addSaleItem(Product product, int quantity) {
+
+        if (quantity < 0)
+            throw new IllegalArgumentException("Quantity must be at least 1");
+
         SaleItem saleItem = new SaleItem(this, product, quantity);
         this.saleItems.add(saleItem);
         return saleItem;
     }
 
-    public void removeItem(SaleItem item) {
+    public void removeSaleItem(SaleItem item) {
         saleItems.remove(item);
+    }
+
+    public List<SaleItem> getItems() {
+        return List.copyOf(saleItems);
     }
 
     @Transient

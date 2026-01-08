@@ -93,7 +93,7 @@ public class SaleService implements ISaleService {
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         Product product = productService.findRequiredById(request.productId());
-        SaleItem item = sale.addItem(product, request.quantity());
+        SaleItem item = sale.addSaleItem(product, request.quantity());
         repository.save(sale);
 
         return ItemMapper.mapToDTO(item);
