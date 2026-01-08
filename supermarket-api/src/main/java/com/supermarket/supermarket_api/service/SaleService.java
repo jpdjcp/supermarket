@@ -11,6 +11,9 @@ import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.model.SaleItem;
 import com.supermarket.supermarket_api.model.Sale;
 import com.supermarket.supermarket_api.repository.SaleRepository;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -24,16 +27,19 @@ public class SaleService implements ISaleService {
     private final BranchService branchService;
     private final ProductService productService;
     private final SaleMapper saleMapper;
+    private final SaleItemMapper saleItemMapper;
 
     public SaleService(
             SaleRepository repository,
             BranchService branchService,
             ProductService productService,
-            SaleMapper saleMapper) {
+            SaleMapper saleMapper,
+            SaleItemMapper saleItemMapper) {
         this.repository = repository;
         this.branchService = branchService;
         this.productService = productService;
         this.saleMapper = saleMapper;
+        this.saleItemMapper = saleItemMapper;
     }
 
     @Override
@@ -49,18 +55,10 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public SaleResponse getById(Long id) {
+    public SaleResponse findById(Long id) {
         return repository.findById(id)
                 .map(saleMapper::toResponse)
                 .orElseThrow(() -> new SaleNotFoundException(id));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<SaleResponse> findAll() {
-        return repository.findAll().stream()
-                .map(saleMapper::toResponse)
-                .toList();
     }
 
     @Override
@@ -74,28 +72,34 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleItemResponse> getItemsBySale(Long saleId) {
+    public List<SaleItemResponse> getProducts(Long saleId) {
 
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         return sale.getSaleItems()
                 .stream()
-                .map(SaleItemMapper::toResponse)
+                .map(saleItemMapper::toResponse)
                 .toList();
     }
 
     @Override
     @Transactional
-    public SaleItemResponse addItem(Long saleId, AddItemRequest request) {
+    public SaleItemResponse addProduct(Long id, AddItemRequest request) {
 
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        Sale sale = repository.findById(id)
+                .orElseThrow(() -> new SaleNotFoundException(id));
 
         Product product = productService.findRequiredById(request.productId());
         SaleItem item = sale.addSaleItem(product, request.quantity());
         repository.save(sale);
 
-        return SaleItemMapper.toResponse(item);
+        return saleItemMapper.toResponse(item);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProduct(Long id, Long itemId) {
+
     }
 }

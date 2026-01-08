@@ -7,10 +7,10 @@ import com.supermarket.supermarket_api.dto.SaleItemResponse;
 import java.util.List;
 
 public interface ISaleService {
-    List<SaleResponse> findAll();
     SaleResponse createSale(Long branchId);
-    SaleResponse getById(Long id);
+    SaleResponse findById(Long id);
     List<SaleResponse> getSalesByBranch(Long branchId);
-    SaleItemResponse addItem(Long saleId, AddItemRequest request);
-    List<SaleItemResponse> getItemsBySale(Long saleId);
+    SaleItemResponse addProduct(Long id, AddItemRequest request);
+    List<SaleItemResponse> getProducts(Long saleId);
+    void deleteProduct(Long id, Long itemId);
 }

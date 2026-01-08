@@ -34,19 +34,19 @@ public class SaleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SaleResponse> get(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping("/{saleId}/items")
     public ResponseEntity<SaleItemResponse> addItem(@PathVariable Long saleId,
                                                     @Valid @RequestBody AddItemRequest request) {
-        SaleItemResponse item = service.addItem(saleId, request);
+        SaleItemResponse item = service.addProduct(saleId, request);
         URI location = URI.create("/api/v1/sales/" + saleId + "/items/" + item.id());
         return ResponseEntity.created(location).body(item);
     }
 
     @GetMapping("/{saleId}/items")
     public ResponseEntity<List<SaleItemResponse>> getItems(@PathVariable Long saleId) {
-        return ResponseEntity.ok(service.getItemsBySale(saleId));
+        return ResponseEntity.ok(service.getProducts(saleId));
     }
 }
