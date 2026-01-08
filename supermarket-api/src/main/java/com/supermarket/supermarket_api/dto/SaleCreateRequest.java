@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.dto;
 
-public record SaleCreate(
+public record SaleCreateRequest(
         Long branchId
 ) {
 }

@@ -1,7 +1,7 @@
 package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.AddItemRequest;
-import com.supermarket.supermarket_api.dto.SaleCreate;
+import com.supermarket.supermarket_api.dto.SaleCreateRequest;
 import com.supermarket.supermarket_api.dto.SaleResponse;
 import com.supermarket.supermarket_api.dto.SaleItemDTO;
 import com.supermarket.supermarket_api.service.SaleService;
@@ -26,7 +26,7 @@ public class SaleController {
     public List<SaleResponse> list() { return service.findAll(); }
 
     @PostMapping
-    public ResponseEntity<SaleResponse> create(@RequestBody @Valid SaleCreate dto) {
+    public ResponseEntity<SaleResponse> create(@RequestBody @Valid SaleCreateRequest dto) {
         SaleResponse sale = service.createSale(dto.branchId());
         URI location = URI.create("/api/v1/sales/" + sale.id());
         return ResponseEntity.created(location).body(sale);
