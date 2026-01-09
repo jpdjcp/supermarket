@@ -42,7 +42,7 @@ public class Sale {
         SaleItem item = findItem(product.getId());
         this.saleItems.remove(item);
     }
-    
+
     public void changeQuantity(Product product, int quantity) {
         SaleItem item = findItem(product.getId());
         item.changeQuantity(quantity);
