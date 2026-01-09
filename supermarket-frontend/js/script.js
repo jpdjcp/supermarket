@@ -5,6 +5,7 @@ const saleRegisterBtn = document.querySelector('#btnRegistrarVenta');
 const addProductToSaleBtn = document.querySelector('#btnAgregarProducto');
 var saleId = 0;
 
+// branch registration
 branchRegisterBtn.addEventListener('click', async () => {
     try {
         const branchAddress = document.querySelector('#direccionSucursal').value;
@@ -26,6 +27,7 @@ branchRegisterBtn.addEventListener('click', async () => {
     }
 });
 
+// product registration
 productRegisterBtn.addEventListener('click', async () => {
     try {
         const name = document.querySelector('#nombreProducto').value;
@@ -46,6 +48,7 @@ productRegisterBtn.addEventListener('click', async () => {
     }
 });
 
+// sale registration
 saleRegisterBtn.addEventListener('click', async () => {
     try {
         const branchId = Number(document.querySelector('#sucursalVenta').value);
@@ -64,6 +67,7 @@ saleRegisterBtn.addEventListener('click', async () => {
     }
 });
 
+// add product to sale
 addProductToSaleBtn.addEventListener('click', async () => {
     try {
         const saleId = Number(document.querySelector('#ventaId').value);
