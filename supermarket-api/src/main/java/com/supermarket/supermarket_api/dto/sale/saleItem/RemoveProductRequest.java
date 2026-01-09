@@ -1,9 +1,9 @@
-package com.supermarket.supermarket_api.dto;
+package com.supermarket.supermarket_api.dto.sale.saleItem;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record RemoveItemRequest(
+public record RemoveProductRequest(
 
         @NotNull(message = "Sale ID is required")
         @Positive(message = "Sale ID must positive")

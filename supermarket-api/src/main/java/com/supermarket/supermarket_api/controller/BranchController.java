@@ -1,8 +1,8 @@
 package com.supermarket.supermarket_api.controller;
 
-import com.supermarket.supermarket_api.dto.BranchCreateRequest;
-import com.supermarket.supermarket_api.dto.BranchResponse;
-import com.supermarket.supermarket_api.dto.SaleResponse;
+import com.supermarket.supermarket_api.dto.branch.BranchCreateRequest;
+import com.supermarket.supermarket_api.dto.branch.BranchResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.service.BranchService;
 import com.supermarket.supermarket_api.service.SaleService;
 import jakarta.validation.Valid;
@@ -18,11 +18,9 @@ import java.util.List;
 public class BranchController {
 
     private final BranchService service;
-    private final SaleService saleService;
 
-    public BranchController(BranchService service, SaleService saleService) {
+    public BranchController(BranchService service) {
         this.service = service;
-        this.saleService = saleService;
     }
 
     @PostMapping
@@ -51,6 +49,6 @@ public class BranchController {
 
     @GetMapping("/{id}/sales")
     public ResponseEntity<List<SaleResponse>> getSalesByBranch(@Positive @PathVariable Long id) {
-        return ResponseEntity.ok(saleService.getSalesByBranch(id));
+        return ResponseEntity.ok(service.getSales(id));
     }
 }

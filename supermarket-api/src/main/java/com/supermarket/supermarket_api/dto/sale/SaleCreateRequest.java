@@ -1,4 +1,4 @@
-package com.supermarket.supermarket_api.dto;
+package com.supermarket.supermarket_api.dto.sale;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

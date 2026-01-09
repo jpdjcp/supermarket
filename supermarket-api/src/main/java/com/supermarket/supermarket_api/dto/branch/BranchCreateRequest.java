@@ -1,6 +1,7 @@
-package com.supermarket.supermarket_api.dto;
+package com.supermarket.supermarket_api.dto.branch;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record BranchCreateRequest(
 

@@ -1,7 +1,9 @@
 package com.supermarket.supermarket_api.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -26,16 +28,20 @@ public class SaleItem {
     private int quantity;
 
     public SaleItem(Sale sale, Product product, int quantity) {
+        validate(sale, product, quantity);
+
+        this.sale = sale;
+        this.product = product;
+        this.quantity = quantity;
+    }
+
+    private static void validate(Sale sale, Product product, int quantity) {
         if (sale == null)
             throw new IllegalArgumentException("Sale cannot be null");
         if (product == null)
             throw new IllegalArgumentException("Product cannot be null");
         if (quantity < 0)
             throw new IllegalArgumentException("Quantity must be at least 1");
-
-        this.sale = sale;
-        this.product = product;
-        this.quantity = quantity;
     }
 
     public void changeQuantity(int quantity) {

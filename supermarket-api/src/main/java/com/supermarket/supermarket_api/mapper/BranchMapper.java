@@ -1,7 +1,7 @@
 package com.supermarket.supermarket_api.mapper;
 
-import com.supermarket.supermarket_api.dto.BranchCreateRequest;
-import com.supermarket.supermarket_api.dto.BranchResponse;
+import com.supermarket.supermarket_api.dto.branch.BranchCreateRequest;
+import com.supermarket.supermarket_api.dto.branch.BranchResponse;
 import com.supermarket.supermarket_api.model.Branch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

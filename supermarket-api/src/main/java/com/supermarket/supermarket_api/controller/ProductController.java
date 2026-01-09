@@ -1,8 +1,8 @@
 package com.supermarket.supermarket_api.controller;
 
-import com.supermarket.supermarket_api.dto.ProductCreateRequest;
-import com.supermarket.supermarket_api.dto.ProductResponse;
-import com.supermarket.supermarket_api.dto.ProductUpdateRequest;
+import com.supermarket.supermarket_api.dto.product.ProductCreateRequest;
+import com.supermarket.supermarket_api.dto.product.ProductResponse;
+import com.supermarket.supermarket_api.dto.product.ProductUpdateRequest;
 import com.supermarket.supermarket_api.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.mapper;
 
-import com.supermarket.supermarket_api.dto.SaleResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.model.Sale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

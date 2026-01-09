@@ -1,4 +1,4 @@
-package com.supermarket.supermarket_api.dto;
+package com.supermarket.supermarket_api.dto.product;
 
 import jakarta.validation.constraints.*;
 

@@ -1,14 +1,14 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.ProductCreateRequest;
-import com.supermarket.supermarket_api.dto.ProductResponse;
-import com.supermarket.supermarket_api.dto.ProductUpdateRequest;
+import com.supermarket.supermarket_api.dto.product.ProductCreateRequest;
+import com.supermarket.supermarket_api.dto.product.ProductResponse;
+import com.supermarket.supermarket_api.dto.product.ProductUpdateRequest;
 import com.supermarket.supermarket_api.exception.ProductNotFoundException;
-import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.mapper.ProductMapper;
+import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.repository.ProductRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

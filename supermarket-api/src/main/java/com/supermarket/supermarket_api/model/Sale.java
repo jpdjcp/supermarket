@@ -1,7 +1,10 @@
 package com.supermarket.supermarket_api.model;
 
+import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,22 +34,22 @@ public class Sale {
         this.branch = branch;
     }
 
-    public SaleItem addSaleItem(Product product, int quantity) {
-
-        if (quantity < 0)
-            throw new IllegalArgumentException("Quantity must be at least 1");
-
-        SaleItem saleItem = new SaleItem(this, product, quantity);
-        this.saleItems.add(saleItem);
-        return saleItem;
+    public SaleItem addProduct(Product product, int quantity) {
+        validate(product, quantity);
+        SaleItem item = new SaleItem(this, product, quantity);
+        this.saleItems.add(item);
+        return item;
     }
 
-    public void removeSaleItem(SaleItem item) {
-        saleItems.remove(item);
+    public void removeProduct(Product product) {
+        SaleItem item = findItem(product.getId());
+        this.saleItems.remove(item);
     }
 
-    public List<SaleItem> getItems() {
-        return List.copyOf(saleItems);
+    // TODO
+    public void changeQuantity(Product product, int quantity) {
+        SaleItem item = findItem(product.getId());
+        item.changeQuantity(quantity);
     }
 
     @Transient
@@ -54,5 +57,19 @@ public class Sale {
         return saleItems.stream()
                 .map(SaleItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private static void validate(Product product, int quantity) {
+        if (quantity < 0)
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        if (product == null)
+            throw new IllegalArgumentException("Product cannot be null");
+    }
+
+    private SaleItem findItem(Long productId) {
+        return saleItems.stream()
+                .filter(i -> i.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new SaleItemNotFoundException(productId));
     }
 }

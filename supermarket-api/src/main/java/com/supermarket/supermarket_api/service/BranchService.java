@@ -1,13 +1,15 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.BranchCreateRequest;
-import com.supermarket.supermarket_api.dto.BranchResponse;
+import com.supermarket.supermarket_api.dto.branch.BranchCreateRequest;
+import com.supermarket.supermarket_api.dto.branch.BranchResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.exception.BranchNotFoundException;
-import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
+import com.supermarket.supermarket_api.mapper.SaleMapper;
+import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.repository.BranchRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,10 +18,15 @@ public class BranchService implements IBranchService {
 
     private final BranchRepository repository;
     private final BranchMapper mapper;
+    private final SaleMapper saleMapper;
 
-    public BranchService(BranchRepository repository, BranchMapper mapper) {
+    public BranchService(
+            BranchRepository repository,
+            BranchMapper mapper,
+            SaleMapper saleMapper) {
         this.repository = repository;
         this.mapper = mapper;
+        this.saleMapper = saleMapper;
     }
 
     @Transactional
@@ -56,5 +63,15 @@ public class BranchService implements IBranchService {
     @Transactional
     public void delete(Long id) {
         repository.delete(findRequiredById(id));
+    }
+
+    @Override
+    public List<SaleResponse> getSales(Long id) {
+        Branch branch = repository.findById(id)
+                .orElseThrow(() -> new BranchNotFoundException(id));
+
+        return branch.getSales().stream()
+                .map(saleMapper::toResponse)
+                .toList();
     }
 }
