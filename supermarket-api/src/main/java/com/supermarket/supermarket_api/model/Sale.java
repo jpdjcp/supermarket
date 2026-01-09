@@ -27,9 +27,6 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SaleItem> saleItems = new ArrayList<>();
 
-    @Column(nullable = false, updatable = false)
-    private final LocalDateTime createdAt = LocalDateTime.now();
-
     public Sale(Branch branch) {
         this.branch = branch;
     }
@@ -45,8 +42,7 @@ public class Sale {
         SaleItem item = findItem(product.getId());
         this.saleItems.remove(item);
     }
-
-    // TODO
+    
     public void changeQuantity(Product product, int quantity) {
         SaleItem item = findItem(product.getId());
         item.changeQuantity(quantity);
