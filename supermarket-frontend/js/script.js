@@ -1,4 +1,5 @@
-const API_URL = '/api';
+//const API_BASE_URL = '/api';
+const API_BASE_URL = 'https://supermarket-api-jpdjcp.fly.dev/api/v1';
 const branchRegisterBtn = document.querySelector('#btnGuardarSucursal');
 const productRegisterBtn = document.querySelector('#btnGuardarProducto');
 const saleRegisterBtn = document.querySelector('#btnRegistrarVenta');
@@ -9,7 +10,7 @@ var saleId = 0;
 branchRegisterBtn.addEventListener('click', async () => {
     try {
         const branchAddress = document.querySelector('#direccionSucursal').value;
-        const response = await fetch(API_URL + '/branch/create', {
+        const response = await fetch(API_BASE_URL + '/branches', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json',
@@ -33,7 +34,7 @@ productRegisterBtn.addEventListener('click', async () => {
         const name = document.querySelector('#nombreProducto').value;
         const price = parseFloat(document.querySelector('#precioProducto').value);
 
-        const response = await fetch(API_URL + '/product/create', {
+        const response = await fetch(API_BASE_URL + '/products', {
             method: 'POST',
             headers: {'Content-Type' : 'application/json'},
             body: JSON.stringify({name : name, price : price})
@@ -52,7 +53,7 @@ productRegisterBtn.addEventListener('click', async () => {
 saleRegisterBtn.addEventListener('click', async () => {
     try {
         const branchId = Number(document.querySelector('#sucursalVenta').value);
-        const response = await fetch(API_URL + '/sales/create/' + branchId, {
+        const response = await fetch(API_BASE_URL + '/sales' + branchId, {
             method: 'POST',
             headers: {'Content-Type' : 'application/json'}
         });
@@ -74,9 +75,9 @@ addProductToSaleBtn.addEventListener('click', async () => {
         const productId = Number(document.querySelector('#productoId').value);
         const quantity = Number(document.querySelector('#cantidadProducto').value);
         
-        const response = await fetch(API_URL + '/sales/' + saleId + '/items',
+        const response = await fetch(API_BASE_URL + '/sales/' + saleId,
             {
-                method : 'POST',
+                method : 'PUT',
                 headers : {'Content-Type' : 'application/json'},
                 body : JSON.stringify(
                     {
