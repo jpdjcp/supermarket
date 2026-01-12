@@ -36,11 +36,11 @@ public class SaleController {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @PostMapping("/{saleId}/items")
-    public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long saleId,
+    @PostMapping("/{id}")
+    public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long id,
                                                          @Valid @RequestBody AddProductRequest request) {
-        AddProductResponse item = service.addProduct(saleId, request);
-        URI location = URI.create("/api/v1/sales/" + saleId);
+        AddProductResponse item = service.addProduct(id, request);
+        URI location = URI.create("/api/v1/sales/" + id);
         return ResponseEntity.created(location).body(item);
     }
 
