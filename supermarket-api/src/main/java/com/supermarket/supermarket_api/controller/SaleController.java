@@ -36,7 +36,7 @@ public class SaleController {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long id,
                                                          @Valid @RequestBody AddProductRequest request) {
         AddProductResponse item = service.addProduct(id, request);
@@ -49,7 +49,7 @@ public class SaleController {
         return ResponseEntity.ok(service.getProducts(saleId));
     }
 
-    @DeleteMapping("/{saleId}/items/{productId}")
+    @PatchMapping("/{saleId}/items/{productId}")
     public ResponseEntity<Void> removeProduct(
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {
