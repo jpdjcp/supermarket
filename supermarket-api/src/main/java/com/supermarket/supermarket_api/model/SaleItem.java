@@ -27,28 +27,30 @@ public class SaleItem {
     @Column(nullable = false)
     private int quantity;
 
-    public SaleItem(Sale sale, Product product, int quantity) {
-        validate(sale, product, quantity);
+    public SaleItem(Sale sale, Product product) {
+        validate(sale, product);
 
         this.sale = sale;
         this.product = product;
-        this.quantity = quantity;
+        this.quantity = 1;
     }
 
-    private static void validate(Sale sale, Product product, int quantity) {
+    private static void validate(Sale sale, Product product) {
         if (sale == null)
             throw new IllegalArgumentException("Sale cannot be null");
         if (product == null)
             throw new IllegalArgumentException("Product cannot be null");
-        if (quantity < 0)
-            throw new IllegalArgumentException("Quantity must be at least 1");
     }
 
-    public void changeQuantity(int quantity) {
-        if (quantity < 0)
-            throw new IllegalArgumentException("Quantity must bbe at least 1");
+    public void increaseQuantity() {
+        this.quantity++;
+    }
 
-        this.quantity = quantity;
+    public void decreaseQuantity() {
+        if (this.quantity == 1)
+            throw new IllegalArgumentException("Quantity must be at least 1");
+
+        this.quantity--;
     }
 
     @Transient

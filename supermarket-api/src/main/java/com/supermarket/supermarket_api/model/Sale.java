@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class Sale {
 
     public SaleItem addProduct(Product product, int quantity) {
         validate(product, quantity);
-        SaleItem item = new SaleItem(this, product, quantity);
+        SaleItem item = new SaleItem(this, product);
         this.saleItems.add(item);
         return item;
     }
@@ -43,9 +42,14 @@ public class Sale {
         this.saleItems.remove(item);
     }
 
-    public void changeQuantity(Product product, int quantity) {
+    public void increaseQuantity(Product product) {
         SaleItem item = findItem(product.getId());
-        item.changeQuantity(quantity);
+        item.increaseQuantity();
+    }
+
+    public void decreaseQuantity(Product product) {
+        SaleItem item = findItem(product.getId());
+        item.decreaseQuantity();
     }
 
     @Transient

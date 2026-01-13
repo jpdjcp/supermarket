@@ -13,4 +13,6 @@ public interface ISaleService {
     AddProductResponse addProduct(Long id, AddProductRequest request);
     List<SaleItemResponse> getProducts(Long saleId);
     void removeProduct(Long id, Long productId);
+    void increaseQuantity(Long id, Long productId);
+    void decreaseQuantity(Long id, Long productId);
 }

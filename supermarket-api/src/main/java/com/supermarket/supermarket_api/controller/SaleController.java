@@ -56,4 +56,20 @@ public class SaleController {
         service.removeProduct(saleId, productId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{saleId}/items/{productId}")
+    public ResponseEntity<Void> increaseQuantity(
+            @PathVariable @Positive Long saleId,
+            @PathVariable @Positive Long productId) {
+        service.increaseQuantity(saleId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{saleId}/items/{productId}")
+    public ResponseEntity<Void> decreaseQuantity(
+            @PathVariable @Positive Long saleId,
+            @PathVariable @Positive Long productId) {
+        service.decreaseQuantity(saleId, productId);
+        return ResponseEntity.noContent().build();
+    }
 }

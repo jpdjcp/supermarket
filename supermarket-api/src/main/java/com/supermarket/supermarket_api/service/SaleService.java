@@ -79,4 +79,26 @@ public class SaleService implements ISaleService {
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
     }
+
+    @Override
+    @Transactional
+    public void increaseQuantity(Long id, Long productId) {
+        Sale sale = repository.findById(id)
+                .orElseThrow(() -> new SaleNotFoundException(id));
+
+        Product product = productService.findRequiredById(productId);
+        sale.increaseQuantity(product);
+    }
+
+    @Override
+    @Transactional
+    public void decreaseQuantity(Long id, Long productId) {
+        Sale sale = repository.findById(id)
+                .orElseThrow(() -> new SaleNotFoundException(id));
+
+        Product product = productService.findRequiredById(productId);
+        sale.decreaseQuantity(product);
+    }
+
+
 }
