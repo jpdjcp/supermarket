@@ -11,8 +11,8 @@ public interface ISaleService {
     SaleResponse createSale(Long branchId);
     SaleResponse findById(Long id);
     AddProductResponse addProduct(Long id, AddProductRequest request);
-    List<SaleItemResponse> getProducts(Long saleId);
-    void removeProduct(Long id, Long productId);
+    List<SaleItemResponse> getItems(Long saleId);
+    void removeItem(Long id, Long productId);
     void increaseQuantity(Long id, Long productId);
     void decreaseQuantity(Long id, Long productId);
 }

@@ -36,7 +36,7 @@ public class SaleController {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @PatchMapping("/{id}")
+    @PostMapping("/{id}/items")
     public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long id,
                                                          @Valid @RequestBody AddProductRequest request) {
         AddProductResponse item = service.addProduct(id, request);
@@ -45,19 +45,19 @@ public class SaleController {
     }
 
     @GetMapping("/{saleId}/items")
-    public ResponseEntity<List<SaleItemResponse>> getProducts(@PathVariable @Positive Long saleId) {
-        return ResponseEntity.ok(service.getProducts(saleId));
+    public ResponseEntity<List<SaleItemResponse>> getItems(@PathVariable @Positive Long saleId) {
+        return ResponseEntity.ok(service.getItems(saleId));
     }
 
-    @PatchMapping("/{saleId}/items/{productId}")
-    public ResponseEntity<Void> removeProduct(
+    @DeleteMapping("/{saleId}/items/{productId}")
+    public ResponseEntity<Void> removeItem(
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {
-        service.removeProduct(saleId, productId);
+        service.removeItem(saleId, productId);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{saleId}/items/{productId}")
+    @PatchMapping("/{saleId}/items/{productId}/increase")
     public ResponseEntity<Void> increaseQuantity(
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {
@@ -65,7 +65,7 @@ public class SaleController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{saleId}/items/{productId}")
+    @PatchMapping("/{saleId}/items/{productId}/decrease")
     public ResponseEntity<Void> decreaseQuantity(
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {

@@ -47,7 +47,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleItemResponse> getProducts(Long id) {
+    public List<SaleItemResponse> getItems(Long id) {
 
         Sale sale = repository.findById(id)
                 .orElseThrow(() -> new SaleNotFoundException(id));
@@ -72,7 +72,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public void removeProduct(Long id, Long productId) {
+    public void removeItem(Long id, Long productId) {
         Sale sale = repository.findById(id)
                 .orElseThrow(() -> new SaleNotFoundException(id));
 

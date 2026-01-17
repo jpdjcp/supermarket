@@ -20,7 +20,7 @@ public class Branch {
     private String address;
 
     @OneToMany(mappedBy = "branch")
-    private List<Sale> sales = new ArrayList<>();
+    private final List<Sale> sales = new ArrayList<>();
 
     public Branch(String address) {
         this.address = address;
