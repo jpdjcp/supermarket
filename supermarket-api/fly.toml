@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for supermarket-api-jpdjcp on 2026-01-10T22:59:37-03:00
+# fly.toml app configuration file generated for supermarket-api-jpdjcp-rough-thunder-2030 on 2026-01-22T11:46:42-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -9,18 +9,17 @@ primary_region = 'iad'
 [build]
 
 [deploy]
-restart_on_crash = false
 
 [http_service]
   internal_port = 8080
   force_https = true
 
-[[http_service.checks]]
-  grace_period = "30s"
-  interval = "15s"
-  timeout = "2s"
-  method = "GET"
-  path = "/actuator/health"
+  [[http_service.checks]]
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '30s'
+    method = 'GET'
+    path = '/actuator/health'
 
 [[vm]]
   memory = '1gb'
