@@ -1,0 +1,17 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "vscode.html-language-features",
+  "html.format.enable": true,
+  "html.format.wrapLineLength": 120,
+  "html.format.unformatted": "wbr",
+  "html.format.contentUnformatted": "pre,code,textarea",
+  "html.format.indentInnerHtml": false,
+  "html.format.preserveNewLines": true,
+  "html.format.maxPreserveNewLines": 2,
+  "html.format.endWithNewline": false,
+  "html.format.extraLiners": "head, body, /html",
+"html.format.wrapAttributes": "auto",
+"[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+}
+}
