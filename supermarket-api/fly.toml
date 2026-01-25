@@ -1,8 +1,3 @@
-# fly.toml app configuration file generated for supermarket-api-jpdjcp-rough-thunder-2030 on 2026-01-22T11:46:42-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'supermarket-api-jpdjcp'
 primary_region = 'iad'
 
