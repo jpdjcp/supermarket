@@ -32,9 +32,19 @@ public class Sale {
 
     public SaleItem addProduct(Product product, int quantity) {
         validate(product, quantity);
-        SaleItem item = new SaleItem(this, product);
-        this.saleItems.add(item);
-        return item;
+
+        return this.saleItems.stream()
+                .filter(item -> item.getProduct().getId().equals(product.getId()))
+                .findFirst()
+                .map(item -> {
+                    item.increaseQuantity();
+                    return item;
+                })
+                .orElseGet(() -> {
+                    SaleItem item = new SaleItem(this, product);
+                    this.saleItems.add(item);
+                    return item;
+                });
     }
 
     public void removeProduct(Product product) {
@@ -59,11 +69,11 @@ public class Sale {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private static void validate(Product product, int quantity) {
-        if (quantity < 0)
-            throw new IllegalArgumentException("Quantity must be at least 1");
+    private void validate(Product product, int quantity) {
         if (product == null)
             throw new IllegalArgumentException("Product cannot be null");
+        if (quantity < 0)
+            throw new IllegalArgumentException("Quantity must be at least 1");
     }
 
     private SaleItem findItem(Long productId) {
