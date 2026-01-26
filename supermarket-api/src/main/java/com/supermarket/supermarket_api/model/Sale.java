@@ -30,15 +30,16 @@ public class Sale {
         this.branch = branch;
     }
 
-    public SaleItem addProduct(Product product, int quantity) {
-        validate(product, quantity);
+    public SaleItem addProduct(Product product) {
+        if (product == null)
+            throw new IllegalArgumentException("Product cannot be null");
 
         return this.saleItems.stream()
-                .filter(item -> item.getProduct().getId().equals(product.getId()))
+                .filter(i -> i.getProduct().equals(product))
                 .findFirst()
-                .map(item -> {
-                    item.increaseQuantity();
-                    return item;
+                .map(i -> {
+                    i.increaseQuantity();
+                    return i;
                 })
                 .orElseGet(() -> {
                     SaleItem item = new SaleItem(this, product);
@@ -48,17 +49,17 @@ public class Sale {
     }
 
     public void removeProduct(Product product) {
-        SaleItem item = findItem(product.getId());
+        SaleItem item = findItem(product);
         this.saleItems.remove(item);
     }
 
     public void increaseQuantity(Product product) {
-        SaleItem item = findItem(product.getId());
+        SaleItem item = findItem(product);
         item.increaseQuantity();
     }
 
     public void decreaseQuantity(Product product) {
-        SaleItem item = findItem(product.getId());
+        SaleItem item = findItem(product);
         item.decreaseQuantity();
     }
 
@@ -69,17 +70,10 @@ public class Sale {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private void validate(Product product, int quantity) {
-        if (product == null)
-            throw new IllegalArgumentException("Product cannot be null");
-        if (quantity < 0)
-            throw new IllegalArgumentException("Quantity must be at least 1");
-    }
-
-    private SaleItem findItem(Long productId) {
+    private SaleItem findItem(Product product) {
         return saleItems.stream()
-                .filter(i -> i.getProduct().getId().equals(productId))
+                .filter(i -> i.getProduct().equals(product))
                 .findFirst()
-                .orElseThrow(() -> new SaleItemNotFoundException(productId));
+                .orElseThrow(() -> new SaleItemNotFoundException(product.getId()));
     }
 }

@@ -65,7 +65,7 @@ public class SaleService implements ISaleService {
                 .orElseThrow(() -> new SaleNotFoundException(id));
 
         Product product = productService.findRequiredById(request.productId());
-        SaleItem item = sale.addProduct(product, request.quantity());
+        SaleItem item = sale.addProduct(product);
 
         return itemMapper.toResponse(item);
     }
@@ -90,6 +90,7 @@ public class SaleService implements ISaleService {
         sale.increaseQuantity(product);
     }
 
+    
     @Override
     @Transactional
     public void decreaseQuantity(Long id, Long productId) {

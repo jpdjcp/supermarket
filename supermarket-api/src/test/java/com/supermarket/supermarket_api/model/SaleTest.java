@@ -19,17 +19,17 @@ public class SaleTest {
     @Test
     void shouldAddProductToSale() {
         Sale sale = new Sale(branch);
-        sale.addProduct(product, 2);
+        sale.addProduct(product);
         assertThat(sale.getSaleItems()).hasSize(1);
-        assertThat(sale.getSaleItems().getFirst().getQuantity()).isEqualTo(2);
+        assertThat(sale.getSaleItems().getFirst().getQuantity()).isEqualTo(1);
     }
 
     @Test
     void shouldIncreaseQuantityWhenAddingSameProductAgain() {
         Sale sale = new Sale(branch);
 
-        sale.addProduct(product, 1);
-        sale.addProduct(product, 1);
+        sale.addProduct(product);
+        sale.addProduct(product);
 
         assertThat(sale.getSaleItems()).hasSize(1);
         assertThat(sale.getSaleItems().getFirst().getQuantity()).isEqualTo(2);
@@ -38,7 +38,7 @@ public class SaleTest {
     @Test
     void shouldNotAllowQuantityBelowOne() {
         Sale sale = new Sale(branch);
-        sale.addProduct(product, 1);
+        sale.addProduct(product);
 
         assertThatThrownBy(() ->
                 sale.decreaseQuantity(product))
@@ -49,7 +49,8 @@ public class SaleTest {
     void shouldCalculateTotal() {
         Sale sale = new Sale(branch);
 
-        sale.addProduct(product, 2);
+        sale.addProduct(product);
+        sale.increaseQuantity(product);
         assertThat(sale.getTotal()).isEqualTo(new BigDecimal("2000"));
 
         sale.decreaseQuantity(product);
