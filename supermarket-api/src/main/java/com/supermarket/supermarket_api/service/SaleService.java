@@ -27,7 +27,7 @@ public class SaleService implements ISaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final SaleItemMapper itemMapper;
-
+/*
     @Override
     @Transactional
     public SaleResponse createSale(Long branchId) {
@@ -35,6 +35,14 @@ public class SaleService implements ISaleService {
         Sale sale = new Sale(branch);
         repository.save(sale);
         return saleMapper.toResponse(sale);
+    }*/
+
+    @Override
+    @Transactional
+    public SaleResponse createSale(Long branchId) {
+        Branch branch = branchService.findRequiredById(branchId);
+        Sale sale = new Sale(branch);
+        return saleMapper.toResponse(repository.save(sale));
     }
 
     @Override
@@ -72,7 +80,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public void removeItem(Long id, Long productId) {
+    public void removeProduct(Long id, Long productId) {
         Sale sale = repository.findById(id)
                 .orElseThrow(() -> new SaleNotFoundException(id));
 
@@ -90,7 +98,7 @@ public class SaleService implements ISaleService {
         sale.increaseQuantity(product);
     }
 
-    
+
     @Override
     @Transactional
     public void decreaseQuantity(Long id, Long productId) {

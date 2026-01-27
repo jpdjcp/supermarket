@@ -53,7 +53,7 @@ public class SaleController {
     public ResponseEntity<Void> removeItem(
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {
-        service.removeItem(saleId, productId);
+        service.removeProduct(saleId, productId);
         return ResponseEntity.noContent().build();
     }
 
