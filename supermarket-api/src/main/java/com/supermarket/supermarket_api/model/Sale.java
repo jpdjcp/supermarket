@@ -1,5 +1,6 @@
 package com.supermarket.supermarket_api.model;
 
+import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -22,6 +23,8 @@ public class Sale {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "branch_id")
     private Branch branch;
+
+    private SaleStatus status = SaleStatus.OPEN;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SaleItem> saleItems = new ArrayList<>();
@@ -63,6 +66,20 @@ public class Sale {
         item.decreaseQuantity();
     }
 
+    public void finish() {
+        if (this.status != SaleStatus.OPEN)
+            throw new InvalidSaleStateException("Only OPEN sales can be finished");
+
+        this.status = SaleStatus.FINISHED;
+    }
+
+    public void cancel() {
+        if (this.status != SaleStatus.OPEN)
+            throw new InvalidSaleStateException("Only OPEN sales can be cancelled");
+
+        this.status = SaleStatus.CANCELLED;
+    }
+
     @Transient
     public BigDecimal getTotal() {
         return saleItems.stream()
@@ -76,4 +93,5 @@ public class Sale {
                 .findFirst()
                 .orElseThrow(() -> new SaleItemNotFoundException(product.getId()));
     }
+
 }

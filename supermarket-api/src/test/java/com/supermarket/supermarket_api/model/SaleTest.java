@@ -1,5 +1,6 @@
 package com.supermarket.supermarket_api.model;
 
+import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
@@ -57,5 +58,32 @@ public class SaleTest {
         assertThat(sale.getTotal()).isEqualTo(new BigDecimal("1000"));
     }
 
+    @Test
+    void finishSale_whenOpen_shouldMarkAsFinished() {
+        Sale sale = new Sale(branch);
+        sale.finish();
+        assertThat(sale.getStatus()).isEqualTo(SaleStatus.FINISHED);
+    }
+
+    @Test
+    void cancelSale_whenOpen_shouldMarkAsCancelled() {
+        Sale sale = new Sale(branch);
+        sale.cancel();
+        assertThat(sale.getStatus()).isEqualTo(SaleStatus.CANCELLED);
+    }
+
+    @Test
+    void finishSale_whenCancelled_shouldThrow() {
+        Sale sale = new Sale(branch);
+        sale.cancel();
+        assertThatThrownBy(sale::finish).isInstanceOf(InvalidSaleStateException.class);
+    }
+
+    @Test
+    void cancelSale_whenFinished_shouldThrow() {
+        Sale sale = new Sale(branch);
+        sale.finish();
+        assertThatThrownBy(sale::cancel).isInstanceOf(InvalidSaleStateException.class);
+    }
 
 }
