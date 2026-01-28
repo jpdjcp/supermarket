@@ -34,3 +34,10 @@ jobs:
       - name: Build and run tests
         run: ./mvnw clean package
         working-directory: supermarket-api
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Deploy placeholder
+        run: echo "Deploy step will be added later"
