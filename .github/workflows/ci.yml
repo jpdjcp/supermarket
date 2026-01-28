@@ -36,8 +36,12 @@ jobs:
         working-directory: supermarket-api
 
   deploy:
+    name: Deploy (placeholder)
     needs: build
     runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
     steps: 
-      - name: Deploy placeholder
-        run: echo "Deploy step will be added later"
+      - name: Deploy step will be added later
+        run: echo "🚀 Deploy job reached. Real deployment will be added next."
