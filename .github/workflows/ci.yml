@@ -25,3 +25,4 @@ jobs:
 
       - name: Build and run tests
         run: ./mvnw clean package
+	working-directory: supermarket-api
