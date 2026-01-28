@@ -12,6 +12,7 @@ import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.model.Sale;
 import com.supermarket.supermarket_api.model.SaleItem;
 import com.supermarket.supermarket_api.repository.SaleRepository;
+import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +28,6 @@ public class SaleService implements ISaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final SaleItemMapper itemMapper;
-/*
-    @Override
-    @Transactional
-    public SaleResponse createSale(Long branchId) {
-        Branch branch = branchService.findRequiredById(branchId);
-        Sale sale = new Sale(branch);
-        repository.save(sale);
-        return saleMapper.toResponse(sale);
-    }*/
 
     @Override
     @Transactional
@@ -56,9 +48,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional(readOnly = true)
     public List<SaleItemResponse> getItems(Long id) {
-
-        Sale sale = repository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException(id));
+        Sale sale = findRequiredSale(id);
 
         return sale.getSaleItems().stream()
                 .map(itemMapper::toSaleItemResponse)
@@ -68,9 +58,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public AddProductResponse addProduct(Long id, AddProductRequest request) {
-
-        Sale sale = repository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException(id));
+        Sale sale = findRequiredSale(id);
 
         Product product = productService.findRequiredById(request.productId());
         SaleItem item = sale.addProduct(product);
@@ -81,8 +69,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public void removeProduct(Long id, Long productId) {
-        Sale sale = repository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException(id));
+        Sale sale = findRequiredSale(id);
 
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
@@ -91,8 +78,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public void increaseQuantity(Long id, Long productId) {
-        Sale sale = repository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException(id));
+        Sale sale = findRequiredSale(id);
 
         Product product = productService.findRequiredById(productId);
         sale.increaseQuantity(product);
@@ -102,12 +88,27 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public void decreaseQuantity(Long id, Long productId) {
-        Sale sale = repository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException(id));
+        Sale sale = findRequiredSale(id);
 
         Product product = productService.findRequiredById(productId);
         sale.decreaseQuantity(product);
     }
 
+    @Override
+    @Transactional
+    public void finishSale(Long saleId) {
+        findRequiredSale(saleId).finish();
+    }
 
+    @Override
+    @Transactional
+    public void cancelSale(Long saleId) {
+        findRequiredSale(saleId).cancel();
+    }
+
+    @Nonnull
+    private Sale findRequiredSale(Long saleId) {
+        return repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+    }
 }

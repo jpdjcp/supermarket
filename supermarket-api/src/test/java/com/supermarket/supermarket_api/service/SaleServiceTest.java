@@ -3,14 +3,13 @@ package com.supermarket.supermarket_api.service;
 import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
+import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
-import com.supermarket.supermarket_api.model.Branch;
-import com.supermarket.supermarket_api.model.Product;
-import com.supermarket.supermarket_api.model.Sale;
-import com.supermarket.supermarket_api.model.SaleItem;
+import com.supermarket.supermarket_api.model.*;
 import com.supermarket.supermarket_api.repository.SaleRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,11 +46,17 @@ public class SaleServiceTest {
     @Mock
     SaleItemMapper itemMapper;
 
+    private Branch branch;
+    private Sale sale;
+
+    @BeforeEach
+    void setUp() {
+        branch = new Branch("Branch address");
+        sale = new Sale(branch);
+    }
+
     @Test
     void createSale_shouldCreateSaleForBranch() {
-
-        Branch branch = new Branch("Branch address");
-        Sale sale = new Sale(branch);
         SaleResponse response = new SaleResponse(1L, branch.getId(), List.of(), BigDecimal.valueOf(1000));
 
         when(branchService.findRequiredById(1L)).thenReturn(branch);
@@ -66,9 +71,7 @@ public class SaleServiceTest {
     }
 
     @Test
-    void addProductTest() {
-        Branch branch = new Branch("Branch address");
-        Sale sale = new Sale(branch);
+    void addProduct_ShouldAddProduct() {
         Product product = new Product("Product name", BigDecimal.valueOf(1000));
         AddProductResponse response = new AddProductResponse(
                 1L,
@@ -90,10 +93,7 @@ public class SaleServiceTest {
     }
 
     @Test
-    void findByIdTest() {
-        //setup
-        Branch branch = new Branch("Branch address");
-        Sale sale = new Sale(branch);
+    void findById_ShouldFindSale() {
         SaleResponse response = new SaleResponse(1L, 1L, List.of(), BigDecimal.valueOf(1000));
 
         when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
