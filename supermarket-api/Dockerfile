@@ -1,5 +1,5 @@
 # Stage 1: build the jar inside Maven
-FROM maven:3.9.2-eclipse-temurin-21 AS build
+FROM maven:3.9.2-eclipse-temurin-21-jdk AS build
 WORKDIR /app
 
 # Copy only pom.xml first to leverage Docker cache
