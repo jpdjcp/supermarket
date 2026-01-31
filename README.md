@@ -1,167 +1,128 @@
-# 🛒 Supermarket API
+# Supermarket API
 
-A backend REST API for managing a supermarket workflow, built with **Spring Boot** following clean architecture, domain-driven design principles, and real-world business rules.
+Proyecto full‑stack con foco en backend, diseñado para demostrar prácticas profesionales de desarrollo backend, CI/CD y despliegue en producción.
 
-This project was designed as a **portfolio-grade backend** to demonstrate professional backend practices: aggregates, DTO separation, validation, exception handling, Dockerization, and deployment readiness.
-
----
-
-## ✨ Features
-
-* Branch management
-* Product catalog with price updates
-* Sale lifecycle with realistic business states
-* Sale items management (add / remove products)
-* Validation with Jakarta Bean Validation
-* Global exception handling with `@ControllerAdvice`
-* DTO separation (Create / Update / Response)
-* Dockerized backend + database
-* Deploying in VPS / cloud services
+Este repositorio sigue un enfoque **monorepo**, conteniendo una API backend y un frontend mínimo utilizado únicamente para mostrar el funcionamiento de la API.
 
 ---
 
-## 🧠 Domain Model Overview
+## Objetivos del Proyecto
 
-### Aggregates
+* Construir un backend limpio y bien estructurado usando Spring Boot
+* Aplicar principios de diseño de dominio a una escala realista
+* Practicar flujos de trabajo profesionales con Git (branches, PRs, CI/CD)
+* Desplegar y operar el sistema en producción
 
-* **Branch** (Aggregate Root)
-* **Product** (Aggregate Root)
-* **Sale** (Aggregate Root)
-
-  * Owns `SaleItem` entities
-
-`SaleItem` is **not** exposed as an independent aggregate.
+Este proyecto es **intencionalmente backend‑first**. La infraestructura y DevOps se mantienen mínimos y pragmáticos.
 
 ---
 
-## 🔄 Sale Lifecycle
+## Stack Tecnológico
 
-Sales follow an explicit lifecycle using a `SaleStatus` enum:
-
-* `OPEN` – Sale in progress (default)
-* `FINISHED` – Sale completed
-* `CANCELLED` – Sale aborted
-
-### Business Rules
-
-* Products can only be added or modified when the sale is `OPEN`
-* Finished or cancelled sales are immutable
-* Status transitions are explicit (no generic update endpoints)
-
----
-
-## 📦 API Design
-
-### Sales
-
-* `POST /api/v1/sales` → Create a new sale
-* `GET /api/v1/sales/{id}` → Get sale details
-* `POST /api/v1/sales/{id}/items` → Add product to sale
-* `GET /api/v1/sales/{id}/items` → List sale items
-* `DELETE /api/v1/sales/{id}/items/{productId}` → Remove product from sale
-* `POST /api/v1/sales/{id}/finish` → Finish sale
-* `POST /api/v1/sales/{id}/cancel` → Cancel sale
-
-### Products
-
-* `POST /api/v1/products`
-* `GET /api/v1/products`
-* `GET /api/v1/products/{id}`
-* `PUT /api/v1/products/{id}` (price update)
-* `DELETE /api/v1/products/{id}`
-
-### Branches
-
-* `POST /api/v1/branches`
-* `GET /api/v1/branches`
-* `GET /api/v1/branches/{id}`
-* `DELETE /api/v1/branches/{id}`
-
----
-
-## 📄 DTO Strategy
-
-DTOs are split by **intent**, not reused blindly:
-
-* `CreateRequest`
-* `UpdateRequest`
-* `Response`
-
-DTOs are organized by domain:
-
-* `dto/branch`
-* `dto/product`
-* `dto/sale`
-* `dto/sale/saleItem`
-
----
-
-## ❗ Error Handling
-
-Centralized error handling via `@RestControllerAdvice`.
-
-Custom domain exceptions:
-
-* `BranchNotFoundException`
-* `ProductNotFoundException`
-* `SaleNotFoundException`
-
-Consistent error responses for clients.
-
----
-
-## 🐳 Docker Support
-
-The project is fully Dockerized:
-
-* Spring Boot backend
-* Relational database
-* Ready to run with Docker Compose
-
-Supports local development, VM deployment, and VPS hosting.
-
----
-
-## 🚀 Deployment
-
-* Tested on Ubuntu Server VM
-* CORS issues resolved
-* Already deployed on VPS (Fly.io)
-
-
----
-
-## 🛠 Tech Stack
+### Backend
 
 * Java 21
 * Spring Boot
-* Spring Data JPA
-* Hibernate
-* Jakarta Validation
-* Lombok
-* Docker & Docker Compose
-* MySQL / PostgreSQL (configurable)
+* Maven
+* MySQL
+* JUnit + Mockito
+
+### Frontend
+
+* HTML / CSS / JavaScript plano
+* UI mínima para interactuar con la API
+
+### Infraestructura
+
+* Fly.io (backend y frontend desplegados como apps separadas)
+* GitHub Actions (CI/CD)
 
 ---
 
-## 🎯 Project Goals
+## Estructura del Repositorio
 
-* Demonstrate backend engineering skills
-* Model real business workflows (not just CRUD)
-* Follow clean, maintainable architecture
-* Be understandable and extensible by other developers
-
----
-
-## 📌 Notes
-
-* Security layer (Spring Security) intentionally postponed
-* Testing and CI/CD planned as next steps
+```text
+supermarket/
+├── supermarket-api/        # Backend Spring Boot
+├── supermarket-frontend/   # Frontend estático
+├── docker-compose.yml      # Soporte para desarrollo local
+└── .github/workflows/      # Pipelines de CI/CD
+```
 
 ---
 
-## 👤 Author
+## Backend
 
-Backend developer focused on clean architecture and professional API design.
+El backend expone una API REST para gestionar ventas de supermercado, productos y reglas de negocio.
 
-This project was built step-by-step with an emphasis on learning and correctness.
+Características principales:
+
+* Modelo de dominio claro
+* Estados de ciclo de vida explícitos (por ejemplo: Sale OPEN / FINISHED / CANCELLED)
+* Excepciones de dominio personalizadas
+* Manejo global de errores
+* Tests automatizados mínimos pero significativos
+
+---
+
+## Frontend
+
+El frontend es intencionalmente simple y existe únicamente para:
+
+* Demostrar la funcionalidad del backend
+* Proveer una interfaz básica para pruebas manuales
+
+No se utilizan frameworks de frontend.
+
+---
+
+## Entornos y Perfiles
+
+El backend utiliza perfiles de Spring para separar responsabilidades:
+
+* `dev` – desarrollo local
+* `test` – tests automatizados
+* `prod` – producción (Fly.io)
+
+Cada perfil utiliza su propia configuración y base de datos.
+
+---
+
+## CI/CD
+
+Este proyecto utiliza GitHub Actions con un **flujo basado en Pull Requests**:
+
+* Los Pull Requests ejecutan CI (build + tests)
+* La rama `main` está protegida
+* El merge a `main` dispara el despliegue automático
+
+Los pipelines están aislados:
+
+* Los workflows del backend solo corren ante cambios en el backend
+* Los workflows del frontend solo corren ante cambios en el frontend
+
+---
+
+## Despliegue
+
+* Backend y frontend se despliegan como **aplicaciones separadas en Fly.io**
+* Los despliegues son completamente automáticos vía GitHub Actions
+* No se requieren despliegues manuales una vez configurado el pipeline
+
+---
+
+## Estado
+
+Proyecto en mantenimiento activo como proyecto de aprendizaje y portfolio.
+
+Focos principales:
+
+* Corrección del backend
+* Arquitectura limpia
+* Preparación para producción
+
+---
+
+## Autor
+
+Desarrollador backend enfocado en Java, Spring Boot y prácticas de ingeniería del mundo real.
