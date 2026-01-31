@@ -42,12 +42,21 @@ jobs:
         working-directory: supermarket-api
 
   deploy:
-    name: Deploy (placeholder)
+    name: Deploy backend to Fly.io
     needs: build
     runs-on: ubuntu-latest
 
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps: 
-      - name: Deploy step will be added later
-        run: echo "🚀 Deploy job reached. Real deployment will be added next."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy backend
+        working-directory: supermarket-api
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
