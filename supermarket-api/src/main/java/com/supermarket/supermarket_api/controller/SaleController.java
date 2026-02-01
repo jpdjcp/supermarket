@@ -32,15 +32,15 @@ public class SaleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SaleResponse> findById(@PathVariable @Positive Long id) {
-        return ResponseEntity.ok(service.findById(id));
+    public ResponseEntity<SaleResponse> findById(@PathVariable @Positive Long saleId) {
+        return ResponseEntity.ok(service.findById(saleId));
     }
 
     @PostMapping("/{id}/items")
-    public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long id,
+    public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long saleId,
                                                          @Valid @RequestBody AddProductRequest request) {
-        AddProductResponse item = service.addProduct(id, request);
-        URI location = URI.create("/api/v1/sales/" + id);
+        AddProductResponse item = service.addProduct(saleId, request);
+        URI location = URI.create("/api/v1/sales/" + saleId);
         return ResponseEntity.created(location).body(item);
     }
 
@@ -50,7 +50,7 @@ public class SaleController {
     }
 
     @DeleteMapping("/{saleId}/items/{productId}")
-    public ResponseEntity<Void> removeItem(
+    public ResponseEntity<Void> removeProduct(
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {
         service.removeProduct(saleId, productId);
@@ -70,6 +70,20 @@ public class SaleController {
             @PathVariable @Positive Long saleId,
             @PathVariable @Positive Long productId) {
         service.decreaseQuantity(saleId, productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{saleId}/finish")
+    public ResponseEntity<Void> finishSale(
+            @PathVariable @Positive Long saleId) {
+        service.finishSale(saleId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{saleId}/cancel")
+    public ResponseEntity<Void> cancelSale(
+            @PathVariable @Positive Long saleId) {
+        service.cancelSale(saleId);
         return ResponseEntity.noContent().build();
     }
 }
