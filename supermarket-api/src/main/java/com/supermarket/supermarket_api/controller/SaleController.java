@@ -6,6 +6,11 @@ import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
 import com.supermarket.supermarket_api.dto.sale.saleItem.SaleItemResponse;
 import com.supermarket.supermarket_api.service.SaleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+@Tag(
+        name = "Sales",
+        description = "Sale lifecycle management (create, finish, cancel)"
+)
 @RestController
 @RequestMapping("/api/v1/sales")
 public class SaleController {
@@ -73,15 +82,63 @@ public class SaleController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Finish a sale",
+            description = "Transitions a sale from OPEN to FINISHED. " +
+                    "Only OPEN sales can be finished."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sale successfully finished"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid sale state transition"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Sale not found"
+            )
+    })
     @PostMapping("/{saleId}/finish")
     public ResponseEntity<Void> finishSale(
+            @Parameter(
+                    description = "Sale identifier",
+                    example = "42",
+                    required = true
+            )
             @PathVariable @Positive Long saleId) {
         service.finishSale(saleId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Cancel a sale",
+            description = "Transitions a sale from OPEN to CANCELLED. " +
+                    "A sale that is already FINISHED or CANCELLED cannot be cancelled."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sale successfully cancelled"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid sale state transition"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Sale not found"
+            )
+    })
     @PostMapping("/{saleId}/cancel")
     public ResponseEntity<Void> cancelSale(
+            @Parameter(
+                    description = "Sale identifier",
+                    example = "42",
+                    required = true
+            )
             @PathVariable @Positive Long saleId) {
         service.cancelSale(saleId);
         return ResponseEntity.noContent().build();
