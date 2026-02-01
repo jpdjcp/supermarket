@@ -1,167 +1,97 @@
 # 🛒 Supermarket API
 
-A backend REST API for managing a supermarket workflow, built with **Spring Boot** following clean architecture, domain-driven design principles, and real-world business rules.
+API REST desarrollada con **Spring Boot** que modela un sistema de ventas para un supermercado, enfocada en buenas prácticas de backend, diseño de dominio y preparación para entornos productivos.
 
-This project was designed as a **portfolio-grade backend** to demonstrate professional backend practices: aggregates, DTO separation, validation, exception handling, Dockerization, and deployment readiness.
-
----
-
-## ✨ Features
-
-* Branch management
-* Product catalog with price updates
-* Sale lifecycle with realistic business states
-* Sale items management (add / remove products)
-* Validation with Jakarta Bean Validation
-* Global exception handling with `@ControllerAdvice`
-* DTO separation (Create / Update / Response)
-* Dockerized backend + database
-* Deploying in VPS / cloud services
+Este proyecto fue construido como parte de un recorrido práctico de aprendizaje backend, priorizando **claridad arquitectónica**, **evolución incremental** y **calidad profesional**.
 
 ---
 
-## 🧠 Domain Model Overview
+## 🎯 Propósito del proyecto
 
-### Aggregates
-
-* **Branch** (Aggregate Root)
-* **Product** (Aggregate Root)
-* **Sale** (Aggregate Root)
-
-  * Owns `SaleItem` entities
-
-`SaleItem` is **not** exposed as an independent aggregate.
+- Diseñar una API REST realista y mantenible
+- Aplicar principios de diseño de dominio (DDD liviano)
+- Implementar un **ciclo de vida explícito de ventas**
+- Preparar el proyecto para **deploy productivo**
+- Incorporar **CI/CD automatizado**
+- Documentar la API de forma clara con **Swagger / OpenAPI**
 
 ---
 
-## 🔄 Sale Lifecycle
+## 🧱 Stack tecnológico
 
-Sales follow an explicit lifecycle using a `SaleStatus` enum:
-
-* `OPEN` – Sale in progress (default)
-* `FINISHED` – Sale completed
-* `CANCELLED` – Sale aborted
-
-### Business Rules
-
-* Products can only be added or modified when the sale is `OPEN`
-* Finished or cancelled sales are immutable
-* Status transitions are explicit (no generic update endpoints)
-
----
-
-## 📦 API Design
-
-### Sales
-
-* `POST /api/v1/sales` → Create a new sale
-* `GET /api/v1/sales/{id}` → Get sale details
-* `POST /api/v1/sales/{id}/items` → Add product to sale
-* `GET /api/v1/sales/{id}/items` → List sale items
-* `DELETE /api/v1/sales/{id}/items/{productId}` → Remove product from sale
-* `POST /api/v1/sales/{id}/finish` → Finish sale
-* `POST /api/v1/sales/{id}/cancel` → Cancel sale
-
-### Products
-
-* `POST /api/v1/products`
-* `GET /api/v1/products`
-* `GET /api/v1/products/{id}`
-* `PUT /api/v1/products/{id}` (price update)
-* `DELETE /api/v1/products/{id}`
-
-### Branches
-
-* `POST /api/v1/branches`
-* `GET /api/v1/branches`
-* `GET /api/v1/branches/{id}`
-* `DELETE /api/v1/branches/{id}`
+- **Java 17**
+- **Spring Boot**
+- **Spring Web (REST)**
+- **Spring Data JPA**
+- **Hibernate**
+- **Flyway** (versionado de base de datos)
+- **H2 / MySQL** (según entorno)
+- **Maven**
+- **Swagger / OpenAPI**
+- **JUnit 5 + Mockito**
+- **GitHub Actions (CI/CD)**
+- **Fly.io** (deploy)
 
 ---
 
-## 📄 DTO Strategy
+## 🧩 Modelo de dominio (visión general)
 
-DTOs are split by **intent**, not reused blindly:
+Entidades principales:
 
-* `CreateRequest`
-* `UpdateRequest`
-* `Response`
+- **Product**
+- **Sale**
+- **SaleItem**
 
-DTOs are organized by domain:
+### Ciclo de vida de una venta (`Sale`)
 
-* `dto/branch`
-* `dto/product`
-* `dto/sale`
-* `dto/sale/saleItem`
+Una venta tiene un estado explícito:
 
----
+- `OPEN` → venta en curso
+- `FINISHED` → venta finalizada correctamente
+- `CANCELLED` → venta cancelada
 
-## ❗ Error Handling
-
-Centralized error handling via `@RestControllerAdvice`.
-
-Custom domain exceptions:
-
-* `BranchNotFoundException`
-* `ProductNotFoundException`
-* `SaleNotFoundException`
-
-Consistent error responses for clients.
+Las transiciones de estado se realizan mediante endpoints específicos, evitando estados inválidos y acciones ambiguas.
 
 ---
 
-## 🐳 Docker Support
+## 🌍 Estrategia de entornos
 
-The project is fully Dockerized:
+El proyecto utiliza **Spring Profiles** para separar configuración:
 
-* Spring Boot backend
-* Relational database
-* Ready to run with Docker Compose
+- `dev` → entorno local
+- `prod` → entorno productivo (Fly.io)
+- `test` → Maven / CI - GitHub Actions
 
-Supports local development, VM deployment, and VPS hosting.
-
----
-
-## 🚀 Deployment
-
-* Tested on Ubuntu Server VM
-* CORS issues resolved
-* Already deployed on VPS (Fly.io)
-
+Características:
+- Sin valores sensibles hardcodeados
+- Configuración vía variables de entorno
+- Health check habilitado mediante **Spring Actuator**
 
 ---
 
-## 🛠 Tech Stack
+## 🚀 CI / CD
 
-* Java 21
-* Spring Boot
-* Spring Data JPA
-* Hibernate
-* Jakarta Validation
-* Lombok
-* Docker & Docker Compose
-* MySQL / PostgreSQL (configurable)
+El proyecto cuenta con **CI/CD automatizado usando GitHub Actions**:
 
----
+Pipeline actual:
+1. Build del proyecto
+2. Ejecución de tests
+3. Deploy automático a Fly.io (si todo pasa correctamente)
 
-## 🎯 Project Goals
-
-* Demonstrate backend engineering skills
-* Model real business workflows (not just CRUD)
-* Follow clean, maintainable architecture
-* Be understandable and extensible by other developers
+Esto garantiza que `main` esté siempre en estado deployable.
 
 ---
 
-## 📌 Notes
+## 📖 Documentación de la API
 
-* Security layer (Spring Security) intentionally postponed
-* Testing and CI/CD planned as next steps
+La API está documentada con **Swagger / OpenAPI**, incluyendo:
 
----
+- Endpoints disponibles
+- Modelos
+- Estados posibles
+- Transiciones del ciclo de vida de una venta
+- Ejemplos de uso
 
-## 👤 Author
+👉 **Swagger UI**  
+Disponible en el entorno productivo (Fly.io):
 
-Backend developer focused on clean architecture and professional API design.
-
-This project was built step-by-step with an emphasis on learning and correctness.
