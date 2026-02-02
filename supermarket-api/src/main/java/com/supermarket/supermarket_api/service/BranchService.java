@@ -39,17 +39,17 @@ public class BranchService implements IBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public BranchResponse findById(Long id) {
-        Branch branch = repository.findById(id)
-                .orElseThrow(() -> new BranchNotFoundException(id));
+    public BranchResponse findById(Long branchId) {
+        Branch branch = repository.findById(branchId)
+                .orElseThrow(() -> new BranchNotFoundException(branchId));
 
         return mapper.toResponse(branch);
     }
 
     @Transactional(readOnly = true)
-    public Branch findRequiredById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new BranchNotFoundException(id));
+    public Branch findRequiredById(Long branchId) {
+        return repository.findById(branchId)
+                .orElseThrow(() -> new BranchNotFoundException(branchId));
     }
 
     @Override
@@ -61,8 +61,8 @@ public class BranchService implements IBranchService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        repository.delete(findRequiredById(id));
+    public void delete(Long branchId) {
+        repository.delete(findRequiredById(branchId));
     }
 
     @Override
