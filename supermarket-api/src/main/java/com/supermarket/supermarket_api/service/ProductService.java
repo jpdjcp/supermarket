@@ -33,18 +33,18 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductResponse findById(Long id) {
-        Product product = repository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductResponse findById(Long productId) {
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         return mapper.toResponse(product);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product findRequiredById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public Product findRequiredById(Long productId) {
+        return repository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     @Override
@@ -57,9 +57,9 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public ProductResponse updatePrice(Long id, ProductUpdateRequest dto) {
-        Product product = repository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductResponse updatePrice(Long productId, ProductUpdateRequest dto) {
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         product.changePrice(dto.price());
         return mapper.toResponse(product);
@@ -67,9 +67,9 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
-        Product product = repository.findById(id)
-                        .orElseThrow(() -> new ProductNotFoundException(id));
+    public void delete(Long productId) {
+        Product product = repository.findById(productId)
+                        .orElseThrow(() -> new ProductNotFoundException(productId));
 
         repository.delete(product);
     }

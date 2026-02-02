@@ -23,6 +23,11 @@ public class Branch {
     private final List<Sale> sales = new ArrayList<>();
 
     public Branch(String address) {
+        if (address == null || address.isBlank())
+            throw new IllegalArgumentException("Branch address cannot be blank or null");
+        if (address.length() < 8)
+            throw new IllegalArgumentException("Branch address length cannot be less than 8 characters");
+
         this.address = address;
     }
 }
