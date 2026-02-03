@@ -40,12 +40,12 @@ public class SaleController {
         return ResponseEntity.created(location).body(sale);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{saleId}")
     public ResponseEntity<SaleResponse> findById(@PathVariable @Positive Long saleId) {
         return ResponseEntity.ok(service.findById(saleId));
     }
 
-    @PostMapping("/{id}/items")
+    @PostMapping("/{saleId}/items")
     public ResponseEntity<AddProductResponse> addProduct(@PathVariable @Positive Long saleId,
                                                          @Valid @RequestBody AddProductRequest request) {
         AddProductResponse item = service.addProduct(saleId, request);
