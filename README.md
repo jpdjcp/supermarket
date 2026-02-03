@@ -54,16 +54,72 @@ Las transiciones de estado se realizan mediante endpoints específicos, evitando
 
 ---
 
-## 🧩 Modelo de dominio (visión general)
+classDiagram
+    class Product {
+        Long id
+        String name
+        BigDecimal price
+    }
 
-Entidades principales:
+    class Branch {
+        Long id
+        String address
+    }
 
-- **Product**
-- **Sale**
-- **SaleItem**
-- **Branch**
+    class Sale {
+        Long id
+        SaleStatus status
+        BigDecimal getTotal()
+    }
+
+    class SaleItem {
+        Long id
+        int quantity
+        BigDecimal getSubtotal()
+    }
+
+    class SaleStatus {
+        <<enumeration>>
+        OPEN
+        FINISHED
+        CANCELLED
+    }
+
+    Branch "1" --> "0..*" Sale : has
+    Sale "1" --> "0..*" SaleItem : contains
+    Product "1" --> "0..*" SaleItem : in
+    Sale --> SaleStatus : status
 
 
+
+erDiagram
+    BRANCH {
+        bigint id PK
+        string address
+    }
+
+    SALE {
+        bigint id PK
+        bigint branch_id FK
+        string status
+    }
+
+    PRODUCT {
+        bigint id PK
+        string name
+        decimal price
+    }
+
+    SALE_ITEM {
+        bigint id PK
+        bigint sale_id FK
+        bigint product_id FK
+        int quantity
+    }
+
+    BRANCH ||--o{ SALE : has
+    SALE ||--o{ SALE_ITEM : contains
+    PRODUCT ||--o{ SALE_ITEM : includes
 
 
 ---
