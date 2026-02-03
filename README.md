@@ -38,6 +38,7 @@ Este proyecto fue construido como parte de un recorrido práctico de aprendizaje
 
 Entidades principales:
 
+- **Branch**
 - **Product**
 - **Sale**
 - **SaleItem**
@@ -54,17 +55,80 @@ Las transiciones de estado se realizan mediante endpoints específicos, evitando
 
 ---
 
-## 🧩 Modelo de dominio (visión general)
+## 🧠 Diagrama de clases (UML)
 
-Entidades principales:
+```mermaid
+classDiagram
+class Product {
+  Long id
+  String name
+  BigDecimal price
+}
 
-- **Product**
-- **Sale**
-- **SaleItem**
-- **Branch**
+class Branch {
+  Long id
+  String address
+}
 
+class Sale {
+  Long id
+  SaleStatus status
+  BigDecimal getTotal()
+}
 
+class SaleItem {
+  Long id
+  int quantity
+  BigDecimal getSubtotal()
+}
 
+class SaleStatus {
+  <<enumeration>>
+  OPEN
+  FINISHED
+  CANCELLED
+}
+
+Branch "1" --> "0..*" Sale : has
+Sale "1" --> "0..*" SaleItem : contains
+Product "1" --> "0..*" SaleItem : in
+Sale --> SaleStatus : status
+```
+
+---
+
+## 🗄️ Diagrama Entidad–Relación (ERD)
+
+```mermaid
+erDiagram
+  BRANCH {
+    bigint id PK
+    string address
+  }
+
+  SALE {
+    bigint id PK
+    bigint branch_id FK
+    string status
+  }
+
+  PRODUCT {
+    bigint id PK
+    string name
+    decimal price
+  }
+
+  SALE_ITEM {
+    bigint id PK
+    bigint sale_id FK
+    bigint product_id FK
+    int quantity
+  }
+
+  BRANCH ||--o{ SALE : has
+  SALE ||--o{ SALE_ITEM : contains
+  PRODUCT ||--o{ SALE_ITEM : includes
+```
 
 ---
 
@@ -107,5 +171,4 @@ La API está documentada con **Swagger / OpenAPI**, incluyendo:
 - Ejemplos de uso
 
 👉 **Swagger UI**  
-Disponible en el entorno productivo (Fly.io):
-
+Disponible en el entorno productivo (Fly.io)
