@@ -8,6 +8,8 @@ export const elements = {
   saleTableBody: document.querySelector('#saleTable tbody'),
   totalCell: document.getElementById('totalCell'),
   addProductBtn: document.getElementById('addProductToSaleBtn'),
+  finishSaleBtn: document.getElementById('finishSaleBtn'),
+  cancelSaleBtn: document.getElementById('cancelSaleBtn'),
 
   // Branch Modal
   editBranchBtn: document.getElementById('editBranchBtn'),

@@ -89,6 +89,14 @@ export async function loadSaleItems() {
       await loadSaleItems();
     }
   });
+
+  updateSaleActionState();
+}
+
+function updateSaleActionState() {
+  if (state.saleItems.length === 0) {
+    dom.elements.finishSaleBtn.disabled = true;
+  }
 }
 
 // ---------- EVENT HANDLERS ----------
@@ -98,9 +106,8 @@ export async function handleCreateSale() {
   if (!branchId) return;
 
   await createSale(branchId);
-  dom.elements.addProductBtn.disabled = false;
-  // enable finish button
-  // enable cancel button
+  dom.elements.addProductBtn.disabled = false; 
+  dom.elements.cancelSaleBtn.disabled = false;
 }
 
 export async function handleAddProduct() {
@@ -112,6 +119,7 @@ export async function handleAddProduct() {
   const productId = dom.elements.productSelect.value;
   await api.addProductToSale(state.currentSaleId, productId);
   await loadSaleItems();
+  dom.elements.finishSaleBtn.disabled = false;
 }
 
 export async function handleCreateBranchFromModal() {
