@@ -11,11 +11,3 @@ body {
   background: url("../assets/img/supermarket-background.jpg") no-repeat center center fixed;
   background-size: cover;
 }
-
-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  color: #f8f9fa; /* Bootstrap light */
-  background-color: #212529; /* Bootstrap dark */
-}

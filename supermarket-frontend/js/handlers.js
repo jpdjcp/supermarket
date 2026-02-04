@@ -98,6 +98,9 @@ export async function handleCreateSale() {
   if (!branchId) return;
 
   await createSale(branchId);
+  dom.elements.addProductBtn.disabled = false;
+  // enable finish button
+  // enable cancel button
 }
 
 export async function handleAddProduct() {
