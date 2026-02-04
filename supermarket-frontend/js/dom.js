@@ -100,6 +100,29 @@ export function renderSaleTable(items, callbacks) {
   elements.totalCell.textContent = `$${total.toFixed(2)}`;
 }
 
+// -------- UPDATE SALE-STATUS BADGE ---------
+function updateSaleStatusBadge(status) {
+  const badge = document.getElementById('saleStatusBadge');
+
+  badge.className = 'badge'; // reset
+  badge.textContent = status;
+
+  switch (status) {
+    case 'OPEN':
+      badge.classList.add('bg-primary');
+      break;
+    case 'FINISHED':
+      badge.classList.add('bg-success');
+      break;
+    case 'CANCELLED':
+      badge.classList.add('bg-danger');
+      break;
+    default:
+      badge.classList.add('bg-secondary');
+      badge.textContent = 'NO SALE';
+  }
+}
+
 // ---------- BRANCH MODAL TABLE ----------
 
 export function renderBranchTable(branches, { onDelete }) {
