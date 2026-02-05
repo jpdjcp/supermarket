@@ -102,15 +102,14 @@ public class SaleController {
             )
     })
     @PostMapping("/{saleId}/finish")
-    public ResponseEntity<Void> finishSale(
+    public ResponseEntity<SaleResponse> finishSale(
             @Parameter(
                     description = "Sale identifier",
                     example = "42",
                     required = true
             )
             @PathVariable @Positive Long saleId) {
-        service.finishSale(saleId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(service.finishSale(saleId));
     }
 
     @Operation(
@@ -133,14 +132,13 @@ public class SaleController {
             )
     })
     @PostMapping("/{saleId}/cancel")
-    public ResponseEntity<Void> cancelSale(
+    public ResponseEntity<SaleResponse> cancelSale(
             @Parameter(
                     description = "Sale identifier",
                     example = "42",
                     required = true
             )
             @PathVariable @Positive Long saleId) {
-        service.cancelSale(saleId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(service.cancelSale(saleId));
     }
 }

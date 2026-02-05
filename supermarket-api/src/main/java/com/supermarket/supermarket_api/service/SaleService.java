@@ -96,14 +96,18 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public void finishSale(Long saleId) {
-        findRequiredSale(saleId).finish();
+    public SaleResponse finishSale(Long saleId) {
+        Sale sale = findRequiredSale(saleId);
+        sale.finish();
+        return saleMapper.toResponse(sale);
     }
 
     @Override
     @Transactional
-    public void cancelSale(Long saleId) {
-        findRequiredSale(saleId).cancel();
+    public SaleResponse cancelSale(Long saleId) {
+        Sale sale = findRequiredSale(saleId);
+        sale.cancel();
+        return saleMapper.toResponse(sale);
     }
 
     @Nonnull

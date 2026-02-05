@@ -56,7 +56,7 @@ public class SaleServiceTest {
 
     @Test
     void createSale_shouldCreateSaleForBranch() {
-        SaleResponse response = new SaleResponse(1L, branch.getId(), List.of(), BigDecimal.valueOf(1000));
+        SaleResponse response = new SaleResponse(1L, branch.getId(), SaleStatus.OPEN, List.of(), BigDecimal.valueOf(1000));
 
         when(branchService.findRequiredById(1L)).thenReturn(branch);
         when(saleRepository.save(any(Sale.class))).thenReturn(sale);
@@ -93,7 +93,7 @@ public class SaleServiceTest {
 
     @Test
     void findById_ShouldFindSale() {
-        SaleResponse response = new SaleResponse(1L, 1L, List.of(), BigDecimal.valueOf(1000));
+        SaleResponse response = new SaleResponse(1L, 1L, SaleStatus.OPEN, List.of(), BigDecimal.valueOf(1000));
 
         when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
         when(saleMapper.toResponse(sale)).thenReturn(response);
@@ -106,7 +106,7 @@ public class SaleServiceTest {
     }
 
     @Test
-    void findByInvalidId() {
+    void findByInvalidId_shouldThrow() {
         when(saleRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> saleService.findById(1L))
