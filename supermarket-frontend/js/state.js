@@ -4,5 +4,6 @@ export const state = {
   productMap: new Map(),
   saleItems: [],
   currentBranchId: null,
-  currentSaleId: null
+  currentSaleId: null,
+  currentSaleStatus: null
 };
