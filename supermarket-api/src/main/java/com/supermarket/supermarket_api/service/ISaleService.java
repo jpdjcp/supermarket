@@ -15,6 +15,6 @@ public interface ISaleService {
     void removeProduct(Long id, Long productId);
     void increaseQuantity(Long id, Long productId);
     void decreaseQuantity(Long id, Long productId);
-    void finishSale(Long saleId);
-    void cancelSale(Long saleId);
+    SaleResponse finishSale(Long saleId);
+    SaleResponse cancelSale(Long saleId);
 }
