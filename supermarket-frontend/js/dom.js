@@ -103,25 +103,30 @@ export function renderSaleTable(items, callbacks) {
 }
 
 // -------- UPDATE SALE-STATUS BADGE ---------
-function updateSaleStatusBadge(status) {
+export function updateSaleStatusBadge(status) {
   const badge = document.getElementById('saleStatusBadge');
+
+  if (!status) {
+    badge.textContent = 'NO SALE';
+    badge.className = 'badge bg-secondary';
+    return;
+  }
 
   badge.className = 'badge'; // reset
   badge.textContent = status;
 
   switch (status) {
     case 'OPEN':
-      badge.classList.add('bg-primary');
+      badge.classList.add('bg-success');
       break;
     case 'FINISHED':
-      badge.classList.add('bg-success');
+      badge.classList.add('bg-primary');
       break;
     case 'CANCELLED':
       badge.classList.add('bg-danger');
       break;
     default:
       badge.classList.add('bg-secondary');
-      badge.textContent = 'NO SALE';
   }
 }
 

@@ -22,6 +22,7 @@ export async function initApp() {
 async function createSale(branchId) {
   const sale = await api.createSale(branchId);
   state.currentSaleId = sale.id;
+  state.currentSaleStatus = sale.status;
   await loadSaleItems();
 }
 
@@ -108,6 +109,7 @@ export async function handleCreateSale() {
   await createSale(branchId);
   dom.elements.addProductBtn.disabled = false; 
   dom.elements.cancelSaleBtn.disabled = false;
+  dom.updateSaleStatusBadge(state.currentSaleStatus);
 }
 
 export async function handleAddProduct() {
