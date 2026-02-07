@@ -1,57 +1,30 @@
-import { initApp, handleCreateSale, handleAddProduct, loadBranchesIntoModal, 
-  loadProductsIntoModal, handleCreateBranchFromModal, handleCreateProductFromModal } from './handlers.js';
-import { elements, renderProductTable } from './dom.js';
-import * as api from './api.js';
+import { initApp } from './handlers/appHandlers.js';
+import * as branchHandlers from './handlers/branchHandlers.js';
+import * as productHandlers from './handlers/productHandlers.js';
+import * as saleHandlers from './handlers/saleHandlers.js';
+import { elements } from './dom/elements.js';
+import { showBranchModal, showProductModal } from './dom/ui/modals.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   await initApp();
 
-  // Links branch and product modal
-  const branchModal = new bootstrap.Modal(
-    document.getElementById('branchModal')
-  );
-
-  const productModal = new bootstrap.Modal(
-    document.getElementById('productModal')
-  );
-
   /* BRANCH CARD */
-
-  // Create sale button
-  elements.createSaleBtn.addEventListener('click', handleCreateSale);
-
-  // Edit branch button
+  elements.createSaleBtn.addEventListener('click', saleHandlers.handleCreateSale);
   elements.editBranchBtn.addEventListener('click', async () => {
-    await loadBranchesIntoModal();
-    branchModal.show();
+    await branchHandlers.loadBranchesIntoModal();
+    showBranchModal();
   });
-
-  /* BRANCH MODAL */
-  
-  // Create branch button (modal)
-  elements.createBranchModalBtn.addEventListener(
-    'click',
-    handleCreateBranchFromModal
-  );
 
   /* PRODUCT CARD */
-
-  // Add product button
-  elements.addProductBtn.addEventListener('click', handleAddProduct);
-
-  // Edit product button
+  elements.addProductBtn.addEventListener('click', productHandlers.handleAddProduct);
   elements.editProductBtn.addEventListener('click', async () => {
-    productModal.show();
-
-    const products = await api.fetchProducts();
-    renderProductTable(products, {
-      targetTbody: elements.productTableBody
-    })
+    await productHandlers.loadProductsIntoModal();
+    showProductModal();
   });
+  elements.finishSaleBtn.addEventListener('click', saleHandlers.handleFinishSale);
+  elements.cancelSaleBtn.addEventListener('click', saleHandlers.handleCancelSale);
 
-  /* PRODUCT MODAL */
-
-  // Create new product button
-  elements.createProductModalBtn.addEventListener('click', handleCreateProductFromModal);
-
+  /* MODALS */
+  elements.createBranchModalBtn.addEventListener('click', branchHandlers.handleCreateBranchFromModal);
+  elements.createProductModalBtn.addEventListener('click', productHandlers.handleCreateProductFromModal);
 });
