@@ -7,11 +7,9 @@ import com.supermarket.supermarket_api.dto.sale.saleItem.SaleItemResponse;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
-import com.supermarket.supermarket_api.model.Branch;
-import com.supermarket.supermarket_api.model.Product;
-import com.supermarket.supermarket_api.model.Sale;
-import com.supermarket.supermarket_api.model.SaleItem;
+import com.supermarket.supermarket_api.model.*;
 import com.supermarket.supermarket_api.repository.SaleRepository;
+import com.supermarket.supermarket_api.exception.SaleNotOpenException;
 import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,6 +57,7 @@ public class SaleService implements ISaleService {
     @Transactional
     public AddProductResponse addProduct(Long id, AddProductRequest request) {
         Sale sale = findRequiredSale(id);
+        validateSaleOpen(sale, "Sale must be OPEN to add a product");
 
         Product product = productService.findRequiredById(request.productId());
         SaleItem item = sale.addProduct(product);
@@ -70,6 +69,7 @@ public class SaleService implements ISaleService {
     @Transactional
     public void removeProduct(Long id, Long productId) {
         Sale sale = findRequiredSale(id);
+        validateSaleOpen(sale, "Sale must be OPEN to remove a product");
 
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
@@ -79,6 +79,7 @@ public class SaleService implements ISaleService {
     @Transactional
     public void increaseQuantity(Long id, Long productId) {
         Sale sale = findRequiredSale(id);
+        validateSaleOpen(sale,"Sale must be OPEN to increase quantity");
 
         Product product = productService.findRequiredById(productId);
         sale.increaseQuantity(product);
@@ -89,6 +90,7 @@ public class SaleService implements ISaleService {
     @Transactional
     public void decreaseQuantity(Long id, Long productId) {
         Sale sale = findRequiredSale(id);
+        validateSaleOpen(sale, "Sale must be OPEN to decrease quantity");
 
         Product product = productService.findRequiredById(productId);
         sale.decreaseQuantity(product);
@@ -98,6 +100,8 @@ public class SaleService implements ISaleService {
     @Transactional
     public SaleResponse finishSale(Long saleId) {
         Sale sale = findRequiredSale(saleId);
+        validateSaleOpen(sale, "Sale must be OPEN to finish it");
+
         sale.finish();
         return saleMapper.toResponse(sale);
     }
@@ -106,6 +110,8 @@ public class SaleService implements ISaleService {
     @Transactional
     public SaleResponse cancelSale(Long saleId) {
         Sale sale = findRequiredSale(saleId);
+        validateSaleOpen(sale, "Sale must be OPEN to cancel it");
+
         sale.cancel();
         return saleMapper.toResponse(sale);
     }
@@ -114,5 +120,11 @@ public class SaleService implements ISaleService {
     private Sale findRequiredSale(Long saleId) {
         return repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
+    }
+
+    private static void validateSaleOpen(Sale sale, String message) {
+        if (sale.getStatus() != SaleStatus.OPEN) {
+            throw new SaleNotOpenException(message);
+        }
     }
 }
