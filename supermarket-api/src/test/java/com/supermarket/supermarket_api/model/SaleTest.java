@@ -40,10 +40,9 @@ public class SaleTest {
     void shouldNotAllowQuantityBelowOne() {
         Sale sale = new Sale(branch);
         sale.addProduct(product);
+        sale.decreaseQuantity(product);
 
-        assertThatThrownBy(() ->
-                sale.decreaseQuantity(product))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(sale.containsProduct(product.getId())).isFalse();
     }
 
     @Test

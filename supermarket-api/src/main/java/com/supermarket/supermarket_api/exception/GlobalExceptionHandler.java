@@ -10,6 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             SaleNotFoundException.class,
+            SaleItemNotFoundException.class,
             BranchNotFoundException.class,
             ProductNotFoundException.class
     })
@@ -19,8 +20,10 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(exception.getMessage()));
     }
 
-    @ExceptionHandler(InvalidSaleStateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidSaleState(DomainException exception) {
+    @ExceptionHandler({
+            InvalidSaleStateException.class,
+            SaleNotOpenException.class})
+    public ResponseEntity<ErrorResponse> handleInvalidSaleMutations(DomainException exception) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(exception.getMessage()));

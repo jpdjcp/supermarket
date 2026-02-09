@@ -63,7 +63,11 @@ public class Sale {
 
     public void decreaseQuantity(Product product) {
         SaleItem item = findItem(product);
-        item.decreaseQuantity();
+        if (item.getQuantity() == 1) {
+            removeProduct(product);
+        } else {
+            item.decreaseQuantity();
+        }
     }
 
     public void finish() {
@@ -87,11 +91,17 @@ public class Sale {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private SaleItem findItem(Product product) {
+    public SaleItem findItem(Product product) {
         return saleItems.stream()
                 .filter(i -> i.getProduct().equals(product))
                 .findFirst()
                 .orElseThrow(() -> new SaleItemNotFoundException(product.getId()));
     }
 
+    public boolean containsProduct(Long productId) {
+        return saleItems.stream()
+                .anyMatch(i -> i.getProduct().getId()
+                        .equals(productId));
+
+    }
 }
