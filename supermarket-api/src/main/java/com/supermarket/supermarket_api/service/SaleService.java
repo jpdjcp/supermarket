@@ -54,8 +54,24 @@ public class SaleService implements ISaleService {
     }
 
     @Override
+    public SaleItem getItem(Long saleId, Long productId) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(()-> new SaleNotFoundException(saleId));
+        Product product = productService.findRequiredById(productId);
+        return sale.findItem(product);
+    }
+
+    @Override
+    public boolean containsProduct(Long saleId, Long productId) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(()-> new SaleNotFoundException(saleId));
+
+        return sale.containsProduct(productId);
+    }
+
+    @Override
     @Transactional
-    public AddProductResponse addProduct(Long id, AddProductRequest request) {
+    public AddProductResponse addProduct(Long id, @Nonnull AddProductRequest request) {
         Sale sale = findRequiredSale(id);
         validateSaleOpen(sale, "Sale must be OPEN to add a product");
 
@@ -70,7 +86,6 @@ public class SaleService implements ISaleService {
     public void removeProduct(Long id, Long productId) {
         Sale sale = findRequiredSale(id);
         validateSaleOpen(sale, "Sale must be OPEN to remove a product");
-
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
     }
@@ -91,7 +106,6 @@ public class SaleService implements ISaleService {
     public void decreaseQuantity(Long id, Long productId) {
         Sale sale = findRequiredSale(id);
         validateSaleOpen(sale, "Sale must be OPEN to decrease quantity");
-
         Product product = productService.findRequiredById(productId);
         sale.decreaseQuantity(product);
     }
