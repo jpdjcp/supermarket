@@ -4,6 +4,9 @@ API REST desarrollada con **Spring Boot** que modela un sistema de ventas para u
 
 Este proyecto fue construido como parte de un recorrido práctico de aprendizaje backend, priorizando **claridad arquitectónica**, **evolución incremental** y **calidad profesional**.
 
+Link de documentación con Swagger:
+https://supermarket-api-jpdjcp.fly.dev/swagger-ui/index.html
+
 ---
 
 ## 🎯 Propósito del proyecto
