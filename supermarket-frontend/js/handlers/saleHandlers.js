@@ -16,8 +16,7 @@ export async function handleCreateSale() {
 
 async function createSale(branchId) {
   const sale = await saleApi.createSale(branchId);
-  state.currentSaleId = sale.id;
-  state.currentSaleStatus = sale.status;
+  applySale(sale);
   await loadSaleItems();
 }
 
@@ -43,9 +42,20 @@ export async function loadSaleItems() {
 }
 
 export async function handleFinishSale() {
-  await saleApi.finishSale(state.currentSaleId);
+  const sale = await saleApi.finishSale(state.currentSaleId);
+  applySale(sale);
+  saleCard.updateSaleStatusBadge(state.currentSaleStatus);
+  updateSaleActionsUI();
 }
 
 export async function handleCancelSale() {
-  await saleApi.cancelSale(state.currentSaleId);
+  const sale = await saleApi.cancelSale(state.currentSaleId);
+  applySale(sale);
+  saleCard.updateSaleStatusBadge(state.currentSaleStatus);
+  updateSaleActionsUI();
+}
+
+function applySale(sale) {
+  state.currentSaleId = sale.id;
+  state.currentSaleStatus = sale.status;
 }

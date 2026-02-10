@@ -20,16 +20,22 @@ export function renderSaleTable(items, callbacks) {
       <td>${item.productId}</td>
       <td>${productName}</td>
       <td class="text-center">
-        <button class="btn btn-sm btn-secondary quantity-btn">-</button>
+
+        <!-- decrease button -->
+        <button class="btn btn-sm btn-secondary quantity-btn sale-item-action">-</button>
         <span class="mx-2">${item.quantity}</span>
-        <button class="btn btn-sm btn-secondary quantity-btn">+</button>
+        
+        <!-- increase button -->
+        <button class="btn btn-sm btn-secondary quantity-btn sale-item-action">+</button>
       </td>
       <td>
         ${unitPrice !== null ? `$${unitPrice.toFixed(2)}` : '-'}
       </td>
       <td>$${item.subtotal.toFixed(2)}</td>
       <td>
-        <button class="btn btn-sm btn-danger">
+
+        <!-- delete button -->
+        <button class="btn btn-sm btn-danger sale-item-action">
           <i class="bi bi-trash"></i>
         </button>
       </td>

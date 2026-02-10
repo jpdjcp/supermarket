@@ -5,11 +5,16 @@ export function updateSaleActionsUI() {
     const hasSale = !!state.currentSaleId;
     const hasItems = state.saleItems.length > 0;
     const isOpen = state.currentSaleStatus === 'OPEN';
+    const saleTableBody = elements.saleTableBody;
 
-    // "Add Product" & "Cancel Cale" buttons only if Sale exists and is OPEN
+    elements.createSaleBtn.toggleAttribute('disabled', hasSale && isOpen);
+
+    saleTableBody.querySelectorAll('.sale-item-action').forEach(btn => btn.toggleAttribute('disabled', !isOpen));
+
+    // "Add Product" & "Cancel Sale" buttons only if Sale exists and is OPEN
     elements.addProductBtn.toggleAttribute('disabled', !hasSale || !isOpen);
     elements.cancelSaleBtn.toggleAttribute('disabled', !hasSale || !isOpen);
 
     // "Finish Sale" button only if there are items
-    elements.finishSaleBtn.toggleAttribute('disabled', !hasItems);
+    elements.finishSaleBtn.toggleAttribute('disabled', !hasItems || !hasSale || !isOpen);
 }
