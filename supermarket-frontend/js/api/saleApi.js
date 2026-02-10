@@ -10,15 +10,17 @@ export async function createSale(branchId) {
 }
 
 export async function finishSale(saleId) {
-  await fetch(`${API_BASE_URL}/sales/${saleId}/finish`, {
+  const res = await fetch(`${API_BASE_URL}/sales/${saleId}/finish`, {
     method: 'POST'
   });
+  return res.json();
 }
 
 export async function cancelSale(saleId) {
-  await fetch(`${API_BASE_URL}/sales/${saleId}/cancel`, {
+  const res = await fetch(`${API_BASE_URL}/sales/${saleId}/cancel`, {
     method: 'POST'
   });
+  return res.json();
 }
 
 export async function fetchSaleItems(saleId) {
