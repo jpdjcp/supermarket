@@ -12,7 +12,8 @@ public class GlobalExceptionHandler {
             SaleNotFoundException.class,
             SaleItemNotFoundException.class,
             BranchNotFoundException.class,
-            ProductNotFoundException.class
+            ProductNotFoundException.class,
+            UserNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(DomainException exception) {
         return ResponseEntity

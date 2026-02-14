@@ -3,7 +3,6 @@ package com.supermarket.supermarket_api.service;
 import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
-import com.supermarket.supermarket_api.exception.ProductNotFoundException;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.exception.SaleNotOpenException;
