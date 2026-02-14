@@ -12,3 +12,7 @@ spring:
 logging:
   level:
     root: INFO
+
+server:
+  address: 0.0.0.0
+  port: 8080
