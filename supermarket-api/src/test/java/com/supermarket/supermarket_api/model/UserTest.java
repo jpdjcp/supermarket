@@ -3,6 +3,8 @@ package com.supermarket.supermarket_api.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.Assertions.*;
 
 public class UserTest {
@@ -138,6 +140,23 @@ public class UserTest {
         user.enable();
 
         assertThat(user.isEnabled()).isTrue();
+    }
+
+    @Test
+    void setLastLogin_shouldSetLastLogin() {
+        user = new User(username, password, role);
+        Instant lastLogin = Instant.now();
+        user.setLastLogin(lastLogin);
+
+        assertThat(user.getLastLogin()).isEqualTo(lastLogin);
+    }
+
+    @Test
+    void setLastLogin_withNullInstant_shouldThrow() {
+        user = new User(username, password, role);
+
+        assertThatThrownBy(()-> user.setLastLogin(null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }

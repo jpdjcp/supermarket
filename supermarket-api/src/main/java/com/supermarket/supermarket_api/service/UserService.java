@@ -11,6 +11,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UserService implements IUserService {
@@ -38,6 +41,36 @@ public class UserService implements IUserService {
         User user = repository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(userId));
         return mapper.toResponse(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponse> findInactiveSince(Instant threshold) {
+        require(threshold != null, "Threshold instant cannot be null");
+
+        List<User> result = repository.findInactiveSince(threshold);
+        return result.stream().map(mapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponse> findByLastLoginBetween(Instant from, Instant to) {
+        require(from != null, "From threshold cannot be null");
+        require(to != null, "To threshold cannot be null");
+        require(from.isBefore(to), "From must be before to");
+
+        List<User> result = repository.findByLastLoginBetween(from, to);
+        return result.stream().map(mapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateLastLogin(Long userId) {
+        require(userId != null, "User ID cannot be null");
+
+        User user = repository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException(userId));
+        user.setLastLogin(Instant.now());
     }
 
     @Override

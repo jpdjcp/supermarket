@@ -9,6 +9,7 @@ public record UserResponse(
         String username,
         UserRole role,
         boolean enabled,
-        Instant createdAt
+        Instant createdAt,
+        Instant lastLogin
 ) {
 }

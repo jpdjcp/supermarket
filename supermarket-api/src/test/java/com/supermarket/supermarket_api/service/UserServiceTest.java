@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -43,6 +45,9 @@ public class UserServiceTest {
     private ChangePasswordRequest pwdRequest;
     private UserResponse response;
     private Long userId;
+    private Instant from;
+    private Instant to;
+    private List<User> users;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +60,11 @@ public class UserServiceTest {
         user = new User(username, password, role);
         request = new CreateUserRequest(username, password, role);
         pwdRequest = new ChangePasswordRequest(newPassword);
-        response = new UserResponse(userId, username, role, true, Instant.now());
+        response = new UserResponse(userId, username, role, true, Instant.now(), Instant.now());
+
+        from = Instant.parse("2024-01-01T00:00:00Z");
+        to = Instant.parse("2024-12-31T00:00:00Z");
+        users = new ArrayList<>();
     }
 
     @Test
@@ -225,5 +234,81 @@ public class UserServiceTest {
         assertThatThrownBy(()-> service.disable(userId))
                 .isInstanceOf(UserNotFoundException.class);
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void findInactiveSince_shouldFind() {
+        users.add(user);
+        Instant threshold = Instant.parse("2025-01-01T00:00:00Z");
+
+        when(repository.findInactiveSince(any(Instant.class)))
+                .thenReturn(users);
+        when(mapper.toResponse(any(User.class)))
+                .thenReturn(response);
+
+        List<UserResponse> result = service.findInactiveSince(threshold);
+
+        assertThat(result)
+                .hasSize(1)
+                .containsExactly(response);
+        verify(repository).findInactiveSince(threshold);
+        verify(mapper).toResponse(user);
+    }
+
+    @Test
+    void findInactiveSince_withNullInstant_shouldThrow() {
+        assertThatThrownBy(()-> service.findInactiveSince(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByLastLoginBetween_shouldFind() {
+        List<User> users = new ArrayList<>();
+        users.add(user);
+
+        when(repository.findByLastLoginBetween(from, to))
+                .thenReturn(users);
+        when(mapper.toResponse(user))
+                .thenReturn(response);
+
+        List<UserResponse> result = service.findByLastLoginBetween(from, to);
+
+        assertThat(result)
+                .hasSize(1)
+                .containsExactly(response);
+        verify(repository).findByLastLoginBetween(from, to);
+        verifyNoMoreInteractions(repository);
+        verify(mapper).toResponse(user);
+    }
+
+    @Test
+    void findByLastLoginBetween_whenNoUsersFound_shouldReturnEmptyList() {
+        List<User> users = new ArrayList<>();
+
+        when(repository.findByLastLoginBetween(from, to))
+                .thenReturn(users);
+
+        List<UserResponse> result = service.findByLastLoginBetween(from, to);
+
+        assertThat(result).isEmpty();
+        verify(repository).findByLastLoginBetween(from, to);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void findByLastLoginBetween_whenFromIsNull_shouldThrowException() {
+        Instant to = Instant.parse("2024-12-31T00:00:00Z");
+
+        assertThatThrownBy(()-> service.findByLastLoginBetween(null, to))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByLastLoginBetween_whenToIsNull_shouldThrowException() {
+        Instant from = Instant.parse("2024-01-01T00:00:00Z");
+
+        assertThatThrownBy(()-> service.findByLastLoginBetween(from, null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

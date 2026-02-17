@@ -13,7 +13,8 @@ public class UserMapper {
                 user.getUsername(),
                 user.getRole(),
                 user.isEnabled(),
-                user.getCreatedAt() != null ? user.getCreatedAt().toInstant() : null
+                user.getCreatedAt() != null ? user.getCreatedAt() : null,
+                user.getLastLogin()
         );
     }
 }
