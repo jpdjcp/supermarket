@@ -33,9 +33,11 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
-    private boolean enabled = true;
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
-    private Date createdAt;
+    private boolean enabled = true;
+    private Instant lastLogin;
 
     public User(String username, String password, UserRole role) {
         onCreate(username, password, role);
@@ -57,9 +59,14 @@ public class User {
         this.enabled = false;
     }
 
+    public void setLastLogin(Instant lastLogin) {
+        require(lastLogin != null, "Last login cannot be null");
+        this.lastLogin = lastLogin;
+    }
+
     @PrePersist
     private void setCreatedAt() {
-        this.createdAt = Date.from(Instant.now());
+        this.createdAt = Instant.now();
     }
 
     private void onCreate(String username, String password, UserRole role) {

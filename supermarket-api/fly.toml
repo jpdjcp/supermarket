@@ -4,6 +4,7 @@ primary_region = 'iad'
 [build]
 
 [deploy]
+  max_restarts = 0
 
 [http_service]
   internal_port = 8080
