@@ -49,6 +49,14 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional(readOnly = true)
+    public ProductResponse findBySKU(String sku) {
+        Product product = repository.findBySKU(sku)
+                .orElseThrow(()-> new ProductNotFoundException(sku));
+        return mapper.toResponse(product);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ProductResponse> findAll() {
         return repository.findAll().stream()
                 .map(mapper::toResponse)
