@@ -29,6 +29,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class SaleServiceTest {
 
+    private final String SKU = "ABCD-1234";
+
     @InjectMocks
     SaleService saleService;
 
@@ -57,7 +59,7 @@ public class SaleServiceTest {
     void setUp() {
         branch = new Branch("Branch address");
         sale = new Sale(branch);
-        product = new Product("Milk", BigDecimal.valueOf(100));
+        product = new Product(SKU, "Milk", BigDecimal.valueOf(100));
         addRequest = new AddProductRequest(1L);
         addResponse = new AddProductResponse(
                 1L,
@@ -90,7 +92,7 @@ public class SaleServiceTest {
 
     @Test
     void addProduct_ShouldAddProduct() {
-        Product product = new Product("Product name", BigDecimal.valueOf(1000));
+        Product product = new Product(SKU, "Product name", BigDecimal.valueOf(1000));
         AddProductResponse response = new AddProductResponse(
                 1L,
                 1L,

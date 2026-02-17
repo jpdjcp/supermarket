@@ -22,6 +22,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
+    private final String SKU = "ABCD-1234";
+
     @InjectMocks
     private ProductService service;
 
@@ -38,9 +40,9 @@ public class ProductServiceTest {
 
     @BeforeEach
     void setUp() {
-        product = new Product("Milk", BigDecimal.valueOf(10));
-        request = new ProductCreateRequest("Milk", BigDecimal.valueOf(10));
-        response = new ProductResponse(1L, "Milk", BigDecimal.valueOf(10));
+        product = new Product(SKU, "Milk", BigDecimal.valueOf(10));
+        request = new ProductCreateRequest(SKU, "Milk", BigDecimal.valueOf(10));
+        response = new ProductResponse(1L, SKU,  "Milk", BigDecimal.valueOf(10));
         updateRequest = new ProductUpdateRequest(BigDecimal.valueOf(20));
     }
 
@@ -73,7 +75,7 @@ public class ProductServiceTest {
 
     @Test
     void updatePrice_shouldUpdatePrice() {
-        response = new ProductResponse(1L, "Milk", BigDecimal.valueOf(20));
+        response = new ProductResponse(1L, SKU,  "Milk", BigDecimal.valueOf(20));
 
         when(repository.findById(1L)).thenReturn(Optional.of(product));
         when(mapper.toResponse(product)).thenReturn(response);

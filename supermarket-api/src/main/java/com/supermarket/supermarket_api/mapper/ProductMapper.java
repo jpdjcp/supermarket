@@ -11,6 +11,7 @@ public class ProductMapper {
     public ProductResponse toResponse(Product product) {
         return new ProductResponse(
                 product.getId(),
+                product.getSku(),
                 product.getName(),
                 product.getPrice()
         );
@@ -18,6 +19,7 @@ public class ProductMapper {
 
     public Product toProduct(ProductCreateRequest dto) {
         return new Product(
+                dto.sku(),
                 dto.name(),
                 dto.price()
         );
