@@ -6,6 +6,10 @@ import java.math.BigDecimal;
 
 public record ProductCreateRequest(
 
+        @NotBlank
+        @Pattern(regexp = "^[A-Z0-9-]{6,20}$", message = "SKU must be 6-20 chars, uppercase, numbers or hyphen")
+        String sku,
+
         @NotBlank(message = "Product name cannot be blank")
         @Size(max = 50, message = "Product name must be at most 50 characters long")
         String name,

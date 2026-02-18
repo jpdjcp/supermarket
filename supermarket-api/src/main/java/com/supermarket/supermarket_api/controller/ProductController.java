@@ -5,6 +5,7 @@ import com.supermarket.supermarket_api.dto.product.ProductResponse;
 import com.supermarket.supermarket_api.dto.product.ProductUpdateRequest;
 import com.supermarket.supermarket_api.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,11 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findById(@PathVariable @Positive Long id) {
         return ResponseEntity.ok(service.findById(id));
+    }
+
+    @GetMapping("/by-sku")
+    public ResponseEntity<ProductResponse> findBySKU(@RequestParam @NotBlank String sku) {
+        return ResponseEntity.ok(service.findBySku(sku));
     }
 
     @GetMapping

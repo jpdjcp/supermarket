@@ -26,7 +26,7 @@ public class BranchTest {
     void constructor_blankAddress_shouldThrow() {
         assertThatThrownBy(() -> new Branch(""))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Branch address cannot be blank or null");;
+                .hasMessage("Branch address cannot be blank or null");
     }
 
     @Test

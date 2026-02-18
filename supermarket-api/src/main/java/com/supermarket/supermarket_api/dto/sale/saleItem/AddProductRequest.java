@@ -1,6 +1,5 @@
 package com.supermarket.supermarket_api.dto.sale.saleItem;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 

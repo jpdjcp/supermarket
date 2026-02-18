@@ -26,6 +26,8 @@ public class ProductService implements IProductService {
     @Override
     @Transactional
     public ProductResponse create(ProductCreateRequest dto) {
+        require(dto != null, "Create Product Request cannot be null");
+
         Product product = mapper.toProduct(dto);
         Product saved = repository.save(product);
         return mapper.toResponse(saved);
@@ -34,6 +36,8 @@ public class ProductService implements IProductService {
     @Override
     @Transactional(readOnly = true)
     public ProductResponse findById(Long productId) {
+        validateProductId(productId);
+
         Product product = repository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
@@ -43,8 +47,21 @@ public class ProductService implements IProductService {
     @Override
     @Transactional(readOnly = true)
     public Product findRequiredById(Long productId) {
+        validateProductId(productId);
+
         return repository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductResponse findBySku(String sku) {
+        require(Product.isValidSku(sku),
+                "SKU must be 6-20 chars, uppercase, numbers or hyphen");
+
+        Product product = repository.findBySku(sku)
+                .orElseThrow(()-> new ProductNotFoundException(sku));
+        return mapper.toResponse(product);
     }
 
     @Override
@@ -57,20 +74,35 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional
-    public ProductResponse updatePrice(Long productId, ProductUpdateRequest dto) {
+    public ProductResponse updatePrice(Long productId, ProductUpdateRequest request) {
+        validateProductId(productId);
+        require(request != null, "Update price request cannot be null");
+
         Product product = repository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        product.changePrice(dto.price());
+        product.changePrice(request.price());
         return mapper.toResponse(product);
     }
 
     @Override
     @Transactional
     public void delete(Long productId) {
+        validateProductId(productId);
+
         Product product = repository.findById(productId)
                         .orElseThrow(() -> new ProductNotFoundException(productId));
 
         repository.delete(product);
+    }
+
+    private void require(boolean condition, String message) {
+        if (!condition)
+            throw new IllegalArgumentException(message);
+    }
+
+    private void validateProductId(Long productId) {
+        require(productId != null, "Product ID cannot be null");
+        require(productId > 0, "Product ID must be positive");
     }
 }

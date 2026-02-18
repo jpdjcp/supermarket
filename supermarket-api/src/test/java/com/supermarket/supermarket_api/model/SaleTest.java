@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.*;
 
 public class SaleTest {
+    private final String SKU = "ABCD-1234";
 
     private Branch branch;
     private Product product;
@@ -14,7 +15,7 @@ public class SaleTest {
     @BeforeEach
     void setUp() {
         branch = new Branch("Branch Address");
-        product = new Product("Product name", new BigDecimal("1000"));
+        product = new Product(SKU, "Product name", new BigDecimal("1000"));
     }
 
     @Test
