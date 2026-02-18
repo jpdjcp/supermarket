@@ -39,7 +39,7 @@ public class ProductController {
 
     @GetMapping("/by-sku")
     public ResponseEntity<ProductResponse> findBySKU(@RequestParam @NotBlank String sku) {
-        return ResponseEntity.ok(service.findBySKU(sku));
+        return ResponseEntity.ok(service.findBySku(sku));
     }
 
     @GetMapping

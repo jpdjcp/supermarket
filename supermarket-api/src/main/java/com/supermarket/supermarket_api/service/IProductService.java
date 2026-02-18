@@ -11,7 +11,7 @@ public interface IProductService {
     ProductResponse create(ProductCreateRequest request);
     ProductResponse findById(Long id);
     Product findRequiredById(Long id);
-    ProductResponse findBySKU(String sku);
+    ProductResponse findBySku(String sku);
     List<ProductResponse> findAll();
     ProductResponse updatePrice(Long id, ProductUpdateRequest request);
     void delete(Long id);

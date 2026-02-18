@@ -39,7 +39,7 @@ public class Product {
         this.price = Objects.requireNonNull(price, "Product's price cannot be null");
 
         require(!sku.isBlank(), "Product's SKU cannot be blank");
-        require(SKU_PATTERN.matcher(sku).matches(), "SKU must be 6-20 chars, uppercase, numbers or hyphen");
+        require(isValidSku(sku), "SKU must be 6-20 chars, uppercase, numbers or hyphen");
         require(!name.isBlank(), "Product's name cannot be blank");
         require(price.signum() > 0, "Product's price must be over zero");
     }
@@ -47,6 +47,10 @@ public class Product {
     public void changePrice(BigDecimal newPrice) {
         validatePrice(newPrice);
         this.price = newPrice;
+    }
+
+    public static boolean isValidSku(String sku) {
+        return sku != null && SKU_PATTERN.matcher(sku).matches();
     }
 
     private static void validatePrice(BigDecimal price) {
@@ -58,4 +62,6 @@ public class Product {
         if (!condition)
             throw new IllegalArgumentException(message);
     }
+
+
 }

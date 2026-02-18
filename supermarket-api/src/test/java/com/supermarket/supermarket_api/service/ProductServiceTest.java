@@ -74,6 +74,36 @@ public class ProductServiceTest {
     }
 
     @Test
+    void findBySku_shouldFind() {
+        when(repository.findBySku(SKU))
+                .thenReturn(Optional.of(product));
+        when(mapper.toResponse(product))
+                .thenReturn(response);
+
+        ProductResponse result = service.findBySku(SKU);
+
+        verify(repository).findBySku(SKU);
+        verify(mapper).toResponse(product);
+        verifyNoMoreInteractions(repository);
+        assertThat(result).isEqualTo(response);
+    }
+
+    @Test
+    void findBySku_whenNotFound_shouldThrow() {
+        when(repository.findBySku(SKU))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(()-> service.findBySku(SKU))
+                .isInstanceOf(ProductNotFoundException.class);
+    }
+
+    @Test
+    void findBySku_withNullSku_shouldThrow() {
+        assertThatThrownBy(()-> service.findBySku(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void updatePrice_shouldUpdatePrice() {
         response = new ProductResponse(1L, SKU,  "Milk", BigDecimal.valueOf(20));
 

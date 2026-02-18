@@ -21,19 +21,19 @@ public class ProductTest {
     }
 
     @Test
-    void createProduct_withNullSKU_shouldThrow() {
+    void createProduct_withNullSku_shouldThrow() {
         assertThatThrownBy(()-> new Product(null, name, price))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void createProduct_withBlankSKU_shouldThrow() {
+    void createProduct_withBlankSku_shouldThrow() {
         assertThatThrownBy(()-> new Product("", name, price))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void createProduct_withSKUInvalidPattern_shouldThrow() {
+    void createProduct_withSkuInvalidPattern_shouldThrow() {
         assertThatThrownBy(()-> new Product("abcd-1234", name, price))
                 .isInstanceOf(IllegalArgumentException.class);
     }
