@@ -15,6 +15,7 @@ public class SaleMapper {
         return new SaleResponse(
                 sale.getId(),
                 sale.getBranch().getId(),
+                sale.getCreatedAt(),
                 sale.getStatus(),
                 sale.getSaleItems().stream().map(mapper::toResponse).toList(),
                 sale.getTotal()
