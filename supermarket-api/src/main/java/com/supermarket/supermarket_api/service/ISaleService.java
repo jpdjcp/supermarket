@@ -13,7 +13,7 @@ import java.util.List;
 public interface ISaleService {
     SaleResponse createSale(Long branchId);
     SaleResponse findById(Long id);
-    List<Sale> findByCreatedAtBetween(Instant from, Instant to);
+    List<SaleResponse> findByCreatedAtBetween(Instant from, Instant to);
     AddProductResponse addProduct(Long id, AddProductRequest request);
     List<SaleItemResponse> getItems(Long saleId);
     SaleItem getItem(Long id, Long productId);

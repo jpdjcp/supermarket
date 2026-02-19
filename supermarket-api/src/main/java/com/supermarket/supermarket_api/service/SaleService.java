@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -41,6 +42,17 @@ public class SaleService implements ISaleService {
         return repository.findById(id)
                 .map(saleMapper::toResponse)
                 .orElseThrow(() -> new SaleNotFoundException(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleResponse> findByCreatedAtBetween(Instant from, Instant to) {
+        require(from != null, "Parameter 'from' instant cannot be null");
+        require(to != null, "Parameter 'to' instant cannot be null");
+        require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
+
+        return repository.findByCreatedAtBetween(from, to)
+                .stream().map(saleMapper::toResponse).toList();
     }
 
     @Override
@@ -140,5 +152,10 @@ public class SaleService implements ISaleService {
         if (sale.getStatus() != SaleStatus.OPEN) {
             throw new SaleNotOpenException(message);
         }
+    }
+
+    private void require(boolean condition, String message) {
+        if (!condition)
+            throw new IllegalArgumentException(message);
     }
 }
