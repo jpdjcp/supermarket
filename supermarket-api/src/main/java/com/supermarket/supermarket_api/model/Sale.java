@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class Sale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "branch_id")
@@ -103,5 +106,10 @@ public class Sale {
                 .anyMatch(i -> i.getProduct().getId()
                         .equals(productId));
 
+    }
+
+    @PrePersist
+    private void setCreatedAt() {
+        this.createdAt = Instant.now();
     }
 }
