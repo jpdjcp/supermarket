@@ -46,7 +46,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleResponse> findByCreatedAtBetween(Instant from, Instant to) {
+    public List<SaleResponse> findByCreatedAt(Instant from, Instant to) {
         require(from != null, "Parameter 'from' instant cannot be null");
         require(to != null, "Parameter 'to' instant cannot be null");
         require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
