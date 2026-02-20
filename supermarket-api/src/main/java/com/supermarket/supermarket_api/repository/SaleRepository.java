@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 
+    List<Sale> findByUser_Id(Long userId);
+
     List<Sale> findByCreatedAtBetween(Instant from, Instant to);
 
     List<Sale> findByClosedAtBetween(Instant from, Instant to);
