@@ -42,6 +42,9 @@ public class SaleServiceTest {
     BranchService branchService;
 
     @Mock
+    UserService userService;
+
+    @Mock
     ProductService productService;
 
     @Mock
@@ -51,6 +54,7 @@ public class SaleServiceTest {
     SaleItemMapper itemMapper;
 
     private Branch branch;
+    private User user;
     private Sale sale;
     private Product product;
     private SaleResponse response;
@@ -63,7 +67,8 @@ public class SaleServiceTest {
     @BeforeEach
     void setUp() {
         branch = new Branch("Branch address");
-        sale = new Sale(branch);
+        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        sale = new Sale(branch, user);
         product = new Product(SKU, "Milk", BigDecimal.valueOf(100));
         addRequest = new AddProductRequest(1L);
         addResponse = new AddProductResponse(
@@ -82,6 +87,7 @@ public class SaleServiceTest {
         response = new SaleResponse(
                 1L,
                 branch.getId(),
+                user.getId(),
                 instant,
                 instant,
                 SaleStatus.OPEN,
@@ -90,14 +96,18 @@ public class SaleServiceTest {
         );
 
         when(branchService.findRequiredById(1L)).thenReturn(branch);
+        when(userService.findRequiredById(1L)).thenReturn(user);
         when(saleRepository.save(any(Sale.class))).thenReturn(sale);
         when(saleMapper.toResponse(any(Sale.class))).thenReturn(response);
 
-        SaleResponse result = saleService.createSale(1L);
+
+        SaleResponse result = saleService.createSale(1L, 1L);
 
         assertThat(result).isNotNull();
         verify(branchService).findRequiredById(1L);
+        verify(userService).findRequiredById(1L);
         verify(saleRepository).save(any(Sale.class));
+        verifyNoMoreInteractions(saleRepository);
     }
 
     @Test
@@ -163,6 +173,7 @@ public class SaleServiceTest {
         response = new SaleResponse(
                 1L,
                 1L,
+                user.getId(),
                 instant,
                 instant,
                 SaleStatus.OPEN,
