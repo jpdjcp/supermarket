@@ -51,6 +51,17 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<SaleResponse> findByUserId(Long userId) {
+        require(userId != null, "User ID cannot be null");
+
+        return repository.findByUser_Id(userId)
+                .stream()
+                .map(saleMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<SaleResponse> findByCreatedAt(Instant from, Instant to) {
         require(from != null, "Parameter 'from' instant cannot be null");
         require(to != null, "Parameter 'to' instant cannot be null");
