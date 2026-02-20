@@ -53,12 +53,16 @@ public class SaleController {
             @RequestParam(required = false) Instant createdFrom,
             @RequestParam(required = false) Instant createdTo,
             @RequestParam(required = false) Instant closedFrom,
-            @RequestParam(required = false) Instant closedTo) {
+            @RequestParam(required = false) Instant closedTo,
+            @RequestParam(required = false) Long userId) {
 
-        if (createdFrom != null && createdTo != null)
+        if (userId != null && createdFrom == null && closedFrom == null)
+            return ResponseEntity.ok(service.findByUserId(userId));
+
+        if (createdFrom != null && createdTo != null && userId == null)
             return ResponseEntity.ok(service.findByCreatedAt(createdFrom, createdTo));
 
-        if (closedFrom != null && closedTo != null)
+        if (closedFrom != null && closedTo != null && userId == null)
             return ResponseEntity.ok(service.findByClosedAt(closedFrom, closedTo));
 
         throw new IllegalArgumentException("Invalid filter combination");
