@@ -15,6 +15,7 @@ public class SaleMapper {
         return new SaleResponse(
                 sale.getId(),
                 sale.getBranch().getId(),
+                sale.getUser().getId(),
                 sale.getCreatedAt(),
                 sale.getClosedAt(),
                 sale.getStatus(),
