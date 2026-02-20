@@ -32,6 +32,9 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleResponse createSale(Long branchId, Long userId) {
+        require(branchId != null, "Branch ID cannot be null");
+        require(userId != null, "User ID cannot be null");
+
         Branch branch = branchService.findRequiredById(branchId);
         User user = userService.findRequiredById(userId);
         Sale sale = new Sale(branch, user);
