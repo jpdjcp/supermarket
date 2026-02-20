@@ -17,6 +17,7 @@ public record SaleResponse(
         Long branchId,
 
         Instant createdAt,
+        Instant closedAt,
         SaleStatus status,
         List<AddProductResponse> items,
         BigDecimal total)
