@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -50,12 +49,19 @@ public class SaleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleResponse>> findByCreatedAt(
-            @RequestParam @NotNull Instant from,
-            @RequestParam @NotNull Instant to) {
+    public ResponseEntity<List<SaleResponse>> findSales(
+            @RequestParam(required = false) Instant createdFrom,
+            @RequestParam(required = false) Instant createdTo,
+            @RequestParam(required = false) Instant closedFrom,
+            @RequestParam(required = false) Instant closedTo) {
 
-        List<SaleResponse> result = service.findByCreatedAt(from, to);
-        return ResponseEntity.ok(result);
+        if (createdFrom != null && createdTo != null)
+            return ResponseEntity.ok(service.findByCreatedAt(createdFrom, createdTo));
+
+        if (closedFrom != null && closedTo != null)
+            return ResponseEntity.ok(service.findByClosedAt(closedFrom, closedTo));
+
+        throw new IllegalArgumentException("Invalid filter combination");
     }
 
     @PostMapping("/{saleId}/items")
