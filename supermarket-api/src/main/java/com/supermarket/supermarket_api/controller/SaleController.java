@@ -38,7 +38,7 @@ public class SaleController {
 
     @PostMapping
     public ResponseEntity<SaleResponse> create(@RequestBody @Valid SaleCreateRequest request) {
-        SaleResponse sale = service.createSale(request.branchId());
+        SaleResponse sale = service.createSale(request.branchId(), request.userId());
         URI location = URI.create("/api/v1/sales/" + sale.id());
         return ResponseEntity.created(location).body(sale);
     }
