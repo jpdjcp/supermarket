@@ -24,15 +24,17 @@ public class SaleService implements ISaleService {
 
     private final SaleRepository repository;
     private final BranchService branchService;
+    private final UserService userService;
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final SaleItemMapper itemMapper;
 
     @Override
     @Transactional
-    public SaleResponse createSale(Long branchId) {
+    public SaleResponse createSale(Long branchId, Long userId) {
         Branch branch = branchService.findRequiredById(branchId);
-        Sale sale = new Sale(branch);
+        User user = userService.findRequiredById(userId);
+        Sale sale = new Sale(branch, user);
         return saleMapper.toResponse(repository.save(sale));
     }
 

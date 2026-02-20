@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.List;
 
 public interface ISaleService {
-    SaleResponse createSale(Long branchId);
+    SaleResponse createSale(Long branchId, Long userId);
     SaleResponse findById(Long id);
     List<SaleResponse> findByCreatedAt(Instant from, Instant to);
     List<SaleResponse> findByClosedAt(Instant from, Instant to);
