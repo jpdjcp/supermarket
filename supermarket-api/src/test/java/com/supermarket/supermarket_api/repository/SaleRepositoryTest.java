@@ -23,15 +23,18 @@ class SaleRepositoryTest {
     @Autowired
     private BranchRepository branchRepository;
 
-    /*
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void shouldPersistAndLoadSale() {
         // given
         Branch branch = new Branch("Main Branch");
         Branch savedBranch = branchRepository.save(branch);
         User user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        User savedUser = userRepository.save(user);
 
-        Sale sale = new Sale(savedBranch, user);
+        Sale sale = new Sale(savedBranch, savedUser);
 
         // when
         Sale savedSale = saleRepository.save(sale);
@@ -42,5 +45,4 @@ class SaleRepositoryTest {
         assertThat(found.getBranch()).isNotNull();
         assertThat(found.getBranch().getId()).isEqualTo(savedBranch.getId());
     }
-     */
 }
