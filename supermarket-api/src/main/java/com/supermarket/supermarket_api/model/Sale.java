@@ -24,6 +24,8 @@ public class Sale {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    private Instant closedAt;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "branch_id")
     private Branch branch;
@@ -79,6 +81,7 @@ public class Sale {
             throw new InvalidSaleStateException("Only OPEN sales can be finished");
 
         this.status = SaleStatus.FINISHED;
+        this.closedAt = Instant.now();
     }
 
     public void cancel() {
@@ -86,6 +89,7 @@ public class Sale {
             throw new InvalidSaleStateException("Only OPEN sales can be cancelled");
 
         this.status = SaleStatus.CANCELLED;
+        this.closedAt = Instant.now();
     }
 
     @Transient
