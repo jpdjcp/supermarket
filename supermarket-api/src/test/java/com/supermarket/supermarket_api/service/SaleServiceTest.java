@@ -100,7 +100,6 @@ public class SaleServiceTest {
         when(saleRepository.save(any(Sale.class))).thenReturn(sale);
         when(saleMapper.toResponse(any(Sale.class))).thenReturn(response);
 
-
         SaleResponse result = saleService.createSale(1L, 1L);
 
         assertThat(result).isNotNull();
@@ -108,6 +107,36 @@ public class SaleServiceTest {
         verify(userService).findRequiredById(1L);
         verify(saleRepository).save(any(Sale.class));
         verifyNoMoreInteractions(saleRepository);
+    }
+
+    @Test
+    void findByUserId_shouldFind() {
+        when(saleRepository.findByUser_Id(1L))
+                .thenReturn(List.of(sale));
+        when(saleMapper.toResponse(sale))
+                .thenReturn(response);
+
+        List<SaleResponse> result = saleService.findByUserId(1L);
+
+        assertThat(result).containsExactly(response);
+        assertThat(result).hasSize(1);
+        verify(saleRepository).findByUser_Id(1L);
+        verifyNoMoreInteractions(saleRepository);
+        verify(saleMapper).toResponse(sale);
+    }
+
+    @Test
+    void findByUserUd_whenUserIdIsNull_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByUserId(null))
+                .isInstanceOf(IllegalArgumentException.class);
+        verifyNoInteractions(saleRepository);
+    }
+
+    @Test
+    void findByUserUd_whenUserIdIsUnderOne_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByUserId(0L))
+                .isInstanceOf(IllegalArgumentException.class);
+        verifyNoInteractions(saleRepository);
     }
 
     @Test

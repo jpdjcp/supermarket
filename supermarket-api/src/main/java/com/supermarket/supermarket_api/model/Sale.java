@@ -40,6 +40,9 @@ public class Sale {
     private final List<SaleItem> saleItems = new ArrayList<>();
 
     public Sale(Branch branch, User user) {
+        require(branch != null, "Branch cannot be null");
+        require(user != null, "User cannot be null");
+
         this.branch = branch;
         this.user = user;
     }
@@ -121,5 +124,10 @@ public class Sale {
     @PrePersist
     private void setCreatedAt() {
         this.createdAt = Instant.now();
+    }
+
+    private void require(boolean condition, String message) {
+        if (!condition)
+            throw new IllegalArgumentException(message);
     }
 }

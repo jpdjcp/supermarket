@@ -53,6 +53,7 @@ public class SaleService implements ISaleService {
     @Transactional(readOnly = true)
     public List<SaleResponse> findByUserId(Long userId) {
         require(userId != null, "User ID cannot be null");
+        require(userId > 0, "User ID must be positive");
 
         return repository.findByUser_Id(userId)
                 .stream()
