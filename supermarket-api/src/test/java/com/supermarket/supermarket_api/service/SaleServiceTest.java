@@ -75,7 +75,7 @@ public class SaleServiceTest {
         SaleResponse response = new SaleResponse(
                 1L,
                 branch.getId(),
-                Instant.parse("2025-01-01T10:00:00PM"),
+                Instant.parse("2025-01-01T10:00:00Z"),
                 SaleStatus.OPEN,
                 List.of(),
                 BigDecimal.valueOf(1000)
@@ -155,7 +155,7 @@ public class SaleServiceTest {
         SaleResponse response = new SaleResponse(
                 1L,
                 1L,
-                Instant.parse("2025-01-01T10:00:00PM"),
+                Instant.parse("2025-01-01T10:00:00Z"),
                 SaleStatus.OPEN,
                 List.of(),
                 BigDecimal.valueOf(1000)
