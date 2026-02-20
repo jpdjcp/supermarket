@@ -16,6 +16,7 @@ public record SaleResponse(
         @Schema(description = "Current lifecycle status of the sale")
         Long branchId,
 
+        Long userId,
         Instant createdAt,
         Instant closedAt,
         SaleStatus status,
