@@ -52,7 +52,22 @@ public class SaleService implements ISaleService {
         require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
 
         return repository.findByCreatedAtBetween(from, to)
-                .stream().map(saleMapper::toResponse).toList();
+                .stream()
+                .map(saleMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleResponse> findByClosedAt(Instant from, Instant to) {
+        require(from != null, "Parameter 'from' instant cannot be null");
+        require(to != null, "Parameter 'to' instant cannot be null");
+        require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
+
+        return repository.findByClosedAtBetween(from, to)
+                .stream()
+                .map(saleMapper::toResponse)
+                .toList();
     }
 
     @Override
