@@ -19,6 +19,18 @@ public class SaleTest {
     }
 
     @Test
+    void createASale_shouldCreateIt() {
+        Sale sale = new Sale(branch);
+
+        assertThat(sale.getId()).isNull();
+        assertThat(sale.getCreatedAt()).isNull();
+        assertThat(sale.getClosedAt()).isNull();
+        assertThat(sale.getSaleItems()).isEmpty();
+        assertThat(sale.getStatus()).isEqualTo(SaleStatus.OPEN);
+        assertThat(sale.getBranch()).isSameAs(branch);
+    }
+
+    @Test
     void shouldAddProductToSale() {
         Sale sale = new Sale(branch);
         sale.addProduct(product);
@@ -59,23 +71,28 @@ public class SaleTest {
     }
 
     @Test
-    void finishSale_whenOpen_shouldMarkAsFinished() {
+    void finishSale_whenOpen_shouldSetStatusAndCloseAt() {
         Sale sale = new Sale(branch);
         sale.finish();
+
         assertThat(sale.getStatus()).isEqualTo(SaleStatus.FINISHED);
+        assertThat(sale.getClosedAt()).isNotNull();
     }
 
     @Test
-    void cancelSale_whenOpen_shouldMarkAsCancelled() {
+    void cancelSale_whenOpen_shouldSetStatusAndClosedAt() {
         Sale sale = new Sale(branch);
         sale.cancel();
+
         assertThat(sale.getStatus()).isEqualTo(SaleStatus.CANCELLED);
+        assertThat(sale.getClosedAt()).isNotNull();
     }
 
     @Test
     void finishSale_whenCancelled_shouldThrow() {
         Sale sale = new Sale(branch);
         sale.cancel();
+
         assertThatThrownBy(sale::finish).isInstanceOf(InvalidSaleStateException.class);
     }
 
@@ -83,6 +100,7 @@ public class SaleTest {
     void cancelSale_whenFinished_shouldThrow() {
         Sale sale = new Sale(branch);
         sale.finish();
+
         assertThatThrownBy(sale::cancel).isInstanceOf(InvalidSaleStateException.class);
     }
 
