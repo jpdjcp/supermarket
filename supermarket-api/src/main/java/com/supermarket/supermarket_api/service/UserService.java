@@ -45,6 +45,15 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
+    public User findRequiredById(Long userId) {
+        require(userId != null, "User ID cannot be null");
+
+        return repository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<UserResponse> findInactiveSince(Instant threshold) {
         require(threshold != null, "Threshold instant cannot be null");
 
