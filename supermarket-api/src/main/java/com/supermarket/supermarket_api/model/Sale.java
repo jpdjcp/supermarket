@@ -21,6 +21,10 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -35,8 +39,9 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SaleItem> saleItems = new ArrayList<>();
 
-    public Sale(Branch branch) {
+    public Sale(Branch branch, User user) {
         this.branch = branch;
+        this.user = user;
     }
 
     public SaleItem addProduct(Product product) {
