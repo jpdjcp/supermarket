@@ -7,29 +7,52 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.*;
 
 public class SaleTest {
-    private final String SKU = "ABCD-1234";
-
     private Branch branch;
+    private User user;
     private Product product;
+    private Sale sale;
 
     @BeforeEach
     void setUp() {
+        final String SKU  = "ABCD-1234";
         branch = new Branch("Branch Address");
+        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
         product = new Product(SKU, "Product name", new BigDecimal("1000"));
+        sale = new Sale(branch, user);
     }
 
     @Test
-    void shouldAddProductToSale() {
-        Sale sale = new Sale(branch);
+    void createSale_shouldCreateIt() {
+        assertThat(sale.getId()).isNull();
+        assertThat(sale.getUser()).isSameAs(user);
+        assertThat(sale.getCreatedAt()).isNull();
+        assertThat(sale.getClosedAt()).isNull();
+        assertThat(sale.getSaleItems()).isEmpty();
+        assertThat(sale.getStatus()).isEqualTo(SaleStatus.OPEN);
+        assertThat(sale.getBranch()).isSameAs(branch);
+    }
+
+    @Test
+    void createSale_withNullBranch_shouldThrow() {
+        assertThatThrownBy(()-> new Sale(null, user))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void createSale_withNullUser_shouldThrow() {
+        assertThatThrownBy(()-> new Sale(branch, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void addProduct_shouldAddProductToSale() {
         sale.addProduct(product);
         assertThat(sale.getSaleItems()).hasSize(1);
         assertThat(sale.getSaleItems().getFirst().getQuantity()).isEqualTo(1);
     }
 
     @Test
-    void shouldIncreaseQuantityWhenAddingSameProductAgain() {
-        Sale sale = new Sale(branch);
-
+    void addProduct_whenProductAlreadyAdded_shouldIncreaseQuantity() {
         sale.addProduct(product);
         sale.addProduct(product);
 
@@ -38,8 +61,7 @@ public class SaleTest {
     }
 
     @Test
-    void shouldNotAllowQuantityBelowOne() {
-        Sale sale = new Sale(branch);
+        void decreaseQuantity_whenQuantityIsOne_shouldRemoveProduct() {
         sale.addProduct(product);
         sale.decreaseQuantity(product);
 
@@ -47,9 +69,7 @@ public class SaleTest {
     }
 
     @Test
-    void shouldCalculateTotal() {
-        Sale sale = new Sale(branch);
-
+    void getTotal_shouldCalculateTotal() {
         sale.addProduct(product);
         sale.increaseQuantity(product);
         assertThat(sale.getTotal()).isEqualTo(new BigDecimal("2000"));
@@ -59,30 +79,32 @@ public class SaleTest {
     }
 
     @Test
-    void finishSale_whenOpen_shouldMarkAsFinished() {
-        Sale sale = new Sale(branch);
+    void finishSale_whenOpen_shouldSetStatusAndCloseAt() {
         sale.finish();
+
         assertThat(sale.getStatus()).isEqualTo(SaleStatus.FINISHED);
+        assertThat(sale.getClosedAt()).isNotNull();
     }
 
     @Test
-    void cancelSale_whenOpen_shouldMarkAsCancelled() {
-        Sale sale = new Sale(branch);
+    void cancelSale_whenOpen_shouldSetStatusAndClosedAt() {
         sale.cancel();
+
         assertThat(sale.getStatus()).isEqualTo(SaleStatus.CANCELLED);
+        assertThat(sale.getClosedAt()).isNotNull();
     }
 
     @Test
     void finishSale_whenCancelled_shouldThrow() {
-        Sale sale = new Sale(branch);
         sale.cancel();
+
         assertThatThrownBy(sale::finish).isInstanceOf(InvalidSaleStateException.class);
     }
 
     @Test
     void cancelSale_whenFinished_shouldThrow() {
-        Sale sale = new Sale(branch);
         sale.finish();
+
         assertThatThrownBy(sale::cancel).isInstanceOf(InvalidSaleStateException.class);
     }
 

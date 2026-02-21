@@ -2,6 +2,8 @@ package com.supermarket.supermarket_api.repository;
 
 import com.supermarket.supermarket_api.model.Branch;
 import com.supermarket.supermarket_api.model.Sale;
+import com.supermarket.supermarket_api.model.User;
+import com.supermarket.supermarket_api.model.UserRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -21,13 +23,18 @@ class SaleRepositoryTest {
     @Autowired
     private BranchRepository branchRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     void shouldPersistAndLoadSale() {
         // given
         Branch branch = new Branch("Main Branch");
         Branch savedBranch = branchRepository.save(branch);
+        User user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        User savedUser = userRepository.save(user);
 
-        Sale sale = new Sale(savedBranch);
+        Sale sale = new Sale(savedBranch, savedUser);
 
         // when
         Sale savedSale = saleRepository.save(sale);

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,15 @@ public class Sale {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+    private Instant closedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
@@ -29,8 +39,12 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SaleItem> saleItems = new ArrayList<>();
 
-    public Sale(Branch branch) {
+    public Sale(Branch branch, User user) {
+        require(branch != null, "Branch cannot be null");
+        require(user != null, "User cannot be null");
+
         this.branch = branch;
+        this.user = user;
     }
 
     public SaleItem addProduct(Product product) {
@@ -75,6 +89,7 @@ public class Sale {
             throw new InvalidSaleStateException("Only OPEN sales can be finished");
 
         this.status = SaleStatus.FINISHED;
+        this.closedAt = Instant.now();
     }
 
     public void cancel() {
@@ -82,6 +97,7 @@ public class Sale {
             throw new InvalidSaleStateException("Only OPEN sales can be cancelled");
 
         this.status = SaleStatus.CANCELLED;
+        this.closedAt = Instant.now();
     }
 
     @Transient
@@ -103,5 +119,15 @@ public class Sale {
                 .anyMatch(i -> i.getProduct().getId()
                         .equals(productId));
 
+    }
+
+    @PrePersist
+    private void setCreatedAt() {
+        this.createdAt = Instant.now();
+    }
+
+    private void require(boolean condition, String message) {
+        if (!condition)
+            throw new IllegalArgumentException(message);
     }
 }

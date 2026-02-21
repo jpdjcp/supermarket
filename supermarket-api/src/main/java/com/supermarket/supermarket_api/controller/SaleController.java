@@ -14,9 +14,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 
 @Tag(
@@ -25,6 +27,7 @@ import java.util.List;
 )
 @RestController
 @RequestMapping("/api/v1/sales")
+@Validated
 public class SaleController {
 
     private final SaleService service;
@@ -35,7 +38,7 @@ public class SaleController {
 
     @PostMapping
     public ResponseEntity<SaleResponse> create(@RequestBody @Valid SaleCreateRequest request) {
-        SaleResponse sale = service.createSale(request.branchId());
+        SaleResponse sale = service.createSale(request.branchId(), request.userId());
         URI location = URI.create("/api/v1/sales/" + sale.id());
         return ResponseEntity.created(location).body(sale);
     }
@@ -43,6 +46,26 @@ public class SaleController {
     @GetMapping("/{saleId}")
     public ResponseEntity<SaleResponse> findById(@PathVariable @Positive Long saleId) {
         return ResponseEntity.ok(service.findById(saleId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SaleResponse>> findSales(
+            @RequestParam(required = false) Instant createdFrom,
+            @RequestParam(required = false) Instant createdTo,
+            @RequestParam(required = false) Instant closedFrom,
+            @RequestParam(required = false) Instant closedTo,
+            @RequestParam(required = false) Long userId) {
+
+        if (userId != null && createdFrom == null && closedFrom == null)
+            return ResponseEntity.ok(service.findByUserId(userId));
+
+        if (createdFrom != null && createdTo != null && userId == null)
+            return ResponseEntity.ok(service.findByCreatedAt(createdFrom, createdTo));
+
+        if (closedFrom != null && closedTo != null && userId == null)
+            return ResponseEntity.ok(service.findByClosedAt(closedFrom, closedTo));
+
+        throw new IllegalArgumentException("Invalid filter combination");
     }
 
     @PostMapping("/{saleId}/items")

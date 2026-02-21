@@ -18,13 +18,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SaleServiceTest {
@@ -41,6 +42,9 @@ public class SaleServiceTest {
     BranchService branchService;
 
     @Mock
+    UserService userService;
+
+    @Mock
     ProductService productService;
 
     @Mock
@@ -50,15 +54,21 @@ public class SaleServiceTest {
     SaleItemMapper itemMapper;
 
     private Branch branch;
+    private User user;
     private Sale sale;
     private Product product;
+    private SaleResponse response;
     private AddProductRequest addRequest;
     private AddProductResponse addResponse;
+    private Instant instant;
+    private Instant from;
+    private Instant to;
 
     @BeforeEach
     void setUp() {
         branch = new Branch("Branch address");
-        sale = new Sale(branch);
+        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        sale = new Sale(branch, user);
         product = new Product(SKU, "Milk", BigDecimal.valueOf(100));
         addRequest = new AddProductRequest(1L);
         addResponse = new AddProductResponse(
@@ -67,27 +77,66 @@ public class SaleServiceTest {
                 1,
                 BigDecimal.valueOf(100)
         );
+        instant = Instant.parse("2025-01-01T10:00:00Z");
+        from = Instant.parse("2025-01-01T10:00:00Z");
+        to = Instant.parse("2025-12-31T10:00:00Z");
     }
 
     @Test
     void createSale_shouldCreateSaleForBranch() {
-        SaleResponse response = new SaleResponse(
+        response = new SaleResponse(
                 1L,
                 branch.getId(),
+                user.getId(),
+                instant,
+                instant,
                 SaleStatus.OPEN,
                 List.of(),
                 BigDecimal.valueOf(1000)
         );
 
         when(branchService.findRequiredById(1L)).thenReturn(branch);
+        when(userService.findRequiredById(1L)).thenReturn(user);
         when(saleRepository.save(any(Sale.class))).thenReturn(sale);
         when(saleMapper.toResponse(any(Sale.class))).thenReturn(response);
 
-        SaleResponse result = saleService.createSale(1L);
+        SaleResponse result = saleService.createSale(1L, 1L);
 
         assertThat(result).isNotNull();
         verify(branchService).findRequiredById(1L);
+        verify(userService).findRequiredById(1L);
         verify(saleRepository).save(any(Sale.class));
+        verifyNoMoreInteractions(saleRepository);
+    }
+
+    @Test
+    void findByUserId_shouldFind() {
+        when(saleRepository.findByUser_Id(1L))
+                .thenReturn(List.of(sale));
+        when(saleMapper.toResponse(sale))
+                .thenReturn(response);
+
+        List<SaleResponse> result = saleService.findByUserId(1L);
+
+        assertThat(result).containsExactly(response);
+        assertThat(result).hasSize(1);
+        verify(saleRepository).findByUser_Id(1L);
+        verifyNoMoreInteractions(saleRepository);
+        verify(saleMapper).toResponse(sale);
+    }
+
+    @Test
+    void findByUserUd_whenUserIdIsNull_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByUserId(null))
+                .isInstanceOf(IllegalArgumentException.class);
+        verifyNoInteractions(saleRepository);
+    }
+
+    @Test
+    void findByUserUd_whenUserIdIsUnderOne_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByUserId(0L))
+                .isInstanceOf(IllegalArgumentException.class);
+        verifyNoInteractions(saleRepository);
     }
 
     @Test
@@ -150,9 +199,12 @@ public class SaleServiceTest {
 
     @Test
     void findById_ShouldFindSale() {
-        SaleResponse response = new SaleResponse(
+        response = new SaleResponse(
                 1L,
                 1L,
+                user.getId(),
+                instant,
+                instant,
                 SaleStatus.OPEN,
                 List.of(),
                 BigDecimal.valueOf(1000)
@@ -176,6 +228,100 @@ public class SaleServiceTest {
                 .isInstanceOf(SaleNotFoundException.class);
 
         verify(saleRepository).findById(1L);
+    }
+
+    // *** findSales Tests ***
+
+    @Test
+    void findByCreatedAt_shouldFind() {
+        when(saleRepository.findByCreatedAtBetween(from, to))
+                .thenReturn(List.of(sale));
+        when(saleMapper.toResponse(sale))
+                .thenReturn(response);
+
+        List<SaleResponse> result = saleService.findByCreatedAt(from, to);
+
+        assertThat(result).hasSize(1);
+        verify(saleRepository).findByCreatedAtBetween(from, to);
+        verifyNoMoreInteractions(saleRepository);
+        verify(saleMapper).toResponse(sale);
+    }
+
+    @Test
+    void findByCreatedAt_whenNoMatchesFound_shouldReturnEmptyList() {
+        when(saleRepository.findByCreatedAtBetween(from, to))
+                .thenReturn(new ArrayList<>());
+
+        List<SaleResponse> result = saleService.findByCreatedAt(from, to);
+
+        assertThat(result).isEmpty();
+        verify(saleRepository).findByCreatedAtBetween(from, to);
+        verifyNoMoreInteractions(saleRepository);
+        verifyNoInteractions(saleMapper);
+    }
+
+    @Test
+    void findByCreatedAt_whenFromIsAfterTo_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByCreatedAt(to, from))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByCreatedAt_whenFromIsNull_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByCreatedAt(null, to))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByCreatedAt_whenToIsNull_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByCreatedAt(from, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByClosedAt_shouldFind() {
+        when(saleRepository.findByClosedAtBetween(from, to))
+                .thenReturn(List.of(sale));
+        when(saleMapper.toResponse(sale))
+                .thenReturn(response);
+
+        List<SaleResponse> result = saleService.findByClosedAt(from, to);
+
+        assertThat(result).hasSize(1);
+        verify(saleRepository).findByClosedAtBetween(from, to);
+        verifyNoMoreInteractions(saleRepository);
+        verify(saleMapper).toResponse(sale);
+    }
+
+    @Test
+    void findByClosedAt_whenNoMatchesFound_shouldReturnEmptyList() {
+        when(saleRepository.findByClosedAtBetween(from, to))
+                .thenReturn(new ArrayList<>());
+
+        List<SaleResponse> result = saleService.findByClosedAt(from, to);
+
+        assertThat(result).isEmpty();
+        verify(saleRepository).findByClosedAtBetween(from, to);
+        verifyNoMoreInteractions(saleRepository);
+        verifyNoInteractions(saleMapper);
+    }
+
+    @Test
+    void findByClosedAt_whenFromIsAfterTo_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByCreatedAt(to, from))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByClosedAt_whenFromIsNull_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByCreatedAt(null, to))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void findByClosedAt_whenToIsNull_shouldThrow() {
+        assertThatThrownBy(()-> saleService.findByCreatedAt(from, null))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     // *** State Mutation Tests ***

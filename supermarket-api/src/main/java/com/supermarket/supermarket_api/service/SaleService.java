@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -23,15 +24,20 @@ public class SaleService implements ISaleService {
 
     private final SaleRepository repository;
     private final BranchService branchService;
+    private final UserService userService;
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final SaleItemMapper itemMapper;
 
     @Override
     @Transactional
-    public SaleResponse createSale(Long branchId) {
+    public SaleResponse createSale(Long branchId, Long userId) {
+        require(branchId != null, "Branch ID cannot be null");
+        require(userId != null, "User ID cannot be null");
+
         Branch branch = branchService.findRequiredById(branchId);
-        Sale sale = new Sale(branch);
+        User user = userService.findRequiredById(userId);
+        Sale sale = new Sale(branch, user);
         return saleMapper.toResponse(repository.save(sale));
     }
 
@@ -41,6 +47,44 @@ public class SaleService implements ISaleService {
         return repository.findById(id)
                 .map(saleMapper::toResponse)
                 .orElseThrow(() -> new SaleNotFoundException(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleResponse> findByUserId(Long userId) {
+        require(userId != null, "User ID cannot be null");
+        require(userId > 0, "User ID must be positive");
+
+        return repository.findByUser_Id(userId)
+                .stream()
+                .map(saleMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleResponse> findByCreatedAt(Instant from, Instant to) {
+        require(from != null, "Parameter 'from' instant cannot be null");
+        require(to != null, "Parameter 'to' instant cannot be null");
+        require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
+
+        return repository.findByCreatedAtBetween(from, to)
+                .stream()
+                .map(saleMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleResponse> findByClosedAt(Instant from, Instant to) {
+        require(from != null, "Parameter 'from' instant cannot be null");
+        require(to != null, "Parameter 'to' instant cannot be null");
+        require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
+
+        return repository.findByClosedAtBetween(from, to)
+                .stream()
+                .map(saleMapper::toResponse)
+                .toList();
     }
 
     @Override
@@ -140,5 +184,10 @@ public class SaleService implements ISaleService {
         if (sale.getStatus() != SaleStatus.OPEN) {
             throw new SaleNotOpenException(message);
         }
+    }
+
+    private void require(boolean condition, String message) {
+        if (!condition)
+            throw new IllegalArgumentException(message);
     }
 }
