@@ -18,4 +18,5 @@ public interface IUserService {
     void changePassword(Long userId, ChangePasswordRequest request);
     void enable(Long userId);
     void disable(Long userId);
+    void ensureExists(Long userId);
 }

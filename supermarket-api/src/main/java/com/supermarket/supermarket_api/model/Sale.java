@@ -2,6 +2,7 @@ package com.supermarket.supermarket_api.model;
 
 import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
+import com.supermarket.supermarket_api.pricing.discount.DiscountStrategy;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,6 +35,8 @@ public class Sale {
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private SaleStatus status = SaleStatus.OPEN;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,6 +53,10 @@ public class Sale {
     public SaleItem addProduct(Product product) {
         if (product == null)
             throw new IllegalArgumentException("Product cannot be null");
+        if (this.status != SaleStatus.OPEN)
+            throw new InvalidSaleStateException(
+                    "Only in OPEN sales can add product"
+            );
 
         return this.saleItems.stream()
                 .filter(i -> i.getProduct().equals(product))
@@ -66,16 +73,31 @@ public class Sale {
     }
 
     public void removeProduct(Product product) {
+        if (this.status != SaleStatus.OPEN)
+            throw new InvalidSaleStateException(
+                    "Only in OPEN sales can removed product"
+            );
+
         SaleItem item = findItem(product);
         this.saleItems.remove(item);
     }
 
     public void increaseQuantity(Product product) {
+        if (this.status != SaleStatus.OPEN)
+            throw new InvalidSaleStateException(
+                    "Only in OPEN sales can increase product's quantity"
+            );
+
         SaleItem item = findItem(product);
         item.increaseQuantity();
     }
 
     public void decreaseQuantity(Product product) {
+        if (this.status != SaleStatus.OPEN)
+            throw new InvalidSaleStateException(
+                    "Only in OPEN sales can decrease product's quantity"
+            );
+
         SaleItem item = findItem(product);
         if (item.getQuantity() == 1) {
             removeProduct(product);
@@ -101,7 +123,12 @@ public class Sale {
     }
 
     @Transient
-    public BigDecimal getTotal() {
+    public BigDecimal getTotal(DiscountStrategy strategy) {
+        return strategy.apply(this.calculateTotal());
+    }
+
+    @Transient
+    public BigDecimal calculateTotal() {
         return saleItems.stream()
                 .map(SaleItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

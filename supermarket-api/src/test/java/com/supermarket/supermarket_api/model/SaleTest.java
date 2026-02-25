@@ -69,13 +69,13 @@ public class SaleTest {
     }
 
     @Test
-    void getTotal_shouldCalculateTotal() {
+    void getSubTotal_shouldCalculateSubTotal() {
         sale.addProduct(product);
         sale.increaseQuantity(product);
-        assertThat(sale.getTotal()).isEqualTo(new BigDecimal("2000"));
+        assertThat(sale.calculateTotal()).isEqualTo(new BigDecimal("2000"));
 
         sale.decreaseQuantity(product);
-        assertThat(sale.getTotal()).isEqualTo(new BigDecimal("1000"));
+        assertThat(sale.calculateTotal()).isEqualTo(new BigDecimal("1000"));
     }
 
     @Test

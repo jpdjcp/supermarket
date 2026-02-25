@@ -8,6 +8,8 @@ import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
 import com.supermarket.supermarket_api.model.*;
+import com.supermarket.supermarket_api.pricing.DiscountResolver;
+import com.supermarket.supermarket_api.pricing.discount.DiscountStrategy;
 import com.supermarket.supermarket_api.repository.SaleRepository;
 import com.supermarket.supermarket_api.exception.SaleNotOpenException;
 import jakarta.annotation.Nonnull;
@@ -28,6 +30,7 @@ public class SaleService implements ISaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final SaleItemMapper itemMapper;
+    private final DiscountResolver discountResolver;
 
     @Override
     @Transactional
@@ -38,26 +41,49 @@ public class SaleService implements ISaleService {
         Branch branch = branchService.findRequiredById(branchId);
         User user = userService.findRequiredById(userId);
         Sale sale = new Sale(branch, user);
-        return saleMapper.toResponse(repository.save(sale));
+        Sale saved = repository.save(sale);
+        DiscountStrategy strategy = discountResolver.resolve(saved);
+        return saleMapper.toResponse(saved, strategy);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SaleResponse findById(Long id) {
-        return repository.findById(id)
-                .map(saleMapper::toResponse)
-                .orElseThrow(() -> new SaleNotFoundException(id));
+    public SaleResponse findById(Long saleId) {
+        require(saleId != null, "Sale ID cannot be null");
+
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+
+        DiscountStrategy strategy = discountResolver.resolve(sale);
+        return saleMapper.toResponse(sale, strategy);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SaleResponse> findByUserId(Long userId) {
         require(userId != null, "User ID cannot be null");
-        require(userId > 0, "User ID must be positive");
+        userService.ensureExists(userId);
 
-        return repository.findByUser_Id(userId)
+        return  repository.findByUser_Id(userId)
                 .stream()
-                .map(saleMapper::toResponse)
+                .map(sale -> saleMapper.toResponse(
+                        sale,
+                        discountResolver.resolve(sale)
+                ))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SaleResponse> findByBranchId(Long branchId) {
+        require(branchId != null, "Branch ID cannot be null");
+
+        return  repository.findByBranch_Id(branchId)
+                .stream()
+                .map(sale -> saleMapper.toResponse(
+                        sale,
+                        discountResolver.resolve(sale)
+                ))
                 .toList();
     }
 
@@ -70,7 +96,9 @@ public class SaleService implements ISaleService {
 
         return repository.findByCreatedAtBetween(from, to)
                 .stream()
-                .map(saleMapper::toResponse)
+                .map(sale -> saleMapper.toResponse(
+                        sale,
+                        discountResolver.resolve(sale)))
                 .toList();
     }
 
@@ -83,14 +111,17 @@ public class SaleService implements ISaleService {
 
         return repository.findByClosedAtBetween(from, to)
                 .stream()
-                .map(saleMapper::toResponse)
+                .map(sale -> saleMapper.toResponse(
+                        sale,
+                        discountResolver.resolve(sale)))
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleItemResponse> getItems(Long id) {
-        Sale sale = findRequiredSale(id);
+    public List<SaleItemResponse> getItems(Long saleId) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         return sale.getSaleItems().stream()
                 .map(itemMapper::toSaleItemResponse)
@@ -115,8 +146,12 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public AddProductResponse addProduct(Long id, @Nonnull AddProductRequest request) {
-        Sale sale = findRequiredSale(id);
+    public AddProductResponse addProduct(Long saleId, @Nonnull AddProductRequest request) {
+        require(saleId != null, "Sale ID cannot be null");
+
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+
         validateSaleOpen(sale, "Sale must be OPEN to add a product");
 
         Product product = productService.findRequiredById(request.productId());
@@ -127,8 +162,13 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public void removeProduct(Long id, Long productId) {
-        Sale sale = findRequiredSale(id);
+    public void removeProduct(Long saleId, Long productId) {
+        require(saleId != null, "Sale ID cannot be null");
+        require(productId != null, "Product ID cannot be null");
+
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+
         validateSaleOpen(sale, "Sale must be OPEN to remove a product");
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
@@ -136,8 +176,13 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public void increaseQuantity(Long id, Long productId) {
-        Sale sale = findRequiredSale(id);
+    public void increaseQuantity(Long saleId, Long productId) {
+        require(saleId != null, "Sale ID cannot be null");
+        require(productId != null, "Product ID cannot be null");
+
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+
         validateSaleOpen(sale,"Sale must be OPEN to increase quantity");
 
         Product product = productService.findRequiredById(productId);
@@ -147,8 +192,13 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public void decreaseQuantity(Long id, Long productId) {
-        Sale sale = findRequiredSale(id);
+    public void decreaseQuantity(Long saleId, Long productId) {
+        require(saleId != null, "Sale ID cannot be null");
+        require(productId != null, "Product ID cannot be null");
+
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+
         validateSaleOpen(sale, "Sale must be OPEN to decrease quantity");
         Product product = productService.findRequiredById(productId);
         sale.decreaseQuantity(product);
@@ -157,27 +207,30 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleResponse finishSale(Long saleId) {
-        Sale sale = findRequiredSale(saleId);
-        validateSaleOpen(sale, "Sale must be OPEN to finish it");
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
 
+        validateSaleOpen(sale, "Sale must be OPEN to finish it");
         sale.finish();
-        return saleMapper.toResponse(sale);
+        return saleMapper.toResponse(
+                sale,
+                discountResolver.resolve(sale)
+        );
     }
 
     @Override
     @Transactional
     public SaleResponse cancelSale(Long saleId) {
-        Sale sale = findRequiredSale(saleId);
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(() -> new SaleNotFoundException(saleId));
+
         validateSaleOpen(sale, "Sale must be OPEN to cancel it");
 
         sale.cancel();
-        return saleMapper.toResponse(sale);
-    }
-
-    @Nonnull
-    private Sale findRequiredSale(Long saleId) {
-        return repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        return saleMapper.toResponse(
+                sale,
+                discountResolver.resolve(sale)
+        );
     }
 
     private static void validateSaleOpen(Sale sale, String message) {
