@@ -25,6 +25,7 @@ export const elements = {
   productModal: document.getElementById('productModal'),
   productTableBody: document.getElementById('productTableBody'),
   newProductNameInput: document.getElementById('newProductName'),
+  newProductSkuInput: document.getElementById('newBranchSku'),
   newProductPriceInput: document.getElementById('newProductPrice'),
   createProductModalBtn: document.getElementById('createProductModalBtn')
 };

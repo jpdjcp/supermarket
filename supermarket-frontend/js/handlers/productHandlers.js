@@ -9,11 +9,17 @@ import { updateSaleActionsUI } from "./../dom/render/saleActions.js"
 
 export async function handleCreateProductFromModal() {
   const name = elements.newProductNameInput.value.trim();
+  const sku = elements.newProductSkuInput.value.trim();
   const price = parseFloat(elements.newProductPriceInput.value);
 
   // validation
   if (!name || name.length < 2) {
     alert('Product name is required');
+    return;
+  }
+
+  if (!sku || sku.length < 6) {
+    alert('Product SKU is required');
     return;
   }
 
@@ -23,7 +29,7 @@ export async function handleCreateProductFromModal() {
   }
 
   // API call
-  await productApi.createProduct({ name, price });
+  await productApi.createProduct({ sku, name, price });
 
   // reset inputs
   elements.newProductNameInput.value = '';
