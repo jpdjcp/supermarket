@@ -13,6 +13,7 @@ public interface ISaleService {
     SaleResponse createSale(Long branchId, Long userId);
     SaleResponse findById(Long id);
     List<SaleResponse> findByUserId(Long userId);
+    List<SaleResponse> findByBranchId(Long branchId);
     List<SaleResponse> findByCreatedAt(Instant from, Instant to);
     List<SaleResponse> findByClosedAt(Instant from, Instant to);
     AddProductResponse addProduct(Long id, AddProductRequest request);

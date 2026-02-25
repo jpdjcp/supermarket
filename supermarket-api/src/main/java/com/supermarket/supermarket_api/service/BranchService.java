@@ -7,6 +7,7 @@ import com.supermarket.supermarket_api.exception.BranchNotFoundException;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
 import com.supermarket.supermarket_api.model.Branch;
+import com.supermarket.supermarket_api.pricing.DiscountResolver;
 import com.supermarket.supermarket_api.repository.BranchRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,17 @@ public class BranchService implements IBranchService {
     private final BranchRepository repository;
     private final BranchMapper mapper;
     private final SaleMapper saleMapper;
+    private final DiscountResolver discountResolver;
 
     public BranchService(
             BranchRepository repository,
             BranchMapper mapper,
-            SaleMapper saleMapper) {
+            SaleMapper saleMapper,
+            DiscountResolver discountResolver) {
         this.repository = repository;
         this.mapper = mapper;
         this.saleMapper = saleMapper;
+        this.discountResolver = discountResolver;
     }
 
     @Transactional
@@ -63,15 +67,5 @@ public class BranchService implements IBranchService {
     @Transactional
     public void delete(Long branchId) {
         repository.delete(findRequiredById(branchId));
-    }
-
-    @Override
-    public List<SaleResponse> getSales(Long id) {
-        Branch branch = repository.findById(id)
-                .orElseThrow(() -> new BranchNotFoundException(id));
-
-        return branch.getSales().stream()
-                .map(saleMapper::toResponse)
-                .toList();
     }
 }

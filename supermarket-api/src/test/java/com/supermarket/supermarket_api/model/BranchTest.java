@@ -12,7 +12,6 @@ public class BranchTest {
         Branch branch = new Branch(address);
 
         assertThat(branch.getAddress()).isEqualTo(address);
-        assertThat(branch.getSales().isEmpty()).isTrue();
     }
 
     @Test

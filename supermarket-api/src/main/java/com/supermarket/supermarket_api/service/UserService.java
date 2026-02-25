@@ -113,6 +113,12 @@ public class UserService implements IUserService {
         user.disable();
     }
 
+    @Override
+    public void ensureExists(Long userId) {
+        repository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException(userId));
+    }
+
     private void require(boolean condition, String message) {
         if (!condition) throw new IllegalArgumentException(message);
     }

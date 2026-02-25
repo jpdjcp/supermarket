@@ -54,10 +54,14 @@ public class SaleController {
             @RequestParam(required = false) Instant createdTo,
             @RequestParam(required = false) Instant closedFrom,
             @RequestParam(required = false) Instant closedTo,
-            @RequestParam(required = false) Long userId) {
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long branchId) {
 
         if (userId != null && createdFrom == null && closedFrom == null)
             return ResponseEntity.ok(service.findByUserId(userId));
+
+        if (branchId != null && createdFrom == null && closedFrom == null)
+            return ResponseEntity.ok(service.findByBranchId(branchId));
 
         if (createdFrom != null && createdTo != null && userId == null)
             return ResponseEntity.ok(service.findByCreatedAt(createdFrom, createdTo));

@@ -45,9 +45,4 @@ public class BranchController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/{id}/sales")
-    public ResponseEntity<List<SaleResponse>> getSales(@Positive @PathVariable Long id) {
-        return ResponseEntity.ok(service.getSales(id));
-    }
 }

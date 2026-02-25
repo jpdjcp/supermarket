@@ -9,10 +9,15 @@ import com.supermarket.supermarket_api.exception.SaleNotOpenException;
 import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
 import com.supermarket.supermarket_api.model.*;
+import com.supermarket.supermarket_api.pricing.DiscountResolver;
+import com.supermarket.supermarket_api.pricing.discount.DiscountStrategy;
+import com.supermarket.supermarket_api.pricing.discount.NoDiscountStrategy;
 import com.supermarket.supermarket_api.repository.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -53,37 +58,44 @@ public class SaleServiceTest {
     @Mock
     SaleItemMapper itemMapper;
 
+    @Mock
+    DiscountResolver discountResolver;
+
     private Branch branch;
+    private Long branchId;
     private User user;
+    private Long userId;
     private Sale sale;
+    private Long saleId;
     private Product product;
+    private String name;
+    private Long productId;
     private SaleResponse response;
     private AddProductRequest addRequest;
     private AddProductResponse addResponse;
     private Instant instant;
     private Instant from;
     private Instant to;
+    private DiscountStrategy strategy;
+    private ArgumentCaptor<Sale> saleCaptor;
+    private ArgumentCaptor<SaleItem> itemCaptor;
+    private int quantity;
+    private List<SaleResponse> responses;
 
     @BeforeEach
     void setUp() {
+        branchId = 1L;
         branch = new Branch("Branch address");
         user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        userId = 99L;
         sale = new Sale(branch, user);
-        product = new Product(SKU, "Milk", BigDecimal.valueOf(100));
-        addRequest = new AddProductRequest(1L);
-        addResponse = new AddProductResponse(
-                1L,
-                1L,
-                1,
-                BigDecimal.valueOf(100)
-        );
-        instant = Instant.parse("2025-01-01T10:00:00Z");
-        from = Instant.parse("2025-01-01T10:00:00Z");
-        to = Instant.parse("2025-12-31T10:00:00Z");
-    }
-
-    @Test
-    void createSale_shouldCreateSaleForBranch() {
+        saleId = 33L;
+        name = "Milk";
+        product = new Product(SKU, name, BigDecimal.valueOf(100));
+        productId = 22L;
+        quantity = 1;
+        addRequest = new AddProductRequest(productId);
+        addResponse = new AddProductResponse(saleId, productId, quantity, BigDecimal.valueOf(100));
         response = new SaleResponse(
                 1L,
                 branch.getId(),
@@ -94,371 +106,446 @@ public class SaleServiceTest {
                 List.of(),
                 BigDecimal.valueOf(1000)
         );
-
-        when(branchService.findRequiredById(1L)).thenReturn(branch);
-        when(userService.findRequiredById(1L)).thenReturn(user);
-        when(saleRepository.save(any(Sale.class))).thenReturn(sale);
-        when(saleMapper.toResponse(any(Sale.class))).thenReturn(response);
-
-        SaleResponse result = saleService.createSale(1L, 1L);
-
-        assertThat(result).isNotNull();
-        verify(branchService).findRequiredById(1L);
-        verify(userService).findRequiredById(1L);
-        verify(saleRepository).save(any(Sale.class));
-        verifyNoMoreInteractions(saleRepository);
+        instant = Instant.parse("2025-01-01T10:00:00Z");
+        from = Instant.parse("2025-01-01T10:00:00Z");
+        to = Instant.parse("2025-12-31T10:00:00Z");
+        strategy = new NoDiscountStrategy();
+        saleCaptor = ArgumentCaptor.forClass(Sale.class);
+        itemCaptor = ArgumentCaptor.forClass(SaleItem.class);
     }
 
-    @Test
-    void findByUserId_shouldFind() {
-        when(saleRepository.findByUser_Id(1L))
-                .thenReturn(List.of(sale));
-        when(saleMapper.toResponse(sale))
-                .thenReturn(response);
+    @Nested
+    class createSale {
 
-        List<SaleResponse> result = saleService.findByUserId(1L);
+        @Test
+        void createSale_shouldCreateSaleForBranch() {
+            when(branchService.findRequiredById(branchId)).thenReturn(branch);
+            when(userService.findRequiredById(userId)).thenReturn(user);
+            when(saleRepository.save(any(Sale.class))).thenReturn(sale);
+            when(discountResolver.resolve(any(Sale.class))).thenReturn(strategy);
+            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
 
-        assertThat(result).containsExactly(response);
-        assertThat(result).hasSize(1);
-        verify(saleRepository).findByUser_Id(1L);
-        verifyNoMoreInteractions(saleRepository);
-        verify(saleMapper).toResponse(sale);
+            SaleResponse result = saleService.createSale(branchId, userId);
+
+            assertThat(result).isEqualTo(response);
+            verify(branchService).findRequiredById(branchId);
+            verify(userService).findRequiredById(userId);
+            verify(saleRepository).save(saleCaptor.capture());
+            verifyNoMoreInteractions(saleRepository);
+            Sale captured = saleCaptor.getValue();
+            assertThat(captured.getUser()).isEqualTo(user);
+            assertThat(captured.getBranch()).isEqualTo(branch);
+            verify(discountResolver).resolve(sale);
+            verify(saleMapper).toResponse(sale, strategy);
+        }
+
+        @Test
+        void createSale_withNullBranchId_shouldThrow() {
+            assertThatThrownBy(()->saleService.createSale(null, userId))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void createSale_withNullUserId_shouldThrow() {
+            assertThatThrownBy(()->saleService.createSale(branchId, null))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
-    @Test
-    void findByUserUd_whenUserIdIsNull_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByUserId(null))
-                .isInstanceOf(IllegalArgumentException.class);
-        verifyNoInteractions(saleRepository);
+    @Nested
+    class findById {
+
+        @Test
+        void findById_shouldReturnSale() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(discountResolver.resolve(sale)).thenReturn(strategy);
+            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+
+            SaleResponse result = saleService.findById(saleId);
+
+            assertThat(result).isEqualTo(response);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verify(discountResolver).resolve(sale);
+            verify(saleMapper).toResponse(sale, strategy);
+        }
+
+        @Test
+        void findById_whenNotFound_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> saleService.findById(saleId))
+                    .isInstanceOf(SaleNotFoundException.class);
+
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+        }
     }
 
-    @Test
-    void findByUserUd_whenUserIdIsUnderOne_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByUserId(0L))
-                .isInstanceOf(IllegalArgumentException.class);
-        verifyNoInteractions(saleRepository);
+    @Nested
+    class findByUserId {
+
+        @Test
+        void findByUserId_shouldFind() {
+            when(saleRepository.findByUser_Id(userId)).thenReturn(List.of(sale));
+            when(discountResolver.resolve(sale)).thenReturn(strategy);
+            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+
+            List<SaleResponse> result = saleService.findByUserId(userId);
+
+            assertThat(result).containsExactly(response);
+            verify(userService).ensureExists(userId);
+            verify(saleRepository).findByUser_Id(userId);
+            verifyNoMoreInteractions(saleRepository);
+            verify(discountResolver).resolve(sale);
+            verify(saleMapper).toResponse(sale, strategy);
+        }
+
+        @Test
+        void findByUserId_whenUserIdIsNull_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByUserId(null))
+                    .isInstanceOf(IllegalArgumentException.class);
+            verifyNoInteractions(saleRepository);
+        }
     }
 
-    @Test
-    void addProduct_ShouldAddProduct() {
-        Product product = new Product(SKU, "Product name", BigDecimal.valueOf(1000));
-        AddProductResponse response = new AddProductResponse(
-                1L,
-                1L,
-                1,
-                BigDecimal.valueOf(1000)
-        );
+    @Nested
+    class findByCreatedAt {
 
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-        when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(response);
+        @Test
+        void findByCreatedAt_shouldReturnSalesInRange() {
+            when(saleRepository.findByCreatedAtBetween(from, to)).thenReturn(List.of(sale));
+            when(discountResolver.resolve(sale)).thenReturn(strategy);
+            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
 
-        AddProductResponse result = saleService.addProduct(1L, addRequest);
+            responses = saleService.findByCreatedAt(from, to);
 
-        assertThat(result).isNotNull();
-        verify(saleRepository).findById(1L);
-        verify(productService).findRequiredById(1L);
-        verify(itemMapper).toResponse(any(SaleItem.class));
+            assertThat(responses).containsExactly(response);
+            verify(saleRepository).findByCreatedAtBetween(from, to);
+            verifyNoMoreInteractions(saleRepository);
+            verify(discountResolver).resolve(sale);
+            verify(saleMapper).toResponse(sale, strategy);
+        }
+
+        @Test
+        void findByCreatedAt_whenNoMatchesFound_shouldReturnEmptyList() {
+            when(saleRepository.findByCreatedAtBetween(from, to))
+                    .thenReturn(List.of());
+
+            responses = saleService.findByCreatedAt(from, to);
+
+            assertThat(responses).isEmpty();
+            verify(saleRepository).findByCreatedAtBetween(from, to);
+            verifyNoMoreInteractions(saleRepository);
+            verifyNoInteractions(discountResolver);
+            verifyNoInteractions(saleMapper);
+        }
+
+        @Test
+        void findByCreatedAt_whenFromIsAfterTo_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByCreatedAt(to, from))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void findByCreatedAt_whenFromIsNull_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByCreatedAt(null, to))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void findByCreatedAt_whenToIsNull_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByCreatedAt(from, null))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
-    @Test
-    void addProductTwice_shouldIncreaseQuantity() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
+    @Nested
+    class findByClosedAt {
 
-        saleService.addProduct(1L, addRequest);
-        saleService.addProduct(1L, addRequest);
-        SaleItem item = saleService.getItem(1L, 1L);
+        @Test
+        void findByClosedAt_shouldFind() {
+            when(saleRepository.findByClosedAtBetween(from, to)).thenReturn(List.of(sale));
+            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+            when(discountResolver.resolve(sale)).thenReturn(strategy);
 
-        assertThat(item.getQuantity()).isEqualTo(2);
+            responses = saleService.findByClosedAt(from, to);
+
+            assertThat(responses).containsExactly(response);
+            verify(saleRepository).findByClosedAtBetween(from, to);
+            verifyNoMoreInteractions(saleRepository);
+            verify(saleMapper).toResponse(sale, strategy);
+            verify(discountResolver).resolve(sale);
+        }
+
+        @Test
+        void findByClosedAt_whenNoMatchesFound_shouldReturnEmptyList() {
+            when(saleRepository.findByClosedAtBetween(from, to))
+                    .thenReturn(List.of());
+
+            responses = saleService.findByClosedAt(from, to);
+
+            assertThat(responses).isEmpty();
+            verify(saleRepository).findByClosedAtBetween(from, to);
+            verifyNoMoreInteractions(saleRepository);
+            verifyNoInteractions(saleMapper);
+            verifyNoInteractions(discountResolver);
+        }
+
+        @Test
+        void findByClosedAt_whenFromIsAfterTo_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByCreatedAt(to, from))
+                    .isInstanceOf(IllegalArgumentException.class);
+            verifyNoMoreInteractions(saleRepository);
+        }
+
+        @Test
+        void findByClosedAt_whenFromIsNull_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByCreatedAt(null, to))
+                    .isInstanceOf(IllegalArgumentException.class);
+            verifyNoMoreInteractions(saleRepository);
+        }
+
+        @Test
+        void findByClosedAt_whenToIsNull_shouldThrow() {
+            assertThatThrownBy(()-> saleService.findByCreatedAt(from, null))
+                    .isInstanceOf(IllegalArgumentException.class);
+            verifyNoMoreInteractions(saleRepository);
+        }
     }
 
-    @Test
-    void removeProductNotPresent_shouldThrow() {
-        assertThatThrownBy(()-> sale.removeProduct(product))
-                .isInstanceOf(SaleItemNotFoundException.class);
+    @Nested
+    class addProduct {
+
+        @Test
+        void addProduct_ShouldAddProduct() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
+            when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
+
+            AddProductResponse result = saleService.addProduct(saleId, addRequest);
+
+            assertThat(result).isNotNull();
+            verify(saleRepository).findById(saleId);
+            verify(productService).findRequiredById(productId);
+            verify(itemMapper).toResponse(itemCaptor.capture());
+
+            SaleItem captured = itemCaptor.getValue();
+            assertThat(captured.getProduct()).isEqualTo(product);
+        }
+
+        @Test
+        void addProductTwice_shouldIncreaseQuantity() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
+            when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
+
+            saleService.addProduct(saleId, addRequest);
+            AddProductResponse result = saleService.addProduct(saleId, addRequest);
+
+            assertThat(result).isNotNull();
+            verify(saleRepository, times(2)).findById(saleId);
+            verify(productService, times(2)).findRequiredById(productId);
+            verify(itemMapper, times(2)).toResponse(itemCaptor.capture());
+
+            List<SaleItem> items = itemCaptor.getAllValues();
+            SaleItem lastItem = items.getLast();
+            assertThat(lastItem.getQuantity()).isEqualTo(2);
+            assertThat(items.get(0)).isSameAs(items.get(1));
+        }
+
+        @Test
+        void addProductToSale_whenOpen_shouldAddProduct() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
+            when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
+
+            AddProductResponse result = saleService.addProduct(saleId, addRequest);
+
+            assertThat(result).isEqualTo(addResponse);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verify(productService).findRequiredById(productId);
+            verify(itemMapper).toResponse(itemCaptor.capture());
+
+            SaleItem captured = itemCaptor.getValue();
+            assertThat(captured.getProduct()).isEqualTo(product);
+            assertThat(captured.getQuantity()).isEqualTo(1);
+        }
+
+        @Test
+        void addProductToSale_whenFinished_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+
+            sale.finish();
+            assertThatThrownBy(() -> saleService.addProduct(saleId, addRequest))
+                    .isInstanceOf(SaleNotOpenException.class);
+        }
+
+        @Test
+        void addProductToSale_whenCancelled_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+
+            sale.cancel();
+            assertThatThrownBy(() -> saleService.addProduct(saleId, addRequest))
+                    .isInstanceOf(SaleNotOpenException.class);
+        }
     }
 
-    @Test
-    void increaseQuantity_whenProductNotPresent_shouldThrow() {
-        assertThatThrownBy(()->sale.increaseQuantity(product))
-                .isInstanceOf(SaleItemNotFoundException.class);
+    @Nested
+    class removeProduct {
+
+        @Test
+        void removeProduct_whenNotPresent_shouldThrow() {
+            assertThatThrownBy(()-> sale.removeProduct(product))
+                    .isInstanceOf(SaleItemNotFoundException.class);
+        }
+
+        @Test
+        void removeProduct_whenSaleOpen_shouldRemoveProduct() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
+
+            sale.addProduct(product);
+            assertThat(sale.getSaleItems()).hasSize(1);
+
+            saleService.removeProduct(saleId, productId);
+
+            assertThat(sale.containsProduct(saleId)).isFalse();
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verify(productService).findRequiredById(productId);
+        }
+
+        @Test
+        void removeProduct_whenSaleFinished_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+
+            sale.finish();
+
+            assertThatThrownBy(() -> saleService.removeProduct(saleId, productId))
+                    .isInstanceOf(SaleNotOpenException.class);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verifyNoInteractions(productService);
+        }
+
+        @Test
+        void removeProduct_whenSaleCancelled_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+
+            sale.cancel();
+
+            assertThatThrownBy(() -> saleService.removeProduct(saleId, productId))
+                    .isInstanceOf(SaleNotOpenException.class);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verifyNoInteractions(productService);
+        }
     }
 
-    @Test
-    void decreaseQuantityBellowOne_shouldRemove() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
+    @Nested
+    class increaseQuantity {
 
-        saleService.addProduct(1L, addRequest);
-        saleService.decreaseQuantity(1L, 1L);
+        @Test
+        void increaseQuantity_whenProductNotPresent_shouldThrow() {
+            assertThatThrownBy(()->sale.increaseQuantity(product))
+                    .isInstanceOf(SaleItemNotFoundException.class);
+        }
 
-        assertThat(saleService.containsProduct(1L, 1L))
-                .isFalse();
+        @Test
+        void increaseQuantity_whenSaleOpen_shouldIncreaseQuantity() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
+            sale.addProduct(product);
+
+            saleService.increaseQuantity(saleId, productId);
+
+            SaleItem item = sale.findItem(product);
+            assertThat(item.getQuantity()).isEqualTo(2);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verify(productService).findRequiredById(productId);
+        }
+
+        @Test
+        void increaseQuantity_whenSaleFinished_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            sale.finish();
+
+            assertThatThrownBy(() -> saleService.increaseQuantity(saleId, productId))
+                    .isInstanceOf(SaleNotOpenException.class);
+            verifyNoMoreInteractions(saleRepository);
+            verifyNoInteractions(productService);
+        }
+
+        @Test
+        void increaseQuantity_whenSaleCancelled_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+
+            sale.cancel();
+
+            assertThatThrownBy(() -> saleService.increaseQuantity(saleId, productId))
+                    .isInstanceOf(SaleNotOpenException.class);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verifyNoInteractions(productService);
+        }
     }
 
-    @Test
-    void findById_ShouldFindSale() {
-        response = new SaleResponse(
-                1L,
-                1L,
-                user.getId(),
-                instant,
-                instant,
-                SaleStatus.OPEN,
-                List.of(),
-                BigDecimal.valueOf(1000)
-        );
+    @Nested
+    class decreaseQuantity {
 
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(saleMapper.toResponse(sale)).thenReturn(response);
+        @Test
+        void decreaseQuantityBelowOne_shouldRemove() {
+            int invocations = 2;
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
 
-        SaleResponse result = saleService.findById(1L);
+            saleService.addProduct(saleId, addRequest);
+            saleService.decreaseQuantity(saleId, productId);
 
-        assertThat(result).isNotNull();
-        verify(saleRepository).findById(1L);
-        verify(saleMapper).toResponse(any(Sale.class));
-    }
+            assertThat(sale.getSaleItems()).isEmpty();
+            verify(saleRepository, times(invocations)).findById(saleId);
+            verify(productService, times(invocations)).findRequiredById(productId);
+        }
 
-    @Test
-    void findByInvalidId_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.empty());
+        @Test
+        void decreaseQuantity_whenSaleOpen_shouldDecreaseQuantity() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(productService.findRequiredById(productId)).thenReturn(product);
+            sale.addProduct(product);
+            sale.addProduct(product);
+            SaleItem item = sale.getSaleItems().getFirst();
+            assertThat(item.getQuantity()).isEqualTo(2);
 
-        assertThatThrownBy(() -> saleService.findById(1L))
-                .isInstanceOf(SaleNotFoundException.class);
+            saleService.decreaseQuantity(saleId, productId);
 
-        verify(saleRepository).findById(1L);
-    }
+            SaleItem updated = sale.getSaleItems().getFirst();
+            assertThat(updated.getQuantity()).isEqualTo(1);
+            verify(saleRepository).findById(saleId);
+            verifyNoMoreInteractions(saleRepository);
+            verify(productService).findRequiredById(productId);
+        }
 
-    // *** findSales Tests ***
+        @Test
+        void decreaseProductQuantity_whenFinished_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
 
-    @Test
-    void findByCreatedAt_shouldFind() {
-        when(saleRepository.findByCreatedAtBetween(from, to))
-                .thenReturn(List.of(sale));
-        when(saleMapper.toResponse(sale))
-                .thenReturn(response);
+            sale.finish();
 
-        List<SaleResponse> result = saleService.findByCreatedAt(from, to);
+            assertThatThrownBy(() -> saleService.decreaseQuantity(saleId, productId))
+                    .isInstanceOf(SaleNotOpenException.class);
+        }
 
-        assertThat(result).hasSize(1);
-        verify(saleRepository).findByCreatedAtBetween(from, to);
-        verifyNoMoreInteractions(saleRepository);
-        verify(saleMapper).toResponse(sale);
-    }
+        @Test
+        void decreaseProductQuantity_whenCancelled_shouldThrow() {
+            when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
 
-    @Test
-    void findByCreatedAt_whenNoMatchesFound_shouldReturnEmptyList() {
-        when(saleRepository.findByCreatedAtBetween(from, to))
-                .thenReturn(new ArrayList<>());
+            sale.cancel();
 
-        List<SaleResponse> result = saleService.findByCreatedAt(from, to);
-
-        assertThat(result).isEmpty();
-        verify(saleRepository).findByCreatedAtBetween(from, to);
-        verifyNoMoreInteractions(saleRepository);
-        verifyNoInteractions(saleMapper);
-    }
-
-    @Test
-    void findByCreatedAt_whenFromIsAfterTo_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByCreatedAt(to, from))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findByCreatedAt_whenFromIsNull_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByCreatedAt(null, to))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findByCreatedAt_whenToIsNull_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByCreatedAt(from, null))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findByClosedAt_shouldFind() {
-        when(saleRepository.findByClosedAtBetween(from, to))
-                .thenReturn(List.of(sale));
-        when(saleMapper.toResponse(sale))
-                .thenReturn(response);
-
-        List<SaleResponse> result = saleService.findByClosedAt(from, to);
-
-        assertThat(result).hasSize(1);
-        verify(saleRepository).findByClosedAtBetween(from, to);
-        verifyNoMoreInteractions(saleRepository);
-        verify(saleMapper).toResponse(sale);
-    }
-
-    @Test
-    void findByClosedAt_whenNoMatchesFound_shouldReturnEmptyList() {
-        when(saleRepository.findByClosedAtBetween(from, to))
-                .thenReturn(new ArrayList<>());
-
-        List<SaleResponse> result = saleService.findByClosedAt(from, to);
-
-        assertThat(result).isEmpty();
-        verify(saleRepository).findByClosedAtBetween(from, to);
-        verifyNoMoreInteractions(saleRepository);
-        verifyNoInteractions(saleMapper);
-    }
-
-    @Test
-    void findByClosedAt_whenFromIsAfterTo_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByCreatedAt(to, from))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findByClosedAt_whenFromIsNull_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByCreatedAt(null, to))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void findByClosedAt_whenToIsNull_shouldThrow() {
-        assertThatThrownBy(()-> saleService.findByCreatedAt(from, null))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    // *** State Mutation Tests ***
-
-    @Test
-    void addProductToSale_whenOpen_shouldAddProduct() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-        when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
-
-        AddProductResponse result = saleService.addProduct(1L, addRequest);
-
-        assertThat(result).isEqualTo(addResponse);
-    }
-
-    @Test
-    void addProductToSale_whenFinished_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-
-        sale.finish();
-        assertThatThrownBy(() -> saleService.addProduct(1L, addRequest))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void addProductToSale_whenCancelled_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-
-        sale.cancel();
-        assertThatThrownBy(() -> saleService.addProduct(1L, addRequest))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void removeProductFromSale_whenOpen_shouldRemoveProduct() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-        when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
-
-        saleService.addProduct(1L, addRequest);
-        saleService.removeProduct(1L, 1L);
-
-        assertThat(sale.getSaleItems().isEmpty()).isTrue();
-    }
-
-    @Test
-    void removeProductFromSale_whenFinished_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-        when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
-
-        saleService.addProduct(1L, addRequest);
-        sale.finish();
-
-        assertThatThrownBy(() -> saleService.removeProduct(1L, 1L))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void removeProductFromSale_whenCancelled_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-        when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
-
-        saleService.addProduct(1L, addRequest);
-        sale.cancel();
-
-        assertThatThrownBy(() -> saleService.removeProduct(1L, 1L))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void increaseProductQuantity_whenOpen_shouldIncreaseQuantity() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-
-        saleService.addProduct(1L, addRequest);
-        saleService.increaseQuantity(1L, 1L);
-        SaleItem item = sale.getSaleItems().getFirst();
-
-        assertThat(item.getQuantity()).isEqualTo(2);
-    }
-
-    @Test
-    void increaseProductQuantity_whenFinished_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-
-        saleService.addProduct(1L, addRequest);
-        sale.finish();
-
-        assertThatThrownBy(() -> saleService.increaseQuantity(1L, 1L))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void increaseProductQuantity_whenCancelled_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-
-        saleService.addProduct(1L, addRequest);
-        sale.cancel();
-
-        assertThatThrownBy(() -> saleService.increaseQuantity(1L, 1L))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void decreaseProductQuantity_whenOpen_shouldDecreaseQuantity() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-        when(productService.findRequiredById(1L)).thenReturn(product);
-
-        saleService.addProduct(1L, addRequest);
-        saleService.addProduct(1L, addRequest);
-        saleService.decreaseQuantity(1L, 1L);
-        SaleItem item = sale.getSaleItems().getFirst();
-
-        assertThat(item.getQuantity()).isEqualTo(1);
-    }
-
-    @Test
-    void decreaseProductQuantity_whenFinished_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-
-        sale.finish();
-
-        assertThatThrownBy(() -> saleService.decreaseQuantity(1L, 1L))
-                .isInstanceOf(SaleNotOpenException.class);
-    }
-
-    @Test
-    void decreaseProductQuantity_whenCancelled_shouldThrow() {
-        when(saleRepository.findById(1L)).thenReturn(Optional.of(sale));
-
-        sale.cancel();
-
-        assertThatThrownBy(() -> saleService.decreaseQuantity(1L, 1L))
-                .isInstanceOf(SaleNotOpenException.class);
+            assertThatThrownBy(() -> saleService.decreaseQuantity(saleId, productId))
+                    .isInstanceOf(SaleNotOpenException.class);
+        }
     }
 }

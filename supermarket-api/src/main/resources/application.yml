@@ -1,6 +1,7 @@
 spring:
   application:
     name: supermarket-api
+    open-in-view: false
 
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}

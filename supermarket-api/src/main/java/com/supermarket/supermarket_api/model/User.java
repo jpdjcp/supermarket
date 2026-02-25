@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "users")
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "users")
 public class User {
 
     private static final int USERNAME_MIN = 2;

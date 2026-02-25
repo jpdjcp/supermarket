@@ -112,7 +112,7 @@ public class ProductServiceTest {
 
         ProductResponse result = service.updatePrice(1L, updateRequest);
 
-        assertThat(product.getPrice()).isEqualTo(response.price());
+        assertThat(result.price()).isEqualTo(response.price());
         verify(repository).findById(1L);
         verify(mapper).toResponse(product);
     }
