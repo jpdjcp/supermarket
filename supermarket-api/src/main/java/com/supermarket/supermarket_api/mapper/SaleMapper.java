@@ -12,7 +12,7 @@ public class SaleMapper {
 
     private final SaleItemMapper mapper;
 
-    public final SaleDetail toResponse(Sale sale, DiscountStrategy strategy) {
+    public final SaleDetail toDetail(Sale sale, DiscountStrategy strategy) {
         return new SaleDetail(
                 sale.getId(),
                 sale.getBranch().getId(),

@@ -42,7 +42,7 @@ public class SaleService implements ISaleService {
         Sale sale = new Sale(branch, user);
         Sale saved = repository.save(sale);
         DiscountStrategy strategy = discountResolver.resolve(saved);
-        return saleMapper.toResponse(saved, strategy);
+        return saleMapper.toDetail(saved, strategy);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SaleService implements ISaleService {
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         DiscountStrategy strategy = discountResolver.resolve(sale);
-        return saleMapper.toResponse(sale, strategy);
+        return saleMapper.toDetail(sale, strategy);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class SaleService implements ISaleService {
 
         return  repository.findByUser_Id(userId)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toDetail(
                         sale,
                         discountResolver.resolve(sale)
                 ))
@@ -79,7 +79,7 @@ public class SaleService implements ISaleService {
 
         return  repository.findByBranch_Id(branchId)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toDetail(
                         sale,
                         discountResolver.resolve(sale)
                 ))
@@ -95,7 +95,7 @@ public class SaleService implements ISaleService {
 
         return repository.findByCreatedAtBetween(from, to)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toDetail(
                         sale,
                         discountResolver.resolve(sale)))
                 .toList();
@@ -110,7 +110,7 @@ public class SaleService implements ISaleService {
 
         return repository.findByClosedAtBetween(from, to)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toDetail(
                         sale,
                         discountResolver.resolve(sale)))
                 .toList();
@@ -211,7 +211,7 @@ public class SaleService implements ISaleService {
 
         validateSaleOpen(sale, "Sale must be OPEN to finish it");
         sale.finish();
-        return saleMapper.toResponse(
+        return saleMapper.toDetail(
                 sale,
                 discountResolver.resolve(sale)
         );
@@ -226,7 +226,7 @@ public class SaleService implements ISaleService {
         validateSaleOpen(sale, "Sale must be OPEN to cancel it");
 
         sale.cancel();
-        return saleMapper.toResponse(
+        return saleMapper.toDetail(
                 sale,
                 discountResolver.resolve(sale)
         );

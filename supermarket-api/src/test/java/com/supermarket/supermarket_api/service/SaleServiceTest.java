@@ -122,7 +122,7 @@ public class SaleServiceTest {
             when(userService.findRequiredById(userId)).thenReturn(user);
             when(saleRepository.save(any(Sale.class))).thenReturn(sale);
             when(discountResolver.resolve(any(Sale.class))).thenReturn(strategy);
-            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
 
             SaleDetail result = saleService.createSale(branchId, userId);
 
@@ -135,7 +135,7 @@ public class SaleServiceTest {
             assertThat(captured.getUser()).isEqualTo(user);
             assertThat(captured.getBranch()).isEqualTo(branch);
             verify(discountResolver).resolve(sale);
-            verify(saleMapper).toResponse(sale, strategy);
+            verify(saleMapper).toDetail(sale, strategy);
         }
 
         @Test
@@ -158,7 +158,7 @@ public class SaleServiceTest {
         void findById_shouldReturnSale() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
             when(discountResolver.resolve(sale)).thenReturn(strategy);
-            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
 
             SaleDetail result = saleService.findById(saleId);
 
@@ -166,7 +166,7 @@ public class SaleServiceTest {
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
             verify(discountResolver).resolve(sale);
-            verify(saleMapper).toResponse(sale, strategy);
+            verify(saleMapper).toDetail(sale, strategy);
         }
 
         @Test
@@ -188,7 +188,7 @@ public class SaleServiceTest {
         void findByUserId_shouldFind() {
             when(saleRepository.findByUser_Id(userId)).thenReturn(List.of(sale));
             when(discountResolver.resolve(sale)).thenReturn(strategy);
-            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
 
             List<SaleDetail> result = saleService.findByUserId(userId);
 
@@ -197,7 +197,7 @@ public class SaleServiceTest {
             verify(saleRepository).findByUser_Id(userId);
             verifyNoMoreInteractions(saleRepository);
             verify(discountResolver).resolve(sale);
-            verify(saleMapper).toResponse(sale, strategy);
+            verify(saleMapper).toDetail(sale, strategy);
         }
 
         @Test
@@ -215,7 +215,7 @@ public class SaleServiceTest {
         void findByCreatedAt_shouldReturnSalesInRange() {
             when(saleRepository.findByCreatedAtBetween(from, to)).thenReturn(List.of(sale));
             when(discountResolver.resolve(sale)).thenReturn(strategy);
-            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
 
             responses = saleService.findByCreatedAt(from, to);
 
@@ -223,7 +223,7 @@ public class SaleServiceTest {
             verify(saleRepository).findByCreatedAtBetween(from, to);
             verifyNoMoreInteractions(saleRepository);
             verify(discountResolver).resolve(sale);
-            verify(saleMapper).toResponse(sale, strategy);
+            verify(saleMapper).toDetail(sale, strategy);
         }
 
         @Test
@@ -265,7 +265,7 @@ public class SaleServiceTest {
         @Test
         void findByClosedAt_shouldFind() {
             when(saleRepository.findByClosedAtBetween(from, to)).thenReturn(List.of(sale));
-            when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
             when(discountResolver.resolve(sale)).thenReturn(strategy);
 
             responses = saleService.findByClosedAt(from, to);
@@ -273,7 +273,7 @@ public class SaleServiceTest {
             assertThat(responses).containsExactly(response);
             verify(saleRepository).findByClosedAtBetween(from, to);
             verifyNoMoreInteractions(saleRepository);
-            verify(saleMapper).toResponse(sale, strategy);
+            verify(saleMapper).toDetail(sale, strategy);
             verify(discountResolver).resolve(sale);
         }
 
