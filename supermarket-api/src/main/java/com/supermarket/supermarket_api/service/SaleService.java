@@ -1,6 +1,7 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.sale.SaleDetail;
+import com.supermarket.supermarket_api.dto.sale.SaleSummary;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
@@ -59,7 +60,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDetail> findByUserId(Long userId) {
+    public List<SaleSummary> findByUserId(Long userId) {
         require(userId != null, "User ID cannot be null");
         userService.ensureExists(userId);
 
@@ -74,7 +75,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDetail> findByBranchId(Long branchId) {
+    public List<SaleSummary> findByBranchId(Long branchId) {
         require(branchId != null, "Branch ID cannot be null");
 
         return  repository.findByBranch_Id(branchId)
@@ -88,7 +89,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDetail> findByCreatedAt(Instant from, Instant to) {
+    public List<SaleSummary> findByCreatedAt(Instant from, Instant to) {
         require(from != null, "Parameter 'from' instant cannot be null");
         require(to != null, "Parameter 'to' instant cannot be null");
         require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
@@ -103,7 +104,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleDetail> findByClosedAt(Instant from, Instant to) {
+    public List<SaleSummary> findByClosedAt(Instant from, Instant to) {
         require(from != null, "Parameter 'from' instant cannot be null");
         require(to != null, "Parameter 'to' instant cannot be null");
         require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
