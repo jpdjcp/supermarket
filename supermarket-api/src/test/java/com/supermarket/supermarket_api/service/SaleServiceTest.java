@@ -2,7 +2,7 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
-import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
+import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.exception.SaleNotOpenException;
@@ -24,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +71,7 @@ public class SaleServiceTest {
     private Long productId;
     private SaleResponse response;
     private AddProductRequest addRequest;
-    private AddProductResponse addResponse;
+    private ItemResponse addResponse;
     private Instant instant;
     private Instant from;
     private Instant to;
@@ -95,7 +94,7 @@ public class SaleServiceTest {
         productId = 22L;
         quantity = 1;
         addRequest = new AddProductRequest(productId);
-        addResponse = new AddProductResponse(saleId, productId, quantity, BigDecimal.valueOf(100));
+        addResponse = new ItemResponse(saleId, productId, quantity, BigDecimal.valueOf(100));
         response = new SaleResponse(
                 1L,
                 branch.getId(),
@@ -323,7 +322,7 @@ public class SaleServiceTest {
             when(productService.findRequiredById(productId)).thenReturn(product);
             when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
 
-            AddProductResponse result = saleService.addProduct(saleId, addRequest);
+            ItemResponse result = saleService.addProduct(saleId, addRequest);
 
             assertThat(result).isNotNull();
             verify(saleRepository).findById(saleId);
@@ -341,7 +340,7 @@ public class SaleServiceTest {
             when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
 
             saleService.addProduct(saleId, addRequest);
-            AddProductResponse result = saleService.addProduct(saleId, addRequest);
+            ItemResponse result = saleService.addProduct(saleId, addRequest);
 
             assertThat(result).isNotNull();
             verify(saleRepository, times(2)).findById(saleId);
@@ -360,7 +359,7 @@ public class SaleServiceTest {
             when(productService.findRequiredById(productId)).thenReturn(product);
             when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
 
-            AddProductResponse result = saleService.addProduct(saleId, addRequest);
+            ItemResponse result = saleService.addProduct(saleId, addRequest);
 
             assertThat(result).isEqualTo(addResponse);
             verify(saleRepository).findById(saleId);

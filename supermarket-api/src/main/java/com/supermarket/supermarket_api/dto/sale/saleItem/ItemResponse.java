@@ -2,7 +2,7 @@ package com.supermarket.supermarket_api.dto.sale.saleItem;
 
 import java.math.BigDecimal;
 
-public record SaleItemResponse(
+public record ItemResponse(
         Long saleId,
         Long productId,
         Integer quantity,

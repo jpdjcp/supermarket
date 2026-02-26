@@ -2,8 +2,7 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
-import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
-import com.supermarket.supermarket_api.dto.sale.saleItem.SaleItemResponse;
+import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.model.SaleItem;
 
 import java.time.Instant;
@@ -16,8 +15,8 @@ public interface ISaleService {
     List<SaleResponse> findByBranchId(Long branchId);
     List<SaleResponse> findByCreatedAt(Instant from, Instant to);
     List<SaleResponse> findByClosedAt(Instant from, Instant to);
-    AddProductResponse addProduct(Long id, AddProductRequest request);
-    List<SaleItemResponse> getItems(Long saleId);
+    ItemResponse addProduct(Long id, AddProductRequest request);
+    List<ItemResponse> getItems(Long saleId);
     SaleItem getItem(Long id, Long productId);
     boolean containsProduct(Long id, Long productId);
     void removeProduct(Long id, Long productId);

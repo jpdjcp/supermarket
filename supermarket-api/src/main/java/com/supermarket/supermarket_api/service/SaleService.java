@@ -2,8 +2,7 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
-import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
-import com.supermarket.supermarket_api.dto.sale.saleItem.SaleItemResponse;
+import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
@@ -119,7 +118,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleItemResponse> getItems(Long saleId) {
+    public List<ItemResponse> getItems(Long saleId) {
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
@@ -146,7 +145,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public AddProductResponse addProduct(Long saleId, @Nonnull AddProductRequest request) {
+    public ItemResponse addProduct(Long saleId, @Nonnull AddProductRequest request) {
         require(saleId != null, "Sale ID cannot be null");
 
         Sale sale = repository.findById(saleId)
