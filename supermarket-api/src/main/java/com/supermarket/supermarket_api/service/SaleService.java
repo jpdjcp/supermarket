@@ -1,9 +1,9 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleDetail;
+import com.supermarket.supermarket_api.dto.sale.SaleSummary;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
-import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
-import com.supermarket.supermarket_api.dto.sale.saleItem.SaleItemResponse;
+import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.exception.SaleNotFoundException;
 import com.supermarket.supermarket_api.mapper.SaleItemMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;
@@ -34,7 +34,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleResponse createSale(Long branchId, Long userId) {
+    public SaleDetail createSale(Long branchId, Long userId) {
         require(branchId != null, "Branch ID cannot be null");
         require(userId != null, "User ID cannot be null");
 
@@ -43,30 +43,30 @@ public class SaleService implements ISaleService {
         Sale sale = new Sale(branch, user);
         Sale saved = repository.save(sale);
         DiscountStrategy strategy = discountResolver.resolve(saved);
-        return saleMapper.toResponse(saved, strategy);
+        return saleMapper.toDetail(saved, strategy);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SaleResponse findById(Long saleId) {
+    public SaleDetail findById(Long saleId) {
         require(saleId != null, "Sale ID cannot be null");
 
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         DiscountStrategy strategy = discountResolver.resolve(sale);
-        return saleMapper.toResponse(sale, strategy);
+        return saleMapper.toDetail(sale, strategy);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleResponse> findByUserId(Long userId) {
+    public List<SaleSummary> findByUserId(Long userId) {
         require(userId != null, "User ID cannot be null");
         userService.ensureExists(userId);
 
         return  repository.findByUser_Id(userId)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)
                 ))
@@ -75,12 +75,12 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleResponse> findByBranchId(Long branchId) {
+    public List<SaleSummary> findByBranchId(Long branchId) {
         require(branchId != null, "Branch ID cannot be null");
 
         return  repository.findByBranch_Id(branchId)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)
                 ))
@@ -89,14 +89,14 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleResponse> findByCreatedAt(Instant from, Instant to) {
+    public List<SaleSummary> findByCreatedAt(Instant from, Instant to) {
         require(from != null, "Parameter 'from' instant cannot be null");
         require(to != null, "Parameter 'to' instant cannot be null");
         require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
 
         return repository.findByCreatedAtBetween(from, to)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)))
                 .toList();
@@ -104,14 +104,14 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleResponse> findByClosedAt(Instant from, Instant to) {
+    public List<SaleSummary> findByClosedAt(Instant from, Instant to) {
         require(from != null, "Parameter 'from' instant cannot be null");
         require(to != null, "Parameter 'to' instant cannot be null");
         require(from.isBefore(to), "Parameter 'from' must be before than 'to'");
 
         return repository.findByClosedAtBetween(from, to)
                 .stream()
-                .map(sale -> saleMapper.toResponse(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)))
                 .toList();
@@ -119,7 +119,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SaleItemResponse> getItems(Long saleId) {
+    public List<ItemResponse> getItems(Long saleId) {
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
@@ -146,7 +146,7 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public AddProductResponse addProduct(Long saleId, @Nonnull AddProductRequest request) {
+    public ItemResponse addProduct(Long saleId, @Nonnull AddProductRequest request) {
         require(saleId != null, "Sale ID cannot be null");
 
         Sale sale = repository.findById(saleId)
@@ -206,13 +206,13 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleResponse finishSale(Long saleId) {
+    public SaleDetail finishSale(Long saleId) {
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         validateSaleOpen(sale, "Sale must be OPEN to finish it");
         sale.finish();
-        return saleMapper.toResponse(
+        return saleMapper.toDetail(
                 sale,
                 discountResolver.resolve(sale)
         );
@@ -220,14 +220,14 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleResponse cancelSale(Long saleId) {
+    public SaleDetail cancelSale(Long saleId) {
         Sale sale = repository.findById(saleId)
                 .orElseThrow(() -> new SaleNotFoundException(saleId));
 
         validateSaleOpen(sale, "Sale must be OPEN to cancel it");
 
         sale.cancel();
-        return saleMapper.toResponse(
+        return saleMapper.toDetail(
                 sale,
                 discountResolver.resolve(sale)
         );

@@ -2,7 +2,6 @@ package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.branch.BranchCreateRequest;
 import com.supermarket.supermarket_api.dto.branch.BranchResponse;
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.service.BranchService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

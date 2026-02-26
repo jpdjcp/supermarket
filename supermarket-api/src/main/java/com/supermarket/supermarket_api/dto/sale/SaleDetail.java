@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.dto.sale;
 
-import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductResponse;
+import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.model.SaleStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Schema(description = "Sale representation including lifecycle state")
-public record SaleResponse(
+public record SaleDetail(
         @Schema(example = "42")
         Long id,
 
@@ -20,6 +20,6 @@ public record SaleResponse(
         Instant createdAt,
         Instant closedAt,
         SaleStatus status,
-        List<AddProductResponse> items,
+        List<ItemResponse> items,
         BigDecimal total)
 { }
