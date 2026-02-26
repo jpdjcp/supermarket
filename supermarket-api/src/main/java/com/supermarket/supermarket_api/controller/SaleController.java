@@ -2,6 +2,7 @@ package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.sale.SaleCreateRequest;
 import com.supermarket.supermarket_api.dto.sale.SaleDetail;
+import com.supermarket.supermarket_api.dto.sale.SaleSummary;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.service.SaleService;
@@ -48,7 +49,7 @@ public class SaleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleDetail>> findSales(
+    public ResponseEntity<List<SaleSummary>> findSales(
             @RequestParam(required = false) Instant createdFrom,
             @RequestParam(required = false) Instant createdTo,
             @RequestParam(required = false) Instant closedFrom,
