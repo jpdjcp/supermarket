@@ -1,7 +1,7 @@
 package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.sale.SaleCreateRequest;
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleDetail;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.service.SaleService;
@@ -36,19 +36,19 @@ public class SaleController {
     }
 
     @PostMapping
-    public ResponseEntity<SaleResponse> create(@RequestBody @Valid SaleCreateRequest request) {
-        SaleResponse sale = service.createSale(request.branchId(), request.userId());
+    public ResponseEntity<SaleDetail> create(@RequestBody @Valid SaleCreateRequest request) {
+        SaleDetail sale = service.createSale(request.branchId(), request.userId());
         URI location = URI.create("/api/v1/sales/" + sale.id());
         return ResponseEntity.created(location).body(sale);
     }
 
     @GetMapping("/{saleId}")
-    public ResponseEntity<SaleResponse> findById(@PathVariable @Positive Long saleId) {
+    public ResponseEntity<SaleDetail> findById(@PathVariable @Positive Long saleId) {
         return ResponseEntity.ok(service.findById(saleId));
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleResponse>> findSales(
+    public ResponseEntity<List<SaleDetail>> findSales(
             @RequestParam(required = false) Instant createdFrom,
             @RequestParam(required = false) Instant createdTo,
             @RequestParam(required = false) Instant closedFrom,
@@ -128,7 +128,7 @@ public class SaleController {
             )
     })
     @PostMapping("/{saleId}/finish")
-    public ResponseEntity<SaleResponse> finishSale(
+    public ResponseEntity<SaleDetail> finishSale(
             @Parameter(
                     description = "Sale identifier",
                     example = "42",
@@ -158,7 +158,7 @@ public class SaleController {
             )
     })
     @PostMapping("/{saleId}/cancel")
-    public ResponseEntity<SaleResponse> cancelSale(
+    public ResponseEntity<SaleDetail> cancelSale(
             @Parameter(
                     description = "Sale identifier",
                     example = "42",

@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.mapper;
 
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleDetail;
 import com.supermarket.supermarket_api.model.Sale;
 import com.supermarket.supermarket_api.pricing.discount.DiscountStrategy;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +12,8 @@ public class SaleMapper {
 
     private final SaleItemMapper mapper;
 
-    public final SaleResponse toResponse(Sale sale, DiscountStrategy strategy) {
-        return new SaleResponse(
+    public final SaleDetail toResponse(Sale sale, DiscountStrategy strategy) {
+        return new SaleDetail(
                 sale.getId(),
                 sale.getBranch().getId(),
                 sale.getUser().getId(),

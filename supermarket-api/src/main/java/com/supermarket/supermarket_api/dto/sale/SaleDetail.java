@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Schema(description = "Sale representation including lifecycle state")
-public record SaleResponse(
+public record SaleDetail(
         @Schema(example = "42")
         Long id,
 

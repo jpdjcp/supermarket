@@ -2,7 +2,6 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.branch.BranchCreateRequest;
 import com.supermarket.supermarket_api.dto.branch.BranchResponse;
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.exception.BranchNotFoundException;
 import com.supermarket.supermarket_api.mapper.BranchMapper;
 import com.supermarket.supermarket_api.mapper.SaleMapper;

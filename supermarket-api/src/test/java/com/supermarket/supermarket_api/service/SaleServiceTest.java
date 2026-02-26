@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
+import com.supermarket.supermarket_api.dto.sale.SaleDetail;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
@@ -69,7 +69,7 @@ public class SaleServiceTest {
     private Product product;
     private String name;
     private Long productId;
-    private SaleResponse response;
+    private SaleDetail response;
     private AddProductRequest addRequest;
     private ItemResponse addResponse;
     private Instant instant;
@@ -79,7 +79,7 @@ public class SaleServiceTest {
     private ArgumentCaptor<Sale> saleCaptor;
     private ArgumentCaptor<SaleItem> itemCaptor;
     private int quantity;
-    private List<SaleResponse> responses;
+    private List<SaleDetail> responses;
 
     @BeforeEach
     void setUp() {
@@ -95,7 +95,7 @@ public class SaleServiceTest {
         quantity = 1;
         addRequest = new AddProductRequest(productId);
         addResponse = new ItemResponse(saleId, productId, quantity, BigDecimal.valueOf(100));
-        response = new SaleResponse(
+        response = new SaleDetail(
                 1L,
                 branch.getId(),
                 user.getId(),
@@ -124,7 +124,7 @@ public class SaleServiceTest {
             when(discountResolver.resolve(any(Sale.class))).thenReturn(strategy);
             when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
 
-            SaleResponse result = saleService.createSale(branchId, userId);
+            SaleDetail result = saleService.createSale(branchId, userId);
 
             assertThat(result).isEqualTo(response);
             verify(branchService).findRequiredById(branchId);
@@ -160,7 +160,7 @@ public class SaleServiceTest {
             when(discountResolver.resolve(sale)).thenReturn(strategy);
             when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
 
-            SaleResponse result = saleService.findById(saleId);
+            SaleDetail result = saleService.findById(saleId);
 
             assertThat(result).isEqualTo(response);
             verify(saleRepository).findById(saleId);
@@ -190,7 +190,7 @@ public class SaleServiceTest {
             when(discountResolver.resolve(sale)).thenReturn(strategy);
             when(saleMapper.toResponse(sale, strategy)).thenReturn(response);
 
-            List<SaleResponse> result = saleService.findByUserId(userId);
+            List<SaleDetail> result = saleService.findByUserId(userId);
 
             assertThat(result).containsExactly(response);
             verify(userService).ensureExists(userId);

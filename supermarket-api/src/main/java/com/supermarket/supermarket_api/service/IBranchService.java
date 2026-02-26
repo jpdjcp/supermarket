@@ -2,7 +2,6 @@ package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.branch.BranchCreateRequest;
 import com.supermarket.supermarket_api.dto.branch.BranchResponse;
-import com.supermarket.supermarket_api.dto.sale.SaleResponse;
 import com.supermarket.supermarket_api.model.Branch;
 
 import java.util.List;
