@@ -66,7 +66,7 @@ public class SaleService implements ISaleService {
 
         return  repository.findByUser_Id(userId)
                 .stream()
-                .map(sale -> saleMapper.toDetail(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)
                 ))
@@ -80,7 +80,7 @@ public class SaleService implements ISaleService {
 
         return  repository.findByBranch_Id(branchId)
                 .stream()
-                .map(sale -> saleMapper.toDetail(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)
                 ))
@@ -96,7 +96,7 @@ public class SaleService implements ISaleService {
 
         return repository.findByCreatedAtBetween(from, to)
                 .stream()
-                .map(sale -> saleMapper.toDetail(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)))
                 .toList();
@@ -111,7 +111,7 @@ public class SaleService implements ISaleService {
 
         return repository.findByClosedAtBetween(from, to)
                 .stream()
-                .map(sale -> saleMapper.toDetail(
+                .map(sale -> saleMapper.toSummary(
                         sale,
                         discountResolver.resolve(sale)))
                 .toList();
