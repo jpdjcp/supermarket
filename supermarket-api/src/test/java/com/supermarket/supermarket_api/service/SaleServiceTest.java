@@ -1,6 +1,7 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.sale.SaleDetail;
+import com.supermarket.supermarket_api.dto.sale.SaleSummary;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
@@ -69,7 +70,8 @@ public class SaleServiceTest {
     private Product product;
     private String name;
     private Long productId;
-    private SaleDetail response;
+    private SaleDetail saleDetail;
+    private SaleSummary saleSummary;
     private AddProductRequest addRequest;
     private ItemResponse addResponse;
     private Instant instant;
@@ -79,7 +81,8 @@ public class SaleServiceTest {
     private ArgumentCaptor<Sale> saleCaptor;
     private ArgumentCaptor<SaleItem> itemCaptor;
     private int quantity;
-    private List<SaleDetail> responses;
+    private List<SaleDetail> saleDetails;
+    private List<SaleSummary> saleSummaries;
 
     @BeforeEach
     void setUp() {
@@ -95,7 +98,7 @@ public class SaleServiceTest {
         quantity = 1;
         addRequest = new AddProductRequest(productId);
         addResponse = new ItemResponse(saleId, productId, quantity, BigDecimal.valueOf(100));
-        response = new SaleDetail(
+        saleDetail = new SaleDetail(
                 1L,
                 branch.getId(),
                 user.getId(),
@@ -122,11 +125,11 @@ public class SaleServiceTest {
             when(userService.findRequiredById(userId)).thenReturn(user);
             when(saleRepository.save(any(Sale.class))).thenReturn(sale);
             when(discountResolver.resolve(any(Sale.class))).thenReturn(strategy);
-            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(saleDetail);
 
             SaleDetail result = saleService.createSale(branchId, userId);
 
-            assertThat(result).isEqualTo(response);
+            assertThat(result).isEqualTo(saleDetail);
             verify(branchService).findRequiredById(branchId);
             verify(userService).findRequiredById(userId);
             verify(saleRepository).save(saleCaptor.capture());
@@ -158,11 +161,11 @@ public class SaleServiceTest {
         void findById_shouldReturnSale() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
             when(discountResolver.resolve(sale)).thenReturn(strategy);
-            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
+            when(saleMapper.toDetail(sale, strategy)).thenReturn(saleDetail);
 
             SaleDetail result = saleService.findById(saleId);
 
-            assertThat(result).isEqualTo(response);
+            assertThat(result).isEqualTo(saleDetail);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
             verify(discountResolver).resolve(sale);
@@ -188,16 +191,16 @@ public class SaleServiceTest {
         void findByUserId_shouldFind() {
             when(saleRepository.findByUser_Id(userId)).thenReturn(List.of(sale));
             when(discountResolver.resolve(sale)).thenReturn(strategy);
-            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
+            when(saleMapper.toSummary(sale, strategy)).thenReturn(saleSummary);
 
-            List<SaleDetail> result = saleService.findByUserId(userId);
+            List<SaleSummary> result = saleService.findByUserId(userId);
 
-            assertThat(result).containsExactly(response);
+            assertThat(result).containsExactly(saleSummary);
             verify(userService).ensureExists(userId);
             verify(saleRepository).findByUser_Id(userId);
             verifyNoMoreInteractions(saleRepository);
             verify(discountResolver).resolve(sale);
-            verify(saleMapper).toDetail(sale, strategy);
+            verify(saleMapper).toSummary(sale, strategy);
         }
 
         @Test
@@ -215,15 +218,15 @@ public class SaleServiceTest {
         void findByCreatedAt_shouldReturnSalesInRange() {
             when(saleRepository.findByCreatedAtBetween(from, to)).thenReturn(List.of(sale));
             when(discountResolver.resolve(sale)).thenReturn(strategy);
-            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
+            when(saleMapper.toSummary(sale, strategy)).thenReturn(saleSummary);
 
-            responses = saleService.findByCreatedAt(from, to);
+            saleSummaries = saleService.findByCreatedAt(from, to);
 
-            assertThat(responses).containsExactly(response);
+            assertThat(saleSummaries).containsExactly(saleSummary);
             verify(saleRepository).findByCreatedAtBetween(from, to);
             verifyNoMoreInteractions(saleRepository);
             verify(discountResolver).resolve(sale);
-            verify(saleMapper).toDetail(sale, strategy);
+            verify(saleMapper).toSummary(sale, strategy);
         }
 
         @Test
@@ -231,9 +234,9 @@ public class SaleServiceTest {
             when(saleRepository.findByCreatedAtBetween(from, to))
                     .thenReturn(List.of());
 
-            responses = saleService.findByCreatedAt(from, to);
+            saleSummaries = saleService.findByCreatedAt(from, to);
 
-            assertThat(responses).isEmpty();
+            assertThat(saleSummaries).isEmpty();
             verify(saleRepository).findByCreatedAtBetween(from, to);
             verifyNoMoreInteractions(saleRepository);
             verifyNoInteractions(discountResolver);
@@ -265,15 +268,15 @@ public class SaleServiceTest {
         @Test
         void findByClosedAt_shouldFind() {
             when(saleRepository.findByClosedAtBetween(from, to)).thenReturn(List.of(sale));
-            when(saleMapper.toDetail(sale, strategy)).thenReturn(response);
+            when(saleMapper.toSummary(sale, strategy)).thenReturn(saleSummary);
             when(discountResolver.resolve(sale)).thenReturn(strategy);
 
-            responses = saleService.findByClosedAt(from, to);
+            saleSummaries = saleService.findByClosedAt(from, to);
 
-            assertThat(responses).containsExactly(response);
+            assertThat(saleSummaries).containsExactly(saleSummary);
             verify(saleRepository).findByClosedAtBetween(from, to);
             verifyNoMoreInteractions(saleRepository);
-            verify(saleMapper).toDetail(sale, strategy);
+            verify(saleMapper).toSummary(sale, strategy);
             verify(discountResolver).resolve(sale);
         }
 
@@ -282,9 +285,9 @@ public class SaleServiceTest {
             when(saleRepository.findByClosedAtBetween(from, to))
                     .thenReturn(List.of());
 
-            responses = saleService.findByClosedAt(from, to);
+            saleSummaries = saleService.findByClosedAt(from, to);
 
-            assertThat(responses).isEmpty();
+            assertThat(saleSummaries).isEmpty();
             verify(saleRepository).findByClosedAtBetween(from, to);
             verifyNoMoreInteractions(saleRepository);
             verifyNoInteractions(saleMapper);
