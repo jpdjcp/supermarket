@@ -8,7 +8,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest
+@SpringBootTest(classes = com.supermarket.supermarket_api.SupermarketApiApplication.class)
 public abstract class AbstractIntegrationTest {
 
     static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
