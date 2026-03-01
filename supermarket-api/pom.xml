@@ -37,6 +37,13 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.1.1</version>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- TEMPORAL -->
 		<dependency>
 			<groupId>com.github.docker-java</groupId>
