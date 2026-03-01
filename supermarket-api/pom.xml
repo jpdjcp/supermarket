@@ -31,6 +31,14 @@
 
 	<dependencies>
 
+		<!-- TEMPORAL -->
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java-core</artifactId>
+			<version>3.4.2</version>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- Testcontainers Core -->
 		<dependency>
 			<groupId>org.testcontainers</groupId>
