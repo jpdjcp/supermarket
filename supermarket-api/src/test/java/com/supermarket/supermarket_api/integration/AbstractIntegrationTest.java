@@ -9,7 +9,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 @SpringBootTest
 public abstract class AbstractIntegrationTest {
 
