@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = com.supermarket.supermarket_api.SupermarketApiApplication.class)
 @Transactional
 public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 
