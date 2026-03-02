@@ -1,4 +1,4 @@
-package com.supermarket.integration;
+package com.supermarket.supermarket_api.integration;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @ActiveProfiles("test")
-@SpringBootTest(classes = com.supermarket.supermarket_api.SupermarketApiApplication.class)
+@SpringBootTest
 public abstract class AbstractIntegrationTest {
 
     static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")

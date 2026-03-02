@@ -1,4 +1,4 @@
-package com.supermarket.integration;
+package com.supermarket.supermarket_api.integration;
 
 import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.repository.ProductRepository;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest(classes = com.supermarket.supermarket_api.SupermarketApiApplication.class)
+@SpringBootTest
 @Transactional
 public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 
