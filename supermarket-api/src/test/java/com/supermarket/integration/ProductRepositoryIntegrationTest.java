@@ -11,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-// import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -39,13 +38,12 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
     void shouldSaveAndRetrieveProduct() {
         product = productRepository.save(product);
 
-        assertNotNull(product.getId());
+        assertThat(product.getId()).isNotNull();
 
         found = productRepository.findById(product.getId());
-        assertTrue(found.isPresent());
-        assertEquals(found.get().getSku(), sku);
-        assertEquals(found.get().getName(), name);
-        assertEquals(found.get().getPrice(), price);
-
+        assertThat(found.isPresent()).isTrue();
+        assertThat(found.get().getSku()).isEqualTo(sku);
+        assertThat(found.get().getName()).isEqualTo(name);
+        assertThat(found.get().getPrice()).isEqualTo(price);
     }
 }
