@@ -43,6 +43,6 @@ public class BranchRepositoryIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldNotAllowNullAddress() {
         assertThatThrownBy(()-> branchRepository.save(new Branch(null)))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
