@@ -61,11 +61,7 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldNotAllowNullPrice() {
-        Product nullPricedProduct = new Product(sku, name, null);
-
-        assertThatThrownBy(()-> {
-            productRepository.save(nullPricedProduct);
-            productRepository.flush();
-        }).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(()-> new Product(sku, name, null))
+                .isInstanceOf(NullPointerException.class);
     }
 }
