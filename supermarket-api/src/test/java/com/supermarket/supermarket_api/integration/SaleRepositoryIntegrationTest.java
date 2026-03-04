@@ -2,6 +2,7 @@ package com.supermarket.supermarket_api.integration;
 
 import com.supermarket.supermarket_api.model.*;
 import com.supermarket.supermarket_api.repository.BranchRepository;
+import com.supermarket.supermarket_api.repository.ProductRepository;
 import com.supermarket.supermarket_api.repository.SaleRepository;
 import com.supermarket.supermarket_api.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,9 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private SaleRepository saleRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private BranchRepository branchRepository;
@@ -38,6 +43,10 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
     private User user;
     private String address;
     private Branch branch;
+    private String productName;
+    private String sku;
+    private BigDecimal price;
+    private Product product;
     private Sale sale;
     private Sale saved;
     private Sale found;
@@ -51,15 +60,21 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
         role = UserRole.ROLE_USER;
         user = new User(username, password, role);
         userRepository.save(user);
-        userRepository.flush();
 
         address = "Av. Evergreen 1010, Springfield";
         branch = new Branch(address);
         branchRepository.save(branch);
-        branchRepository.flush();
+
+        sku = "ABC-1234";
+        productName = "Milk";
+        price = BigDecimal.valueOf(10);
+        product = new Product(sku, productName, price);
+        productRepository.save(product);
+
+        entityManager.flush();
+        entityManager.clear();
 
         sale = new Sale(branch, user);
-
     }
 
     @Test
