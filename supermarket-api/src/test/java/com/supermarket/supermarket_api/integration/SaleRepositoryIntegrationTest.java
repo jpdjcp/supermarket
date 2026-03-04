@@ -1,0 +1,137 @@
+package com.supermarket.supermarket_api.integration;
+
+import com.supermarket.supermarket_api.model.*;
+import com.supermarket.supermarket_api.repository.BranchRepository;
+import com.supermarket.supermarket_api.repository.SaleRepository;
+import com.supermarket.supermarket_api.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+
+@SpringBootTest
+@Transactional
+public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
+
+    @Autowired
+    private SaleRepository saleRepository;
+
+    @Autowired
+    private BranchRepository branchRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
+    private String username;
+    private String password;
+    private UserRole role;
+    private User user;
+    private String address;
+    private Branch branch;
+    private Sale sale;
+    private Sale saved;
+    private Sale found;
+    private Optional<Sale> salesFound;
+    private List<Sale> results;
+
+    @BeforeEach
+    void setup() {
+        username = "John Jackson";
+        password = "sd51v5211v5s";
+        role = UserRole.ROLE_USER;
+        user = new User(username, password, role);
+        userRepository.save(user);
+        userRepository.flush();
+
+        address = "Av. Evergreen 1010, Springfield";
+        branch = new Branch(address);
+        branchRepository.save(branch);
+        branchRepository.flush();
+
+        sale = new Sale(branch, user);
+
+    }
+
+    @Test
+    void shouldSaveAndRetrieveSale() {
+        sale = saleRepository.save(sale);
+        salesFound = saleRepository.findById(sale.getId());
+
+        assertThat(salesFound).isPresent();
+        assertThat(salesFound.get().getUser().getId()).isEqualTo(user.getId());
+        assertThat(salesFound.get().getBranch().getId()).isEqualTo(branch.getId());
+        assertThat(salesFound.get().getCreatedAt()).isNotNull();
+        assertThat(salesFound.get().getClosedAt()).isNull();
+        assertThat(salesFound.get().getSaleItems()).isEmpty();
+        assertThat(salesFound.get().getStatus()).isEqualTo(SaleStatus.OPEN);
+    }
+
+    @Test
+    void shouldFindByUserId() {
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
+
+        results = saleRepository.findByUser_Id(user.getId());
+
+        assertThat(results).hasSize(1);
+        assertThat(results.getFirst().getId()).isEqualTo(saved.getId());
+    }
+
+    @Test
+    void shouldFindByBranchId() {
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
+
+        results = saleRepository.findByBranch_Id(branch.getId());
+
+        assertThat(results).hasSize(1);
+        assertThat(results.getFirst().getId()).isEqualTo(saved.getId());
+    }
+
+    @Test
+    void shouldAddProductAndSaveSale() {
+
+    }
+
+    @Test
+    void shouldRemoveProductAndSaveSale() {
+
+    }
+
+    @Test
+    void shouldPersistChangeOfQuantity() {
+
+    }
+
+    @Test
+    void shouldPersistFinishedStatus() {
+
+    }
+
+    @Test
+    void shouldPersistCancelledStatus() {
+
+    }
+
+    @Test
+    void shouldFindByCreatedAtBetween() {
+
+    }
+
+    @Test
+    void shouldFindByClosedAtBetween() {
+
+    }
+}
