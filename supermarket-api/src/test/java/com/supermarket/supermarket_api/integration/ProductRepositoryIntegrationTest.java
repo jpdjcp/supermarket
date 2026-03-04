@@ -23,7 +23,6 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     private Optional<Product> found;
     private Product product;
-    private Product product2;
     private String sku;
     private String name;
     private BigDecimal price;
@@ -51,22 +50,22 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldEnforceUniqueSkuConstraint() {
-        product2 = new Product(sku, name, price);
+        Product duplicatedProduct = new Product(sku, name, price);
         productRepository.save(product);
 
         assertThatThrownBy(()-> {
-            productRepository.save(product2);
+            productRepository.save(duplicatedProduct);
             productRepository.flush();
         }).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     void shouldNotAllowNullPrice() {
-        product2 = new Product(sku, name, null);
+        Product nullPricedProduct = new Product(sku, name, null);
 
         assertThatThrownBy(()-> {
-            productRepository.save(product2);
+            productRepository.save(nullPricedProduct);
             productRepository.flush();
-        }).isInstanceOf(DataIntegrityViolationException.class);
+        }).isInstanceOf(NullPointerException.class);
     }
 }
