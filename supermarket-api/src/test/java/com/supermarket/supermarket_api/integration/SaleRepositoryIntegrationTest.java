@@ -130,37 +130,77 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldRemoveProductAndSaveSale() {
-        sale.addProduct(product);
+        Product product1 = new Product(sku, productName, price);
+        productRepository.save(product1);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale.addProduct(product1);
         saved = saleRepository.save(sale);
         entityManager.flush();
         entityManager.clear();
 
         found = saleRepository.findById(saved.getId());
         assertThat(found).isPresent();
-        assertThat(found.get().containsProduct(product.getId())).isTrue();
+        assertThat(found.get().containsProduct(product1.getId())).isTrue();
 
-        found.get().removeProduct(product);
+        found.get().removeProduct(product1);
         entityManager.flush();
         entityManager.clear();
 
         found = saleRepository.findById(saved.getId());
         assertThat(found).isPresent();
-        assertThat(found.get().containsProduct(product.getId())).isFalse();
+        assertThat(found.get().containsProduct(product1.getId())).isFalse();
     }
 
     @Test
-    void shouldPersistChangeOfQuantity() {
-        
+    void shouldPersistIncreaseQuantity() {
+        // add product
+        // save
+        // flush and clean
+        // get Sale
+        // increase quantity
+        // flush and clean
+        // get sale
+        // check quantity
+    }
+
+    @Test
+    void shouldPersistDecreaseQuantity() {
+        // add product
+        // increase quantity
+        // save
+        // flush and clean
+        // get Sale
+        // check quantity
+        // decrease quantity
+        // flush and clean
+        // get sale
+        // check quantity
     }
 
     @Test
     void shouldPersistFinishedStatus() {
-
+        // save sale
+        // flush and clear
+        // get sale
+        // verify present and open
+        // finish sale
+        // flush and clear
+        // get sale
+        // verify present and finished
     }
 
     @Test
     void shouldPersistCancelledStatus() {
-
+        // save sale
+        // flush and clear
+        // get sale
+        // verify present and open
+        // cancel sale
+        // flush and clear
+        // get sale
+        // verify present and canceled
     }
 
     @Test
