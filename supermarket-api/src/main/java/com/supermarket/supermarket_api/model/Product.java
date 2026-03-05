@@ -63,7 +63,15 @@ public class Product {
             throw new IllegalArgumentException(message);
     }
 
-    public boolean equals(Product other) {
-        return this.sku.equals(other.getSku());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product other)) return false;
+        return sku.equals(other.sku);
+    }
+
+    @Override
+    public int hashCode() {
+        return sku.hashCode();
     }
 }
