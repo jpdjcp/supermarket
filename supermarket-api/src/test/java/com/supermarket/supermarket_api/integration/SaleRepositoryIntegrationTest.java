@@ -49,7 +49,7 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
     private Product product;
     private Sale sale;
     private Sale saved;
-    private Sale found;
+    private Optional<Sale> found;
     private Optional<Sale> salesFound;
     private List<Sale> results;
 
@@ -117,17 +117,40 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldAddProductAndSaveSale() {
+        sale.addProduct(product);
+        sale = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
 
+        found = saleRepository.findById(sale.getId());
+
+        assertThat(found).isPresent();
+        assertThat(found.get().containsProduct(product.getId())).isTrue();
     }
 
     @Test
     void shouldRemoveProductAndSaveSale() {
+        sale.addProduct(product);
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
 
+        found = saleRepository.findById(saved.getId());
+        assertThat(found).isPresent();
+        assertThat(found.get().containsProduct(product.getId())).isTrue();
+
+        found.get().removeProduct(product);
+        entityManager.flush();
+        entityManager.clear();
+
+        found = saleRepository.findById(saved.getId());
+        assertThat(found).isPresent();
+        assertThat(found.get().containsProduct(product.getId())).isFalse();
     }
 
     @Test
     void shouldPersistChangeOfQuantity() {
-
+        
     }
 
     @Test
