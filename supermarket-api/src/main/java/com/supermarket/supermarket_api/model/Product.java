@@ -63,5 +63,7 @@ public class Product {
             throw new IllegalArgumentException(message);
     }
 
-
+    public boolean equals(Product other) {
+        return this.sku.equals(other.getSku());
+    }
 }

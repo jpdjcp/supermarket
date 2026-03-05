@@ -136,7 +136,9 @@ public class Sale {
 
     public SaleItem findItem(Product product) {
         return saleItems.stream()
-                .filter(i -> i.getProduct().equals(product))
+                .filter(i ->
+                        i.getProduct()
+                                .equals(product))
                 .findFirst()
                 .orElseThrow(() -> new SaleItemNotFoundException(product.getId()));
     }
