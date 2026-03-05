@@ -130,7 +130,8 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldRemoveProductAndSaveSale() {
-        Product product1 = new Product(sku, productName, price);
+        String sku1 = "ABC-456";
+        Product product1 = new Product(sku1, productName, price);
         productRepository.save(product1);
         entityManager.flush();
         entityManager.clear();
