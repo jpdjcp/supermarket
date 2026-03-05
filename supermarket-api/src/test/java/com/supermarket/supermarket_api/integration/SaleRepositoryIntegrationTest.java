@@ -130,28 +130,22 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldRemoveProductAndSaveSale() {
-        String sku1 = "ABC-456";
-        Product product1 = new Product(sku1, productName, price);
-        productRepository.save(product1);
-        entityManager.flush();
-        entityManager.clear();
-
-        sale.addProduct(product1);
+        sale.addProduct(product);
         saved = saleRepository.save(sale);
         entityManager.flush();
         entityManager.clear();
 
         found = saleRepository.findById(saved.getId());
         assertThat(found).isPresent();
-        assertThat(found.get().containsProduct(product1.getId())).isTrue();
+        assertThat(found.get().containsProduct(product.getId())).isTrue();
 
-        found.get().removeProduct(product1);
+        found.get().removeProduct(product);
         entityManager.flush();
         entityManager.clear();
 
         found = saleRepository.findById(saved.getId());
         assertThat(found).isPresent();
-        assertThat(found.get().containsProduct(product1.getId())).isFalse();
+        assertThat(found.get().containsProduct(product.getId())).isFalse();
     }
 
     @Test
