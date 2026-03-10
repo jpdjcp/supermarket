@@ -159,4 +159,13 @@ public class Sale {
         if (!condition)
             throw new IllegalArgumentException(message);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Sale other)) return  false;
+
+        return this.user.equals(other.user) &&
+                this.createdAt.equals(other.createdAt);
+    }
 }
