@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +53,8 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
     private Optional<Sale> found;
     private Optional<Sale> salesFound;
     private List<Sale> results;
+    private Instant from;
+    private Instant to;
 
     @BeforeEach
     void setup() {
@@ -59,11 +62,11 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
         password = "sd51v5211v5s";
         role = UserRole.ROLE_USER;
         user = new User(username, password, role);
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         address = "Av. Evergreen 1010, Springfield";
         branch = new Branch(address);
-        branchRepository.save(branch);
+        Branch savedBranch = branchRepository.save(branch);
 
         sku = "ABC-1234";
         productName = "Milk";
@@ -74,7 +77,7 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
         entityManager.flush();
         entityManager.clear();
 
-        sale = new Sale(branch, user);
+        sale = new Sale(savedBranch, savedUser);
     }
 
     @Test
@@ -150,61 +153,103 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldPersistIncreaseQuantity() {
-        // add product
-        // save
-        // flush and clean
-        // get Sale
-        // increase quantity
-        // flush and clean
-        // get sale
-        // check quantity
+        int expected1 = 1;
+        int expected2 = 2;
+        sale.addProduct(product);
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.findItem(product).getQuantity()).isEqualTo(expected1);
+        sale.increaseQuantity(product);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.findItem(product).getQuantity())
+                .isEqualTo(expected2);
     }
 
     @Test
     void shouldPersistDecreaseQuantity() {
-        // add product
-        // increase quantity
-        // save
-        // flush and clean
-        // get Sale
-        // check quantity
-        // decrease quantity
-        // flush and clean
-        // get sale
-        // check quantity
+        int expected1 = 1;
+        int expected2 = 2;
+        sale.addProduct(product);
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.findItem(product).getQuantity()).isEqualTo(expected1);
+        sale.increaseQuantity(product);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.findItem(product).getQuantity()).isEqualTo(expected2);
+        sale.decreaseQuantity(product);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.findItem(product).getQuantity()).isEqualTo(expected1);
     }
 
     @Test
     void shouldPersistFinishedStatus() {
-        // save sale
-        // flush and clear
-        // get sale
-        // verify present and open
-        // finish sale
-        // flush and clear
-        // get sale
-        // verify present and finished
+        sale.finish();
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
+
+        saved = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(saved.getStatus()).isEqualTo(SaleStatus.FINISHED);
     }
 
     @Test
     void shouldPersistCancelledStatus() {
-        // save sale
-        // flush and clear
-        // get sale
-        // verify present and open
-        // cancel sale
-        // flush and clear
-        // get sale
-        // verify present and canceled
+        sale.cancel();
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.getStatus()).isEqualTo(SaleStatus.CANCELLED);
     }
 
     @Test
     void shouldFindByCreatedAtBetween() {
+        from = Instant.now().minusSeconds(10);
+        to = Instant.now().plusSeconds(10);
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
 
+        results  = saleRepository.findByCreatedAtBetween(from, to);
+        assertThat(results.getFirst().getId()).isEqualTo(saved.getId());
     }
 
     @Test
     void shouldFindByClosedAtBetween() {
+        from = Instant.now().minusSeconds(10);
+        to = Instant.now().plusSeconds(10);
+        saved = saleRepository.save(sale);
+        entityManager.flush();
+        entityManager.clear();
 
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(sale.getStatus()).isEqualTo(SaleStatus.OPEN);
+        sale.finish();
+        entityManager.flush();
+        entityManager.clear();
+
+        sale = saleRepository.findById(saved.getId()).orElseThrow();
+        results = saleRepository.findByClosedAtBetween(from, to);
+
+        assertThat(results).hasSize(1);
+        assertThat(results.getFirst().getStatus()).isEqualTo(SaleStatus.FINISHED);
+        assertThat(results.getFirst().getId()).isEqualTo(sale.getId());
+        assertThat(results.getFirst().getClosedAt()).isBetween(from, to);
     }
 }
