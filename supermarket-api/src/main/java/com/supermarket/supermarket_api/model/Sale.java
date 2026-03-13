@@ -136,7 +136,9 @@ public class Sale {
 
     public SaleItem findItem(Product product) {
         return saleItems.stream()
-                .filter(i -> i.getProduct().equals(product))
+                .filter(i ->
+                        i.getProduct()
+                                .equals(product))
                 .findFirst()
                 .orElseThrow(() -> new SaleItemNotFoundException(product.getId()));
     }
@@ -156,5 +158,14 @@ public class Sale {
     private void require(boolean condition, String message) {
         if (!condition)
             throw new IllegalArgumentException(message);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Sale other)) return  false;
+
+        return this.user.equals(other.user) &&
+                this.createdAt.equals(other.createdAt);
     }
 }

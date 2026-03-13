@@ -1,14 +1,16 @@
-package com.supermarket.integration;
+package com.supermarket.supermarket_api.integration;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest(classes = com.supermarket.supermarket_api.SupermarketApiApplication.class)
+@ActiveProfiles("integration")
+@SpringBootTest
 public abstract class AbstractIntegrationTest {
 
     static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")

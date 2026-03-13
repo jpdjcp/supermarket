@@ -93,4 +93,13 @@ public class User {
     private static void require(boolean condition, String message) {
         if (!condition) throw new IllegalArgumentException(message);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User other)) return false;
+
+        return this.username.equals(other.username) &&
+                this.createdAt.equals(other.createdAt);
+    }
 }
