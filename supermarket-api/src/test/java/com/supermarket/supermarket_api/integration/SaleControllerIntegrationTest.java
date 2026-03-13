@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest.*;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URI;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,7 +32,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class SaleControllerIntegrationTest {
+public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
 
     private final String BASE_URL = "/api/v1/sales";
 
