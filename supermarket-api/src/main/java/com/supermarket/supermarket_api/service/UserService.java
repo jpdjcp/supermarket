@@ -8,6 +8,7 @@ import com.supermarket.supermarket_api.mapper.UserMapper;
 import com.supermarket.supermarket_api.model.User;
 import com.supermarket.supermarket_api.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class UserService implements IUserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -28,7 +30,13 @@ public class UserService implements IUserService {
         if (repository.existsByUsername(request.username()))
             throw new IllegalArgumentException("Username already exists");
 
-        User user = new User(request.username(), request.password(), request.role());
+        String encodedPwd = passwordEncoder.encode(request.password());
+
+        User user = new User(
+                request.username(),
+                encodedPwd,
+                request.role());
+
         User saved = repository.save(user);
         return mapper.toResponse(saved);
     }
@@ -90,7 +98,9 @@ public class UserService implements IUserService {
 
         User user = repository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(userId));
-        user.changePassword(request.password());
+
+        String encodedPwd = passwordEncoder.encode(request.password());
+        user.changePassword(encodedPwd);
     }
 
     @Override
