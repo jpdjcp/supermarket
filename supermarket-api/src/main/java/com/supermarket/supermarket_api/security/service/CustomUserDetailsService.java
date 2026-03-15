@@ -2,7 +2,7 @@ package com.supermarket.supermarket_api.security.service;
 
 import com.supermarket.supermarket_api.model.User;
 import com.supermarket.supermarket_api.repository.UserRepository;
-import com.supermarket.supermarket_api.security.model.SecurityUser;
+import com.supermarket.supermarket_api.security.model.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +21,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(()->
                         new UsernameNotFoundException("User not found with username: " + username));
 
-        return new SecurityUser(user);
+        return new CustomUserDetails(user);
     }
 }
