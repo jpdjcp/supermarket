@@ -13,7 +13,7 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "a-very-long-secret-key-for-jwt-signing";
+    private static final String SECRET_KEY = "vxc165x4sdfx23cc1v6sfd23x1v3c18s61cv1x3v18sr13cv1x3f8g41vx35c186s4fgx1v3x";
     private static final Long EXPIRATION_TIME = (long) (1000 * 60 * 60);
 
     public String generateToken(UserDetails userDetails) {
