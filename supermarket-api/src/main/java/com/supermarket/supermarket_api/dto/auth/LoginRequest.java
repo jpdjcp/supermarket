@@ -1,4 +1,13 @@
 package com.supermarket.supermarket_api.dto.auth;
 
-public record LoginRequest() {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequest(
+        
+        @NotBlank
+        String username,
+
+        @NotBlank
+        String password
+) {
 }
