@@ -14,14 +14,27 @@ import java.util.Date;
 public class JwtService {
 
     private static final String SECRET_KEY = "a-very-long-secret-key-for-jwt-signing";
+    private static final Long EXPIRATION_TIME = (long) (1000 * 60 * 60);
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername())
+                && !isTokenNotExpired(token);
+    }
+
+    private boolean isTokenNotExpired(String token) {
+        return extractAllClaims(token)
+                .getExpiration()
+                .before(new Date());
     }
 
     private SecretKey getSigningKey() {
