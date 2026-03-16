@@ -57,7 +57,7 @@ public class UserServiceTest {
         String newPassword = "newPassword";
         UserRole role = UserRole.ROLE_USER;
 
-        user = new User(username, password, role);
+        user = new User(username, password);
         request = new SignupRequest(username, password, role);
         pwdRequest = new ChangePasswordRequest(newPassword);
         response = new UserResponse(userId, username, role, true, Instant.now(), Instant.now());

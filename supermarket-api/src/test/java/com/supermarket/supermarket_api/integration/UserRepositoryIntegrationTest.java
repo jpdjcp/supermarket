@@ -32,7 +32,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         username = "John Jackson";
         password = "h1cs65dd54";
         role = UserRole.ROLE_USER;
-        user = new User(username, password, role);
+        user = new User(username, password);
     }
 
     @Test

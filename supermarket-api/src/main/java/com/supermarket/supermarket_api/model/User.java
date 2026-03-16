@@ -41,11 +41,10 @@ public class User {
     private boolean enabled = true;
     private Instant lastLogin;
 
-    public User(String username, String password, UserRole role) {
+    public User(String username, String password) {
         onCreate(username, password, role);
         this.username = username;
         this.password = password;
-        this.role = role;
     }
 
     public void changePassword(String password) {

@@ -25,7 +25,7 @@ public class UserTest {
 
     @Test
     void validUser_shouldBeCreated() {
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         assertThat(user.getId()).isNull();
         assertThat(user.getUsername()).isEqualTo(username);
@@ -38,13 +38,13 @@ public class UserTest {
     void blankUsername_shouldThrow() {
         String blankUserName = "";
 
-        assertThatThrownBy(()-> new User(blankUserName, password, role))
+        assertThatThrownBy(()-> new User(blankUserName, password))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void nullUsername_shouldThrow() {
-        assertThatThrownBy(()-> new User(null, password, role))
+        assertThatThrownBy(()-> new User(null, password))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -52,7 +52,7 @@ public class UserTest {
     void shortUsername_shouldThrow() {
         String shortUsername = "J";
 
-        assertThatThrownBy(()-> new User(shortUsername, password, role))
+        assertThatThrownBy(()-> new User(shortUsername, password))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -60,13 +60,13 @@ public class UserTest {
     void blankPassword_shouldThrow() {
         String blankPassword = "";
 
-        assertThatThrownBy(()-> new User(username, blankPassword, role))
+        assertThatThrownBy(()-> new User(username, blankPassword))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void nullPassword_shouldThrow() {
-        assertThatThrownBy(()-> new User(username, null, role))
+        assertThatThrownBy(()-> new User(username, null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -74,13 +74,13 @@ public class UserTest {
     void shortPassword_shouldThrow() {
         String shortPassword = "abcd123";
 
-        assertThatThrownBy(()-> new User(username, shortPassword, role))
+        assertThatThrownBy(()-> new User(username, shortPassword))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void nullRole_shouldThrow() {
-        assertThatThrownBy(()-> new User(username, password, null))
+        assertThatThrownBy(()-> new User(username, password))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -89,7 +89,7 @@ public class UserTest {
     @Test
     void changePassword_shouldChangePassword() {
         String newPassword = "newPassword";
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         user.changePassword(newPassword);
 
@@ -99,7 +99,7 @@ public class UserTest {
     @Test
     void changePassword_withShortPassword_shouldThrow() {
         String shortPassword = "abcd123";
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         assertThatThrownBy(()-> user.changePassword(shortPassword))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -108,7 +108,7 @@ public class UserTest {
     @Test
     void changePassword_withBlankPassword_shouldThrow() {
         String blankPassword = "";
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         assertThatThrownBy(()-> user.changePassword(blankPassword))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -116,7 +116,7 @@ public class UserTest {
 
     @Test
     void changePassword_withNullPassword_shouldThrow() {
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         assertThatThrownBy(()-> user.changePassword(null))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -126,7 +126,7 @@ public class UserTest {
 
     @Test
     void disable_shouldDisableUser() {
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         user.disable();
 
@@ -134,7 +134,7 @@ public class UserTest {
     }
     @Test
     void enable_shouldEnableUser() {
-        user = new User(username, password, role);
+        user = new User(username, password);
         user.disable();
 
         user.enable();
@@ -144,7 +144,7 @@ public class UserTest {
 
     @Test
     void setLastLogin_shouldSetLastLogin() {
-        user = new User(username, password, role);
+        user = new User(username, password);
         Instant lastLogin = Instant.now();
         user.setLastLogin(lastLogin);
 
@@ -153,7 +153,7 @@ public class UserTest {
 
     @Test
     void setLastLogin_withNullInstant_shouldThrow() {
-        user = new User(username, password, role);
+        user = new User(username, password);
 
         assertThatThrownBy(()-> user.setLastLogin(null))
                 .isInstanceOf(IllegalArgumentException.class);

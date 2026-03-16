@@ -16,7 +16,7 @@ public class SaleTest {
     void setUp() {
         final String SKU  = "ABCD-1234";
         branch = new Branch("Branch Address");
-        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        user = new User("John", "Abcd-1234");
         product = new Product(SKU, "Product name", new BigDecimal("1000"));
         sale = new Sale(branch, user);
     }
