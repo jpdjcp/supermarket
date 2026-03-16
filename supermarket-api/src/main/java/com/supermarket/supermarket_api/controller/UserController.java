@@ -19,13 +19,6 @@ public class UserController {
 
     private final UserService service;
 
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        UserResponse user = service.createUser(request);
-        URI location = URI.create("/api/v1/users/" + user.id());
-        return ResponseEntity.created(location).body(user);
-    }
-
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> findById(@PathVariable @Positive Long userId) {
         return ResponseEntity.ok(service.findById(userId));
