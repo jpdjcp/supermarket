@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.user.SignupRequest;
+import com.supermarket.supermarket_api.dto.auth.SignupRequest;
 import com.supermarket.supermarket_api.dto.user.ChangePasswordRequest;
 import com.supermarket.supermarket_api.dto.user.UserResponse;
 import com.supermarket.supermarket_api.model.User;

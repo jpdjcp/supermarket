@@ -1,8 +1,6 @@
-package com.supermarket.supermarket_api.dto.user;
+package com.supermarket.supermarket_api.dto.auth;
 
-import com.supermarket.supermarket_api.model.UserRole;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record SignupRequest(
