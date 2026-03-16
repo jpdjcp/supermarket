@@ -42,7 +42,7 @@ public class User {
     private Instant lastLogin;
 
     public User(String username, String password) {
-        onCreate(username, password, role);
+        onCreate(username, password);
         this.username = username;
         this.password = password;
     }
@@ -70,10 +70,9 @@ public class User {
         this.createdAt = Instant.now();
     }
 
-    private void onCreate(String username, String password, UserRole role) {
+    private void onCreate(String username, String password) {
         validateUser(username);
         validatePassword(password);
-        require(role != null, "Role cannot be null");
     }
 
     /* Validations */
