@@ -6,6 +6,7 @@ import com.supermarket.supermarket_api.dto.user.UserResponse;
 import com.supermarket.supermarket_api.exception.UserNotFoundException;
 import com.supermarket.supermarket_api.mapper.UserMapper;
 import com.supermarket.supermarket_api.model.User;
+import com.supermarket.supermarket_api.model.UserRole;
 import com.supermarket.supermarket_api.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,7 @@ public class UserService implements IUserService {
                 request.username(),
                 encodedPwd
         );
+        user.setRole(UserRole.ROLE_USER);
 
         User saved = repository.save(user);
         return mapper.toResponse(saved);
