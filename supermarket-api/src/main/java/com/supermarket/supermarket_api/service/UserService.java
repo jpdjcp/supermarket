@@ -1,6 +1,6 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.user.CreateUserRequest;
+import com.supermarket.supermarket_api.dto.user.SignupRequest;
 import com.supermarket.supermarket_api.dto.user.ChangePasswordRequest;
 import com.supermarket.supermarket_api.dto.user.UserResponse;
 import com.supermarket.supermarket_api.exception.UserNotFoundException;
@@ -25,7 +25,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public UserResponse createUser(CreateUserRequest request) {
+    public UserResponse createUser(SignupRequest request) {
         require(request != null, "Create User Request cannot be null");
         if (repository.existsByUsername(request.username()))
             throw new IllegalArgumentException("Username already exists");

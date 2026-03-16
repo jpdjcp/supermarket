@@ -1,7 +1,6 @@
 package com.supermarket.supermarket_api.controller;
 
 import com.supermarket.supermarket_api.dto.user.ChangePasswordRequest;
-import com.supermarket.supermarket_api.dto.user.CreateUserRequest;
 import com.supermarket.supermarket_api.dto.user.UserResponse;
 import com.supermarket.supermarket_api.service.UserService;
 import jakarta.validation.Valid;
@@ -9,8 +8,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @AllArgsConstructor
 @RestController

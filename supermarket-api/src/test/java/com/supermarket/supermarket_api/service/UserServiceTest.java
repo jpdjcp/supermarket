@@ -1,7 +1,7 @@
 package com.supermarket.supermarket_api.service;
 
 import com.supermarket.supermarket_api.dto.user.ChangePasswordRequest;
-import com.supermarket.supermarket_api.dto.user.CreateUserRequest;
+import com.supermarket.supermarket_api.dto.user.SignupRequest;
 import com.supermarket.supermarket_api.dto.user.UserResponse;
 import com.supermarket.supermarket_api.exception.UserNotFoundException;
 import com.supermarket.supermarket_api.mapper.UserMapper;
@@ -41,7 +41,7 @@ public class UserServiceTest {
     ArgumentCaptor<User> userCaptor;
 
     private User user;
-    private CreateUserRequest request;
+    private SignupRequest request;
     private ChangePasswordRequest pwdRequest;
     private UserResponse response;
     private Long userId;
@@ -58,7 +58,7 @@ public class UserServiceTest {
         UserRole role = UserRole.ROLE_USER;
 
         user = new User(username, password, role);
-        request = new CreateUserRequest(username, password, role);
+        request = new SignupRequest(username, password, role);
         pwdRequest = new ChangePasswordRequest(newPassword);
         response = new UserResponse(userId, username, role, true, Instant.now(), Instant.now());
 
