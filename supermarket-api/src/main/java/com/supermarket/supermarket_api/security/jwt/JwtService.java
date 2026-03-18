@@ -17,7 +17,7 @@ import java.util.Map;
 public class JwtService {
 
     @Value("${security.jwt.secret}")
-    private static String JWT_SECRET;
+    private String JWT_SECRET;
     private static final Long EXPIRATION_TIME = (long) (1000 * 60 * 60);
 
     public String generateToken(UserDetails userDetails) {
