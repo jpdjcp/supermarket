@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,8 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "vxc165x4sdfx23cc1v6sfd23x1v3c18s61cv1x3v18sr13cv1x3f8g41vx35c186s4fgx1v3x";
+    @Value("${security.jwt.secret}")
+    private static String JWT_SECRET;
     private static final Long EXPIRATION_TIME = (long) (1000 * 60 * 60);
 
     public String generateToken(UserDetails userDetails) {
@@ -43,7 +45,7 @@ public class JwtService {
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
