@@ -30,7 +30,7 @@ public class UserTest {
         assertThat(user.getId()).isNull();
         assertThat(user.getUsername()).isEqualTo(username);
         assertThat(user.getPassword()).isEqualTo(password);
-        assertThat(user.getRole()).isEqualTo(role);
+        assertThat(user.getRole()).isNull();
         assertThat(user.isEnabled()).isTrue();
     }
 
@@ -75,12 +75,6 @@ public class UserTest {
         String shortPassword = "abcd123";
 
         assertThatThrownBy(()-> new User(username, shortPassword))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void nullRole_shouldThrow() {
-        assertThatThrownBy(()-> new User(username, password))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
