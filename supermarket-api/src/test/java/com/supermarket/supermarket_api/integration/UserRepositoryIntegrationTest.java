@@ -33,6 +33,7 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         password = "h1cs65dd54";
         role = UserRole.ROLE_USER;
         user = new User(username, password);
+        user.setRole(role);
     }
 
     @Test
