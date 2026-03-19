@@ -8,6 +8,7 @@ import com.supermarket.supermarket_api.mapper.UserMapper;
 import com.supermarket.supermarket_api.model.User;
 import com.supermarket.supermarket_api.model.UserRole;
 import com.supermarket.supermarket_api.repository.UserRepository;
+import com.supermarket.supermarket_api.security.util.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class UserService implements IUserService {
     private final UserRepository repository;
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityUtils securityUtils;
 
     @Override
     @Transactional
@@ -60,6 +62,13 @@ public class UserService implements IUserService {
 
         return repository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(userId));
+    }
+
+    @Override
+    public User getCurrentUser() {
+        String username = securityUtils.getCurrentUsername();
+        return repository.findByUsername(username)
+                .orElseThrow(()-> new UserNotFoundException(username));
     }
 
     @Override

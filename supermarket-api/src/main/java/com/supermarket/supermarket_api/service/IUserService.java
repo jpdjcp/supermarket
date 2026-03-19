@@ -12,6 +12,7 @@ public interface IUserService {
     UserResponse createUser(SignupRequest request);
     UserResponse findById(Long userId);
     User findRequiredById(Long userId);
+    User getCurrentUser();
     List<UserResponse> findInactiveSince(Instant threshold);
     List<UserResponse> findByLastLoginBetween(Instant from, Instant to);
     void updateLastLogin(Long userId);
