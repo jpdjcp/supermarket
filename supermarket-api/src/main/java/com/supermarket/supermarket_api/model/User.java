@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 
@@ -29,6 +30,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
@@ -39,11 +41,10 @@ public class User {
     private boolean enabled = true;
     private Instant lastLogin;
 
-    public User(String username, String password, UserRole role) {
-        onCreate(username, password, role);
+    public User(String username, String password) {
+        onCreate(username, password);
         this.username = username;
         this.password = password;
-        this.role = role;
     }
 
     public void changePassword(String password) {
@@ -69,10 +70,9 @@ public class User {
         this.createdAt = Instant.now();
     }
 
-    private void onCreate(String username, String password, UserRole role) {
+    private void onCreate(String username, String password) {
         validateUser(username);
         validatePassword(password);
-        require(role != null, "Role cannot be null");
     }
 
     /* Validations */

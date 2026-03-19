@@ -88,7 +88,7 @@ public class SaleServiceTest {
     void setUp() {
         branchId = 1L;
         branch = new Branch("Branch address");
-        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        user = new User("John", "Abcd-1234");
         userId = 99L;
         sale = new Sale(branch, user);
         saleId = 33L;

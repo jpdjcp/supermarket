@@ -61,7 +61,8 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
         username = "John Jackson";
         password = "sd51v5211v5s";
         role = UserRole.ROLE_USER;
-        user = new User(username, password, role);
+        user = new User(username, password);
+        user.setRole(role);
         User savedUser = userRepository.save(user);
 
         address = "Av. Evergreen 1010, Springfield";

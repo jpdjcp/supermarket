@@ -6,6 +6,7 @@ import com.supermarket.supermarket_api.service.BranchService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -22,6 +23,7 @@ public class BranchController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BranchResponse> create(@Valid @RequestBody BranchCreateRequest dto) {
         BranchResponse result = service.create(dto);
         return ResponseEntity.created(
@@ -40,6 +42,7 @@ public class BranchController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@Positive @PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

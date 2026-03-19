@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.*;
 @Transactional
 public class BranchRepositoryIntegrationTest extends AbstractIntegrationTest {
 
+
     @Autowired
     private BranchRepository branchRepository;
 

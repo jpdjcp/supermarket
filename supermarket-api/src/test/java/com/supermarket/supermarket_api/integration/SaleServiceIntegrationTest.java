@@ -56,7 +56,9 @@ public class SaleServiceIntegrationTest extends AbstractIntegrationTest {
         String username = "John Jackson";
         String password = "vx1c25fHGF21";
         UserRole role = UserRole.ROLE_USER;
-        user = userRepository.save(new User(username, password, role));
+        user = new User(username, password);
+        user.setRole(role);
+        user = userRepository.save(user);
     }
 
     @Test
