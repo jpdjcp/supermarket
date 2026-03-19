@@ -40,7 +40,7 @@ form.addEventListener("submit", async (e) => {
 
     // Save JWT
     localStorage.setItem("token", data.token);
-
+    console.log(data.token);
     // Redirect to main app
     window.location.href = "/index.html";
 
