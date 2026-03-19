@@ -1,7 +1,6 @@
 const form = document.getElementById("auth-form");
 const toggleText = document.getElementById("toggle-text");
 const title = document.getElementById("form-title");
-const usernameGroup = document.getElementById("username-group");
 const errorDiv = document.getElementById("error");
 
 let isLogin = true;
@@ -10,7 +9,6 @@ toggleText.addEventListener("click", () => {
   isLogin = !isLogin;
 
   title.textContent = isLogin ? "Login" : "Sign Up";
-  usernameGroup.classList.toggle("d-none");
 
   toggleText.textContent = isLogin
     ? "Don't have an account? Sign up"
@@ -20,33 +18,30 @@ toggleText.addEventListener("click", () => {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
   const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  errorDiv.textContent = "";
 
   try {
     const url = isLogin
-      ? "/auth/login"
-      : "/auth/signup";
-
-    const body = isLogin
-      ? { email, password }
-      : { username, email, password };
+      ? "http://localhost:8080/api/v1/auth/login"
+      : "http://localhost:8080/api/v1/auth/signup";
 
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ username, password })
     });
 
-    if (!res.ok) throw new Error("Auth failed");
+    if (!res.ok) throw new Error();
 
     const data = await res.json();
 
     // Save JWT
     localStorage.setItem("token", data.token);
 
-    // Redirect
+    // Redirect to main app
     window.location.href = "/index.html";
 
   } catch (err) {
