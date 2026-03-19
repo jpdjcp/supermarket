@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://supermarket-api-jpdjcp.fly.dev/api/v1';
+import { API_BASE_URL } from "./api.js";
 
 export async function fetchProducts() {
   const res = await fetch(`${API_BASE_URL}/products`);
