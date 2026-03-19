@@ -65,6 +65,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getCurrentUser() {
         String username = securityUtils.getCurrentUsername();
         return repository.findByUsername(username)
