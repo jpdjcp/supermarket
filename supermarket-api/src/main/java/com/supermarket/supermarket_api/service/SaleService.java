@@ -148,8 +148,7 @@ public class SaleService implements ISaleService {
         require(saleId != null, "Sale ID cannot be null");
 
         Sale sale = getSaleOwnedByCurrentUser(saleId);
-
-        validateSaleOpen(sale, "Sale must be OPEN to add a product");
+        sale.ensureOpen();
 
         Product product = productService.findRequiredById(request.productId());
         SaleItem item = sale.addProduct(product);
@@ -164,8 +163,8 @@ public class SaleService implements ISaleService {
         require(productId != null, "Product ID cannot be null");
 
         Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
-        validateSaleOpen(sale, "Sale must be OPEN to remove a product");
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
     }
@@ -177,8 +176,7 @@ public class SaleService implements ISaleService {
         require(productId != null, "Product ID cannot be null");
 
         Sale sale = getSaleOwnedByCurrentUser(saleId);
-
-        validateSaleOpen(sale,"Sale must be OPEN to increase quantity");
+        sale.ensureOpen();
 
         Product product = productService.findRequiredById(productId);
         sale.increaseQuantity(product);
@@ -191,8 +189,8 @@ public class SaleService implements ISaleService {
         require(productId != null, "Product ID cannot be null");
 
         Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
-        validateSaleOpen(sale, "Sale must be OPEN to decrease quantity");
         Product product = productService.findRequiredById(productId);
         sale.decreaseQuantity(product);
     }
@@ -201,8 +199,8 @@ public class SaleService implements ISaleService {
     @Transactional
     public SaleDetail finishSale(Long saleId) {
         Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
-        validateSaleOpen(sale, "Sale must be OPEN to finish it");
         sale.finish();
         return saleMapper.toDetail(
                 sale,
@@ -214,14 +212,10 @@ public class SaleService implements ISaleService {
     @Transactional
     public SaleDetail cancelSale(Long saleId) {
         Sale sale = getSaleOwnedByCurrentUser(saleId);
-
         sale.ensureOpen();
 
         sale.cancel();
-        return saleMapper.toDetail(
-                sale,
-                discountResolver.resolve(sale)
-        );
+        return saleMapper.toDetail(sale, discountResolver.resolve(sale));
     }
 
     private void require(boolean condition, String message) {
