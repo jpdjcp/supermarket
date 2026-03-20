@@ -34,13 +34,13 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleDetail createSale(Long branchId, Long userId) {
+    public SaleDetail createSale(Long branchId) {
         require(branchId != null, "Branch ID cannot be null");
-        require(userId != null, "User ID cannot be null");
 
+        User currentUser = userService.getCurrentUser();
         Branch branch = branchService.findRequiredById(branchId);
-        User user = userService.findRequiredById(userId);
-        Sale sale = new Sale(branch, user);
+
+        Sale sale = new Sale(branch, currentUser);
         Sale saved = repository.save(sale);
         DiscountStrategy strategy = discountResolver.resolve(saved);
         return saleMapper.toDetail(saved, strategy);
