@@ -14,11 +14,13 @@ import com.supermarket.supermarket_api.repository.SaleRepository;
 import com.supermarket.supermarket_api.exception.SaleNotOpenException;
 import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -242,5 +244,18 @@ public class SaleService implements ISaleService {
     private void require(boolean condition, String message) {
         if (!condition)
             throw new IllegalArgumentException(message);
+    }
+
+    @Transactional(readOnly = true)
+    private Sale getSaleOwnedByCurrentUser(Long saleId) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(()-> new SaleNotFoundException(saleId));
+
+        User currentUser = userService.getCurrentUser();
+
+        if (!Objects.equals(sale.getUser().getId(), currentUser.getId()))
+            throw new AccessDeniedException("Forbidden: this sale doesn't belongs to this user");
+
+        return sale;
     }
 }
