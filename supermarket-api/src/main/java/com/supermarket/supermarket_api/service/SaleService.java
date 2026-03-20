@@ -215,19 +215,13 @@ public class SaleService implements ISaleService {
     public SaleDetail cancelSale(Long saleId) {
         Sale sale = getSaleOwnedByCurrentUser(saleId);
 
-        validateSaleOpen(sale, "Sale must be OPEN to cancel it");
+        sale.ensureOpen();
 
         sale.cancel();
         return saleMapper.toDetail(
                 sale,
                 discountResolver.resolve(sale)
         );
-    }
-
-    private static void validateSaleOpen(Sale sale, String message) {
-        if (sale.getStatus() != SaleStatus.OPEN) {
-            throw new SaleNotOpenException(message);
-        }
     }
 
     private void require(boolean condition, String message) {
