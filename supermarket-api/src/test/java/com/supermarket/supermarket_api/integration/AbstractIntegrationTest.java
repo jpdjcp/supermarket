@@ -31,8 +31,7 @@ public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected ObjectMapper objectMapper;
-
-    @Container
+    
     static final MySQLContainer<?> mysql;
 
     static {
