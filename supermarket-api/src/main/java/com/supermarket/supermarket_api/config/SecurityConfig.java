@@ -3,6 +3,7 @@ package com.supermarket.supermarket_api.config;
 import com.supermarket.supermarket_api.security.jwt.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
 
+    @Autowired
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
