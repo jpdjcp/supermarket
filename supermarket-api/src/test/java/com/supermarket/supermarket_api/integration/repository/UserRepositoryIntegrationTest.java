@@ -16,10 +16,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-//@SpringBootTest
 @Transactional
 public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
-/*
+
     @Autowired
     private UserRepository userRepository;
 
@@ -63,5 +62,5 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
                 .findInactiveSince(Instant.now());
 
         assertThat(inactives).hasSize(1);
-    }*/
+    }
 }
