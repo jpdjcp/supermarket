@@ -9,21 +9,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@Testcontainers
-@ActiveProfiles("integration")
+@ActiveProfiles("dev")
 @SpringBootTest
-public abstract class AbstractIntegrationTest {
+@AutoConfigureMockMvc
+public abstract class AbstractLocalIntegrationTest {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -31,40 +26,28 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("test_db")
-            .withUsername("test")
-            .withPassword("test");
+    protected String obtainAccessToken(String username, String password) throws Exception {
 
-    @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysql::getJdbcUrl);
-        registry.add("spring.datasource.username", mysql::getUsername);
-        registry.add("spring.datasource.password", mysql::getPassword);
-        registry.add("spring.datasource.driver-class-name", mysql::getDriverClassName);
-    }
-
-    protected String obtainAccessToken(String username, String password)
-            throws Exception {
-        // signup
         SignupRequest signupRequest = new SignupRequest(username, password);
+
         mockMvc.perform(post("/api/v1/auth/signup")
+
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signupRequest)))
                 .andExpect(status().isCreated());
 
-        // login
         LoginRequest loginRequest = new LoginRequest(username, password);
+
         MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // extract token
         AuthResponse response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
-                AuthResponse.class);
+                AuthResponse.class
+        );
 
         return response.token();
     }

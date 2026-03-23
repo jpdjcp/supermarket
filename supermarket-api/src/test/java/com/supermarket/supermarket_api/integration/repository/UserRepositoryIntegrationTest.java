@@ -1,5 +1,6 @@
-package com.supermarket.supermarket_api.integration;
+package com.supermarket.supermarket_api.integration.repository;
 
+import com.supermarket.supermarket_api.integration.AbstractIntegrationTest;
 import com.supermarket.supermarket_api.model.User;
 import com.supermarket.supermarket_api.model.UserRole;
 import com.supermarket.supermarket_api.repository.UserRepository;

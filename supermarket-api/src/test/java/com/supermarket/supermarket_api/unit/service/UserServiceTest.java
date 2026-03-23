@@ -1,4 +1,4 @@
-package com.supermarket.supermarket_api.service;
+package com.supermarket.supermarket_api.unit.service;
 
 import com.supermarket.supermarket_api.dto.user.ChangePasswordRequest;
 import com.supermarket.supermarket_api.dto.auth.SignupRequest;
@@ -8,6 +8,7 @@ import com.supermarket.supermarket_api.mapper.UserMapper;
 import com.supermarket.supermarket_api.model.User;
 import com.supermarket.supermarket_api.model.UserRole;
 import com.supermarket.supermarket_api.repository.UserRepository;
+import com.supermarket.supermarket_api.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

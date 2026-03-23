@@ -6,7 +6,7 @@ export async function createSale(branchId) {
     headers: getAuthHeaders(),
     body: JSON.stringify({ branchId })
   });
-  //handleUnauthorized(res);
+  handleUnauthorized(res);
   return res.json();
 }
 

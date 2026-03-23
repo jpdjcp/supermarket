@@ -1,5 +1,6 @@
-package com.supermarket.supermarket_api.integration;
+package com.supermarket.supermarket_api.integration.repository;
 
+import com.supermarket.supermarket_api.integration.AbstractIntegrationTest;
 import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,6 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
 
-    private Optional<Product> found;
     private Product product;
     private String sku;
     private String name;
@@ -41,7 +41,7 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 
         assertThat(product.getId()).isNotNull();
 
-        found = productRepository.findById(product.getId());
+        Optional<Product> found = productRepository.findById(product.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getSku()).isEqualTo(sku);
         assertThat(found.get().getName()).isEqualTo(name);

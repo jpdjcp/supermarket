@@ -1,5 +1,6 @@
-package com.supermarket.supermarket_api.model;
+package com.supermarket.supermarket_api.unit.model;
 
+import com.supermarket.supermarket_api.model.Branch;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;

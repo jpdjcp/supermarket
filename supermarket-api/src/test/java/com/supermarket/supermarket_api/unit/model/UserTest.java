@@ -1,5 +1,7 @@
-package com.supermarket.supermarket_api.model;
+package com.supermarket.supermarket_api.unit.model;
 
+import com.supermarket.supermarket_api.model.User;
+import com.supermarket.supermarket_api.model.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

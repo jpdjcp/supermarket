@@ -1,6 +1,7 @@
-package com.supermarket.supermarket_api.model;
+package com.supermarket.supermarket_api.unit.model;
 
 import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
+import com.supermarket.supermarket_api.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;

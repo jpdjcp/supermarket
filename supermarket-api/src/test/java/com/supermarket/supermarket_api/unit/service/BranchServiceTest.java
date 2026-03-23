@@ -1,7 +1,8 @@
-package com.supermarket.supermarket_api.service;
+package com.supermarket.supermarket_api.unit.service;
 
 import com.supermarket.supermarket_api.exception.BranchNotFoundException;
 import com.supermarket.supermarket_api.repository.BranchRepository;
+import com.supermarket.supermarket_api.service.BranchService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

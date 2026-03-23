@@ -1,4 +1,4 @@
-package com.supermarket.supermarket_api.service;
+package com.supermarket.supermarket_api.unit.service;
 
 import com.supermarket.supermarket_api.dto.product.ProductCreateRequest;
 import com.supermarket.supermarket_api.dto.product.ProductResponse;
@@ -7,6 +7,7 @@ import com.supermarket.supermarket_api.exception.ProductNotFoundException;
 import com.supermarket.supermarket_api.mapper.ProductMapper;
 import com.supermarket.supermarket_api.model.Product;
 import com.supermarket.supermarket_api.repository.ProductRepository;
+import com.supermarket.supermarket_api.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
