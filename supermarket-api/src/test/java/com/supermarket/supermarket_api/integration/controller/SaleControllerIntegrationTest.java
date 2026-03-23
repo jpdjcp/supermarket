@@ -87,7 +87,7 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         Sale saved = saleRepository.findById(response.id()).orElseThrow();
         assertThat(saved.getUser().getId()).isEqualTo(user.getId());
     }
-/*
+
     @Test
     void shouldGetSaleById() throws Exception {
         sale = saleRepository.save(new Sale(branch, user));
@@ -252,5 +252,5 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         assertThat(response.createdAt()).isNotNull();
         assertThat(response.closedAt()).isNotNull();
         assertThat(response.status()).isEqualTo(SaleStatus.CANCELLED);
-    }*/
+    }
 }
