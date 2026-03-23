@@ -18,5 +18,6 @@ spring:
   flyway:
     enabled: false
 
-jwt:
-  secret: test-secret-key-12345678901234567890
+security:
+  jwt:
+    secret: test-secret-key-12345678901234567890
