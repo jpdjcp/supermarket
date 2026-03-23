@@ -1,9 +1,10 @@
-package com.supermarket.supermarket_api.integration;
+package com.supermarket.supermarket_api.integration.controller;
 
 import com.supermarket.supermarket_api.dto.sale.SaleCreateRequest;
 import com.supermarket.supermarket_api.dto.sale.SaleDetail;
 import com.supermarket.supermarket_api.dto.sale.saleItem.AddProductRequest;
 import com.supermarket.supermarket_api.dto.sale.saleItem.ItemResponse;
+import com.supermarket.supermarket_api.integration.AbstractIntegrationTest;
 import com.supermarket.supermarket_api.model.*;
 import com.supermarket.supermarket_api.repository.BranchRepository;
 import com.supermarket.supermarket_api.repository.ProductRepository;
@@ -12,35 +13,21 @@ import com.supermarket.supermarket_api.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest.*;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
 public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
 
     private final String BASE_URL = "/api/v1/sales";
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private SaleRepository saleRepository;
@@ -57,39 +44,34 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
     private Branch branch;
     private Product product;
     private User user;
-    private SaleCreateRequest request;
-    private SaleDetail response;
-    private AddProductRequest addRequest;
-    private MvcResult result;
     private Sale sale;
+    private String token;
 
     @BeforeEach
-    void setup() {
-        String address = "Branch Address";
-        branch = branchRepository.save(new Branch(address));
+    void setup() throws Exception {
+        branch = branchRepository.save(new Branch("Branch Address"));
+        product = productRepository
+                .save(new Product("ABC-1234", "Milk", BigDecimal.valueOf(10)));
 
-        String sku = "ABC-1234";
-        String name = "Milk";
-        BigDecimal price = BigDecimal.valueOf(10);
-        product = productRepository.save(new Product(sku, name, price));
+        String username = "user-" + System.currentTimeMillis();
+        String password = "password";
 
-        String username = "John Jackson";
-        String password = "vjklznv43xv3213d";
-        UserRole role = UserRole.ROLE_USER;
-        user = userRepository.save(new User(username, password, role));
+        token = obtainAccessToken(username, password);
+        user = userRepository.findByUsername(username).orElseThrow();
     }
 
     @Test
     void shouldCreateSale() throws Exception {
-        request = new SaleCreateRequest(branch.getId(), user.getId());
+        SaleCreateRequest request = new SaleCreateRequest(branch.getId());
 
-        result = mockMvc.perform(post(BASE_URL)
+        MvcResult result = mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        response = objectMapper.readValue(
+        SaleDetail response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 SaleDetail.class);
 
@@ -101,6 +83,9 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         assertThat(response.status()).isEqualTo(SaleStatus.OPEN);
         assertThat(response.items()).isEmpty();
         assertThat(response.total()).isZero();
+
+        Sale saved = saleRepository.findById(response.id()).orElseThrow();
+        assertThat(saved.getUser().getId()).isEqualTo(user.getId());
     }
 
     @Test
@@ -109,12 +94,12 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
 
         URI uri = URI.create("%s/%d".formatted(BASE_URL, sale.getId()));
 
-        result = mockMvc
-                .perform(get(uri))
+        MvcResult result = mockMvc.perform(get(uri)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        response = objectMapper.readValue(
+        SaleDetail response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 SaleDetail.class);
 
@@ -130,12 +115,13 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldAddProductToSale() throws Exception {
-        addRequest = new AddProductRequest(product.getId());
+        AddProductRequest addRequest = new AddProductRequest(product.getId());
         sale = saleRepository.save(new Sale(branch, user));
 
         URI uri = URI.create("%s/%d/items".formatted(BASE_URL, sale.getId()));
 
-        result = mockMvc.perform(post(uri)
+        MvcResult result = mockMvc.perform(post(uri)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(addRequest)))
                 .andExpect(status().isCreated())
@@ -164,7 +150,8 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         URI uri = URI.create("%s/%d/items/%d"
                 .formatted(BASE_URL, sale.getId(), product.getId()));
 
-        mockMvc.perform(delete(uri))
+        mockMvc.perform(delete(uri)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent())
                 .andReturn();
 
@@ -182,7 +169,8 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         URI uri = URI.create("%s/%d/items/%d/increase"
                 .formatted(BASE_URL, sale.getId(), product.getId()));
 
-        mockMvc.perform(patch(uri))
+        mockMvc.perform(patch(uri)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent())
                 .andReturn();
 
@@ -202,7 +190,8 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         URI uri = URI.create("%s/%d/items/%d/decrease"
                 .formatted(BASE_URL, sale.getId(), product.getId()));
 
-        mockMvc.perform(patch(uri))
+        mockMvc.perform(patch(uri)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent())
                 .andReturn();
 
@@ -219,11 +208,12 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         URI uri = URI.create("%s/%d/finish"
                 .formatted(BASE_URL, sale.getId()));
 
-        result = mockMvc.perform(post(uri))
+        MvcResult result = mockMvc.perform(post(uri)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        response = objectMapper.readValue(
+        SaleDetail response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 SaleDetail.class);
 
@@ -244,11 +234,12 @@ public class SaleControllerIntegrationTest extends AbstractIntegrationTest {
         URI uri = URI.create("%s/%d/cancel"
                 .formatted(BASE_URL, sale.getId()));
 
-        result = mockMvc.perform(post(uri))
+        MvcResult result = mockMvc.perform(post(uri)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        response = objectMapper.readValue(
+        SaleDetail response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 SaleDetail.class);
 

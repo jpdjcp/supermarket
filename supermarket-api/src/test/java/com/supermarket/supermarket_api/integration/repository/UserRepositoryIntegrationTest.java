@@ -1,5 +1,6 @@
-package com.supermarket.supermarket_api.integration;
+package com.supermarket.supermarket_api.integration.repository;
 
+import com.supermarket.supermarket_api.integration.AbstractIntegrationTest;
 import com.supermarket.supermarket_api.model.User;
 import com.supermarket.supermarket_api.model.UserRole;
 import com.supermarket.supermarket_api.repository.UserRepository;
@@ -15,7 +16,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
 @Transactional
 public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
 
@@ -32,7 +32,8 @@ public class UserRepositoryIntegrationTest extends AbstractIntegrationTest {
         username = "John Jackson";
         password = "h1cs65dd54";
         role = UserRole.ROLE_USER;
-        user = new User(username, password, role);
+        user = new User(username, password);
+        user.setRole(role);
     }
 
     @Test

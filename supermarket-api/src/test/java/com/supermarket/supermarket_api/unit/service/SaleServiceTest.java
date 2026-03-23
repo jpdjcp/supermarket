@@ -1,4 +1,4 @@
-package com.supermarket.supermarket_api.service;
+package com.supermarket.supermarket_api.unit.service;
 
 import com.supermarket.supermarket_api.dto.sale.SaleDetail;
 import com.supermarket.supermarket_api.dto.sale.SaleSummary;
@@ -14,6 +14,10 @@ import com.supermarket.supermarket_api.pricing.DiscountResolver;
 import com.supermarket.supermarket_api.pricing.discount.DiscountStrategy;
 import com.supermarket.supermarket_api.pricing.discount.NoDiscountStrategy;
 import com.supermarket.supermarket_api.repository.SaleRepository;
+import com.supermarket.supermarket_api.service.BranchService;
+import com.supermarket.supermarket_api.service.ProductService;
+import com.supermarket.supermarket_api.service.SaleService;
+import com.supermarket.supermarket_api.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -88,7 +92,7 @@ public class SaleServiceTest {
     void setUp() {
         branchId = 1L;
         branch = new Branch("Branch address");
-        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        user = new User("John", "Abcd-1234");
         userId = 99L;
         sale = new Sale(branch, user);
         saleId = 33L;
@@ -121,35 +125,33 @@ public class SaleServiceTest {
 
         @Test
         void createSale_shouldCreateSaleForBranch() {
+            when(userService.getCurrentUser()).thenReturn(user);
             when(branchService.findRequiredById(branchId)).thenReturn(branch);
-            when(userService.findRequiredById(userId)).thenReturn(user);
             when(saleRepository.save(any(Sale.class))).thenReturn(sale);
             when(discountResolver.resolve(any(Sale.class))).thenReturn(strategy);
             when(saleMapper.toDetail(sale, strategy)).thenReturn(saleDetail);
 
-            SaleDetail result = saleService.createSale(branchId, userId);
+            SaleDetail result = saleService.createSale(branchId);
 
             assertThat(result).isEqualTo(saleDetail);
-            verify(branchService).findRequiredById(branchId);
-            verify(userService).findRequiredById(userId);
             verify(saleRepository).save(saleCaptor.capture());
             verifyNoMoreInteractions(saleRepository);
             Sale captured = saleCaptor.getValue();
             assertThat(captured.getUser()).isEqualTo(user);
             assertThat(captured.getBranch()).isEqualTo(branch);
-            verify(discountResolver).resolve(sale);
-            verify(saleMapper).toDetail(sale, strategy);
+            verify(discountResolver).resolve(any(Sale.class));
+            verify(saleMapper).toDetail(any(Sale.class), any(DiscountStrategy.class));
         }
 
         @Test
         void createSale_withNullBranchId_shouldThrow() {
-            assertThatThrownBy(()->saleService.createSale(null, userId))
+            assertThatThrownBy(()->saleService.createSale(null))
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
         @Test
-        void createSale_withNullUserId_shouldThrow() {
-            assertThatThrownBy(()->saleService.createSale(branchId, null))
+        void createSale_withWhenNoCurrentUser_shouldThrow() {
+            assertThatThrownBy(()->saleService.createSale(branchId))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -160,6 +162,7 @@ public class SaleServiceTest {
         @Test
         void findById_shouldReturnSale() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(discountResolver.resolve(sale)).thenReturn(strategy);
             when(saleMapper.toDetail(sale, strategy)).thenReturn(saleDetail);
 
@@ -168,6 +171,7 @@ public class SaleServiceTest {
             assertThat(result).isEqualTo(saleDetail);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verify(discountResolver).resolve(sale);
             verify(saleMapper).toDetail(sale, strategy);
         }
@@ -322,6 +326,7 @@ public class SaleServiceTest {
         @Test
         void addProduct_ShouldAddProduct() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
             when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
 
@@ -329,6 +334,7 @@ public class SaleServiceTest {
 
             assertThat(result).isNotNull();
             verify(saleRepository).findById(saleId);
+            verify(userService).getCurrentUser();
             verify(productService).findRequiredById(productId);
             verify(itemMapper).toResponse(itemCaptor.capture());
 
@@ -339,6 +345,7 @@ public class SaleServiceTest {
         @Test
         void addProductTwice_shouldIncreaseQuantity() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
             when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
 
@@ -347,6 +354,7 @@ public class SaleServiceTest {
 
             assertThat(result).isNotNull();
             verify(saleRepository, times(2)).findById(saleId);
+            verify(userService, times(2)).getCurrentUser();
             verify(productService, times(2)).findRequiredById(productId);
             verify(itemMapper, times(2)).toResponse(itemCaptor.capture());
 
@@ -359,6 +367,7 @@ public class SaleServiceTest {
         @Test
         void addProductToSale_whenOpen_shouldAddProduct() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
             when(itemMapper.toResponse(any(SaleItem.class))).thenReturn(addResponse);
 
@@ -367,6 +376,7 @@ public class SaleServiceTest {
             assertThat(result).isEqualTo(addResponse);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verify(productService).findRequiredById(productId);
             verify(itemMapper).toResponse(itemCaptor.capture());
 
@@ -378,19 +388,25 @@ public class SaleServiceTest {
         @Test
         void addProductToSale_whenFinished_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.finish();
+
             assertThatThrownBy(() -> saleService.addProduct(saleId, addRequest))
                     .isInstanceOf(SaleNotOpenException.class);
+            verify(userService).getCurrentUser();
         }
 
         @Test
         void addProductToSale_whenCancelled_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.cancel();
+
             assertThatThrownBy(() -> saleService.addProduct(saleId, addRequest))
                     .isInstanceOf(SaleNotOpenException.class);
+            verify(userService).getCurrentUser();
         }
     }
 
@@ -406,6 +422,7 @@ public class SaleServiceTest {
         @Test
         void removeProduct_whenSaleOpen_shouldRemoveProduct() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
 
             sale.addProduct(product);
@@ -416,12 +433,14 @@ public class SaleServiceTest {
             assertThat(sale.containsProduct(saleId)).isFalse();
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verify(productService).findRequiredById(productId);
         }
 
         @Test
         void removeProduct_whenSaleFinished_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.finish();
 
@@ -429,12 +448,14 @@ public class SaleServiceTest {
                     .isInstanceOf(SaleNotOpenException.class);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verifyNoInteractions(productService);
         }
 
         @Test
         void removeProduct_whenSaleCancelled_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.cancel();
 
@@ -442,6 +463,7 @@ public class SaleServiceTest {
                     .isInstanceOf(SaleNotOpenException.class);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verifyNoInteractions(productService);
         }
     }
@@ -458,6 +480,7 @@ public class SaleServiceTest {
         @Test
         void increaseQuantity_whenSaleOpen_shouldIncreaseQuantity() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
             sale.addProduct(product);
 
@@ -467,23 +490,27 @@ public class SaleServiceTest {
             assertThat(item.getQuantity()).isEqualTo(2);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verify(productService).findRequiredById(productId);
         }
 
         @Test
         void increaseQuantity_whenSaleFinished_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             sale.finish();
 
             assertThatThrownBy(() -> saleService.increaseQuantity(saleId, productId))
                     .isInstanceOf(SaleNotOpenException.class);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verifyNoInteractions(productService);
         }
 
         @Test
         void increaseQuantity_whenSaleCancelled_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.cancel();
 
@@ -491,6 +518,7 @@ public class SaleServiceTest {
                     .isInstanceOf(SaleNotOpenException.class);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verifyNoInteractions(productService);
         }
     }
@@ -502,6 +530,7 @@ public class SaleServiceTest {
         void decreaseQuantityBelowOne_shouldRemove() {
             int invocations = 2;
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
 
             saleService.addProduct(saleId, addRequest);
@@ -509,12 +538,14 @@ public class SaleServiceTest {
 
             assertThat(sale.getSaleItems()).isEmpty();
             verify(saleRepository, times(invocations)).findById(saleId);
+            verify(userService, times(invocations)).getCurrentUser();
             verify(productService, times(invocations)).findRequiredById(productId);
         }
 
         @Test
         void decreaseQuantity_whenSaleOpen_shouldDecreaseQuantity() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
             when(productService.findRequiredById(productId)).thenReturn(product);
             sale.addProduct(product);
             sale.addProduct(product);
@@ -527,27 +558,32 @@ public class SaleServiceTest {
             assertThat(updated.getQuantity()).isEqualTo(1);
             verify(saleRepository).findById(saleId);
             verifyNoMoreInteractions(saleRepository);
+            verify(userService).getCurrentUser();
             verify(productService).findRequiredById(productId);
         }
 
         @Test
         void decreaseProductQuantity_whenFinished_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.finish();
 
             assertThatThrownBy(() -> saleService.decreaseQuantity(saleId, productId))
                     .isInstanceOf(SaleNotOpenException.class);
+            verify(userService).getCurrentUser();
         }
 
         @Test
         void decreaseProductQuantity_whenCancelled_shouldThrow() {
             when(saleRepository.findById(saleId)).thenReturn(Optional.of(sale));
+            when(userService.getCurrentUser()).thenReturn(user);
 
             sale.cancel();
 
             assertThatThrownBy(() -> saleService.decreaseQuantity(saleId, productId))
                     .isInstanceOf(SaleNotOpenException.class);
+            verify(userService).getCurrentUser();
         }
     }
 }

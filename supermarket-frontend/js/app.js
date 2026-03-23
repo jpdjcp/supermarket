@@ -5,6 +5,12 @@ import * as saleHandlers from './handlers/saleHandlers.js';
 import { elements } from './dom/elements.js';
 import { showBranchModal, showProductModal } from './dom/ui/modals.js';
 
+const token = localStorage.getItem("token");
+
+if (!token) {
+  window.location.href = "/auth.html";
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await initApp();
 

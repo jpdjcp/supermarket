@@ -1,13 +1,16 @@
 package com.supermarket.supermarket_api.service;
 
-import com.supermarket.supermarket_api.dto.user.CreateUserRequest;
+import com.supermarket.supermarket_api.dto.auth.SignupRequest;
 import com.supermarket.supermarket_api.dto.user.ChangePasswordRequest;
 import com.supermarket.supermarket_api.dto.user.UserResponse;
 import com.supermarket.supermarket_api.exception.UserNotFoundException;
 import com.supermarket.supermarket_api.mapper.UserMapper;
 import com.supermarket.supermarket_api.model.User;
+import com.supermarket.supermarket_api.model.UserRole;
 import com.supermarket.supermarket_api.repository.UserRepository;
+import com.supermarket.supermarket_api.security.util.SecurityUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,15 +23,24 @@ public class UserService implements IUserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final PasswordEncoder passwordEncoder;
+    private final SecurityUtils securityUtils;
 
     @Override
     @Transactional
-    public UserResponse createUser(CreateUserRequest request) {
+    public UserResponse createUser(SignupRequest request) {
         require(request != null, "Create User Request cannot be null");
         if (repository.existsByUsername(request.username()))
             throw new IllegalArgumentException("Username already exists");
 
-        User user = new User(request.username(), request.password(), request.role());
+        String encodedPwd = passwordEncoder.encode(request.password());
+
+        User user = new User(
+                request.username(),
+                encodedPwd
+        );
+        user.setRole(UserRole.ROLE_USER);
+
         User saved = repository.save(user);
         return mapper.toResponse(saved);
     }
@@ -50,6 +62,14 @@ public class UserService implements IUserService {
 
         return repository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(userId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        String username = securityUtils.getCurrentUsername();
+        return repository.findByUsername(username)
+                .orElseThrow(()-> new UserNotFoundException(username));
     }
 
     @Override
@@ -90,7 +110,9 @@ public class UserService implements IUserService {
 
         User user = repository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(userId));
-        user.changePassword(request.password());
+
+        String encodedPwd = passwordEncoder.encode(request.password());
+        user.changePassword(encodedPwd);
     }
 
     @Override

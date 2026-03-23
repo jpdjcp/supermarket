@@ -2,6 +2,7 @@ package com.supermarket.supermarket_api.model;
 
 import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
 import com.supermarket.supermarket_api.exception.SaleItemNotFoundException;
+import com.supermarket.supermarket_api.exception.SaleNotOpenException;
 import com.supermarket.supermarket_api.pricing.discount.DiscountStrategy;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -167,5 +168,10 @@ public class Sale {
 
         return this.user.equals(other.user) &&
                 this.createdAt.equals(other.createdAt);
+    }
+
+    public void ensureOpen() {
+        if (!this.status.equals(SaleStatus.OPEN))
+            throw new SaleNotOpenException();
     }
 }

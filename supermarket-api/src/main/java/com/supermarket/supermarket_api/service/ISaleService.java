@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.List;
 
 public interface ISaleService {
-    SaleDetail createSale(Long branchId, Long userId);
+    SaleDetail createSale(Long branchId);
     SaleDetail findById(Long id);
     List<SaleSummary> findByUserId(Long userId);
     List<SaleSummary> findByBranchId(Long branchId);

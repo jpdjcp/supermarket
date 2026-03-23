@@ -1,15 +1,5 @@
-package com.supermarket.supermarket_api.repository;
+package com.supermarket.supermarket_api.unit.repository;
 
-import com.supermarket.supermarket_api.model.Branch;
-import com.supermarket.supermarket_api.model.Sale;
-import com.supermarket.supermarket_api.model.User;
-import com.supermarket.supermarket_api.model.UserRole;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 /*
 @DataJpaTest

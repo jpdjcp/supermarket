@@ -7,3 +7,7 @@ spring:
 
   flyway:
     enabled: true
+
+security:
+  jwt:
+    secret: dGVzdC1zZWNyZXQta2V5LTEyMzQ1Njc4OTAxMjM0NTY3ODkw

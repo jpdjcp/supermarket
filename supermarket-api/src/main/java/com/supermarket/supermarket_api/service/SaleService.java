@@ -14,11 +14,13 @@ import com.supermarket.supermarket_api.repository.SaleRepository;
 import com.supermarket.supermarket_api.exception.SaleNotOpenException;
 import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -34,13 +36,13 @@ public class SaleService implements ISaleService {
 
     @Override
     @Transactional
-    public SaleDetail createSale(Long branchId, Long userId) {
+    public SaleDetail createSale(Long branchId) {
         require(branchId != null, "Branch ID cannot be null");
-        require(userId != null, "User ID cannot be null");
 
+        User currentUser = userService.getCurrentUser();
         Branch branch = branchService.findRequiredById(branchId);
-        User user = userService.findRequiredById(userId);
-        Sale sale = new Sale(branch, user);
+
+        Sale sale = new Sale(branch, currentUser);
         Sale saved = repository.save(sale);
         DiscountStrategy strategy = discountResolver.resolve(saved);
         return saleMapper.toDetail(saved, strategy);
@@ -51,8 +53,7 @@ public class SaleService implements ISaleService {
     public SaleDetail findById(Long saleId) {
         require(saleId != null, "Sale ID cannot be null");
 
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
 
         DiscountStrategy strategy = discountResolver.resolve(sale);
         return saleMapper.toDetail(sale, strategy);
@@ -120,8 +121,7 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemResponse> getItems(Long saleId) {
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
 
         return sale.getSaleItems().stream()
                 .map(itemMapper::toSaleItemResponse)
@@ -130,18 +130,16 @@ public class SaleService implements ISaleService {
 
     @Override
     public SaleItem getItem(Long saleId, Long productId) {
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(()-> new SaleNotFoundException(saleId));
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+
         Product product = productService.findRequiredById(productId);
         return sale.findItem(product);
     }
 
     @Override
     public boolean containsProduct(Long saleId, Long productId) {
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(()-> new SaleNotFoundException(saleId));
-
-        return sale.containsProduct(productId);
+        return getSaleOwnedByCurrentUser(saleId)
+                .containsProduct(productId);
     }
 
     @Override
@@ -149,10 +147,8 @@ public class SaleService implements ISaleService {
     public ItemResponse addProduct(Long saleId, @Nonnull AddProductRequest request) {
         require(saleId != null, "Sale ID cannot be null");
 
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
-
-        validateSaleOpen(sale, "Sale must be OPEN to add a product");
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
         Product product = productService.findRequiredById(request.productId());
         SaleItem item = sale.addProduct(product);
@@ -166,10 +162,9 @@ public class SaleService implements ISaleService {
         require(saleId != null, "Sale ID cannot be null");
         require(productId != null, "Product ID cannot be null");
 
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
-        validateSaleOpen(sale, "Sale must be OPEN to remove a product");
         Product product = productService.findRequiredById(productId);
         sale.removeProduct(product);
     }
@@ -180,15 +175,12 @@ public class SaleService implements ISaleService {
         require(saleId != null, "Sale ID cannot be null");
         require(productId != null, "Product ID cannot be null");
 
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
-
-        validateSaleOpen(sale,"Sale must be OPEN to increase quantity");
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
         Product product = productService.findRequiredById(productId);
         sale.increaseQuantity(product);
     }
-
 
     @Override
     @Transactional
@@ -196,10 +188,9 @@ public class SaleService implements ISaleService {
         require(saleId != null, "Sale ID cannot be null");
         require(productId != null, "Product ID cannot be null");
 
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
-        validateSaleOpen(sale, "Sale must be OPEN to decrease quantity");
         Product product = productService.findRequiredById(productId);
         sale.decreaseQuantity(product);
     }
@@ -207,10 +198,9 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleDetail finishSale(Long saleId) {
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
-        validateSaleOpen(sale, "Sale must be OPEN to finish it");
         sale.finish();
         return saleMapper.toDetail(
                 sale,
@@ -221,26 +211,28 @@ public class SaleService implements ISaleService {
     @Override
     @Transactional
     public SaleDetail cancelSale(Long saleId) {
-        Sale sale = repository.findById(saleId)
-                .orElseThrow(() -> new SaleNotFoundException(saleId));
-
-        validateSaleOpen(sale, "Sale must be OPEN to cancel it");
+        Sale sale = getSaleOwnedByCurrentUser(saleId);
+        sale.ensureOpen();
 
         sale.cancel();
-        return saleMapper.toDetail(
-                sale,
-                discountResolver.resolve(sale)
-        );
-    }
-
-    private static void validateSaleOpen(Sale sale, String message) {
-        if (sale.getStatus() != SaleStatus.OPEN) {
-            throw new SaleNotOpenException(message);
-        }
+        return saleMapper.toDetail(sale, discountResolver.resolve(sale));
     }
 
     private void require(boolean condition, String message) {
         if (!condition)
             throw new IllegalArgumentException(message);
+    }
+
+    @Transactional(readOnly = true)
+    private Sale getSaleOwnedByCurrentUser(Long saleId) {
+        Sale sale = repository.findById(saleId)
+                .orElseThrow(()-> new SaleNotFoundException(saleId));
+
+        User currentUser = userService.getCurrentUser();
+
+        if (!Objects.equals(sale.getUser().getId(), currentUser.getId()))
+            throw new AccessDeniedException("Forbidden: this sale doesn't belongs to this user");
+
+        return sale;
     }
 }

@@ -1,6 +1,7 @@
-package com.supermarket.supermarket_api.model;
+package com.supermarket.supermarket_api.unit.model;
 
 import com.supermarket.supermarket_api.exception.InvalidSaleStateException;
+import com.supermarket.supermarket_api.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ public class SaleTest {
     void setUp() {
         final String SKU  = "ABCD-1234";
         branch = new Branch("Branch Address");
-        user = new User("John", "Abcd-1234", UserRole.ROLE_USER);
+        user = new User("John", "Abcd-1234");
         product = new Product(SKU, "Product name", new BigDecimal("1000"));
         sale = new Sale(branch, user);
     }

@@ -1,5 +1,6 @@
-package com.supermarket.supermarket_api.integration;
+package com.supermarket.supermarket_api.integration.repository;
 
+import com.supermarket.supermarket_api.integration.AbstractIntegrationTest;
 import com.supermarket.supermarket_api.model.*;
 import com.supermarket.supermarket_api.repository.BranchRepository;
 import com.supermarket.supermarket_api.repository.ProductRepository;
@@ -9,7 +10,6 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
 @Transactional
 public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
@@ -61,7 +60,8 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
         username = "John Jackson";
         password = "sd51v5211v5s";
         role = UserRole.ROLE_USER;
-        user = new User(username, password, role);
+        user = new User(username, password);
+        user.setRole(role);
         User savedUser = userRepository.save(user);
 
         address = "Av. Evergreen 1010, Springfield";
