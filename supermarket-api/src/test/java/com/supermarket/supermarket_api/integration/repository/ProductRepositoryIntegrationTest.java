@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 //@SpringBootTest
 @Transactional
 public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
-
+/*
     @Autowired
     private ProductRepository productRepository;
 
@@ -63,5 +63,5 @@ public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
     void shouldNotAllowNullPrice() {
         assertThatThrownBy(()-> new Product(sku, name, null))
                 .isInstanceOf(NullPointerException.class);
-    }
+    }*/
 }

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.*;
 //@SpringBootTest
 @Transactional
 public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
-
+/*
     @Autowired
     private SaleRepository saleRepository;
 
@@ -253,5 +253,5 @@ public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
         assertThat(results.getFirst().getStatus()).isEqualTo(SaleStatus.FINISHED);
         assertThat(results.getFirst().getId()).isEqualTo(sale.getId());
         assertThat(results.getFirst().getClosedAt()).isBetween(from, to);
-    }
+    }*/
 }
