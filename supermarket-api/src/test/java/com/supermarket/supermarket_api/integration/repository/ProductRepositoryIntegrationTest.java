@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
+//@SpringBootTest
 @Transactional
 public class ProductRepositoryIntegrationTest extends AbstractIntegrationTest {
 

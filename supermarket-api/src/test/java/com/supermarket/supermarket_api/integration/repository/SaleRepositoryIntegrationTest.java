@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
+//@SpringBootTest
 @Transactional
 public class SaleRepositoryIntegrationTest extends AbstractIntegrationTest {
 
