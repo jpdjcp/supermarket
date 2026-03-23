@@ -10,4 +10,4 @@ spring:
 
 security:
   jwt:
-    secret: test-secret-key-12345678901234567890
+    secret: dGVzdC1zZWNyZXQta2V5LTEyMzQ1Njc4OTAxMjM0NTY3ODkw
