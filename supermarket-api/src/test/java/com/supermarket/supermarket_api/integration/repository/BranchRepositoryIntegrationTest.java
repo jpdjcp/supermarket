@@ -13,10 +13,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-//@SpringBootTest
+@SpringBootTest
 @Transactional
 public class BranchRepositoryIntegrationTest extends AbstractIntegrationTest {
-/*
 
     @Autowired
     private BranchRepository branchRepository;
@@ -46,5 +45,5 @@ public class BranchRepositoryIntegrationTest extends AbstractIntegrationTest {
     void shouldNotAllowNullAddress() {
         assertThatThrownBy(()-> branchRepository.save(new Branch(null)))
                 .isInstanceOf(IllegalArgumentException.class);
-    }*/
+    }
 }
