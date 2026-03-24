@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../api/api";
+import { API_BASE_URL } from "../api/api.js";
 
 const form = document.getElementById("auth-form");
 const toggleText = document.getElementById("toggle-text");
