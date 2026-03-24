@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../api/api";
+
 const form = document.getElementById("auth-form");
 const toggleText = document.getElementById("toggle-text");
 const title = document.getElementById("form-title");
@@ -25,8 +27,8 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const url = isLogin
-      ? "http://localhost:8080/api/v1/auth/login"
-      : "http://localhost:8080/api/v1/auth/signup";
+      ? API_BASE_URL + "/auth/login"
+      : API_BASE_URL + "/auth/signup";
 
     const res = await fetch(url, {
       method: "POST",
