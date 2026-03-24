@@ -5,6 +5,7 @@ export async function fetchBranches() {
     method: "GET",
     headers: getAuthHeaders()
   });
+  
   handleUnauthorized(res);
   return res.json();
 }
