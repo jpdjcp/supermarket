@@ -1,64 +1,91 @@
 # 🛒 Supermarket API
 
-API REST desarrollada con **Spring Boot** que modela un sistema de ventas para un supermercado, enfocada en buenas prácticas de backend, diseño de dominio y preparación para entornos productivos.
+API REST desarrollada con **Spring Boot** para gestionar ventas, productos y usuarios, implementando un ciclo de vida de ventas explícito y buenas prácticas de diseño backend.
 
-Este proyecto fue construido como parte de un recorrido práctico de aprendizaje backend, priorizando **claridad arquitectónica**, **evolución incremental** y **calidad profesional**.
+Este proyecto está orientado a demostrar:
+- diseño de dominio claro
+- arquitectura mantenible
+- testing automatizado
+- despliegue en entorno productivo
 
-Link de documentación con Swagger:
-https://supermarket-api-jpdjcp.fly.dev/swagger-ui/index.html
+👉 [Ver documentación (Swagger UI)](https://supermarket-api-jpdjcp.fly.dev/swagger-ui/index.html)
 
 ---
 
-## 🎯 Propósito del proyecto
+## 🚀 Funcionalidades principales
 
-- Diseñar una API REST realista y mantenible
-- Aplicar principios de diseño de dominio (DDD liviano)
-- Implementar un **ciclo de vida explícito de ventas**
-- Preparar el proyecto para **deploy productivo**
-- Incorporar **CI/CD automatizado**
-- Documentar la API de forma clara con **Swagger / OpenAPI**
+- Autenticación basada en **JWT**
+- Gestión de ventas con ciclo de vida (`OPEN → FINISHED / CANCELLED`)
+- Administración de productos y sucursales
+- Control de acceso por roles (`USER`, `ADMIN`)
+- Validación de datos y manejo global de errores
+- API REST consistente y predecible
 
 ---
 
 ## 🧱 Stack tecnológico
 
-- **Java 17**
-- **Spring Boot**
-- **Spring Web (REST)**
-- **Spring Data JPA**
-- **Hibernate**
-- **Flyway** (planeado para versionado de base de datos)
-- **H2 / PostgreSQL** (según entorno)
-- **Maven**
-- **Swagger / OpenAPI**
-- **JUnit 5 + Mockito**
-- **GitHub Actions (CI/CD)**
-- **Fly.io** (deploy)
+- Java 21
+- Spring Boot
+- Spring Web / Spring Data JPA / Hibernate
+- Spring Security (JWT)
+- MySQL / H2 (según entorno)
+- Flyway (migraciones)
+- Testcontainers (tests de integración)
+- JUnit 5 + Mockito
+- Docker / Docker Compose
+- GitHub Actions (CI/CD)
+- Fly.io (deploy)
+- Swagger / OpenAPI
 
 ---
 
-## 🧩 Modelo de dominio (visión general)
+## 🏗️ Arquitectura
+
+El proyecto sigue una arquitectura en capas:
+
+- **Controller** → exposición de endpoints REST  
+- **Service** → lógica de negocio y reglas de dominio  
+- **Repository** → acceso a datos  
+
+Principales decisiones:
+- separación clara de responsabilidades  
+- validación del estado de negocio (ej: ventas solo modificables en estado `OPEN`)  
+- manejo centralizado de excepciones  
+- uso de transacciones a nivel de servicio  
+
+---
+
+## 🔐 Seguridad
+
+- Autenticación mediante **JWT**
+- Sistema **stateless**
+- Autorización basada en roles (`USER`, `ADMIN`)
+- Protección de endpoints sensibles
+
+---
+
+## 🧩 Modelo de dominio
 
 Entidades principales:
 
-- **Branch**
-- **Product**
-- **Sale**
-- **SaleItem**
+- `User`
+- `Sale`
+- `SaleItem`
+- `Product`
+- `Branch`
 
-### Ciclo de vida de una venta (`Sale`)
+### Ciclo de vida de una venta
 
-Una venta tiene un estado explícito:
+- `OPEN` → editable  
+- `FINISHED` → cerrada correctamente  
+- `CANCELLED` → anulada  
 
-- `OPEN` → venta en curso
-- `FINISHED` → venta finalizada correctamente
-- `CANCELLED` → venta cancelada
-
-Las transiciones de estado se realizan mediante endpoints específicos, evitando estados inválidos y acciones ambiguas.
+Las transiciones se realizan mediante endpoints específicos, evitando estados inválidos.
 
 ---
 
-## 🧠 Diagrama de clases (UML)
+## 📊 Diagrama UML
 
 ```mermaid
 classDiagram
@@ -100,7 +127,7 @@ Sale --> SaleStatus : status
 
 ---
 
-## 🗄️ Diagrama Entidad–Relación (ERD)
+## 🗄️ Diagrama ERD
 
 ```mermaid
 erDiagram
@@ -135,43 +162,59 @@ erDiagram
 
 ---
 
-## 🌍 Estrategia de entornos
+## 🧪 Testing
 
-El proyecto utiliza **Spring Profiles** para separar configuración:
+- Tests unitarios para lógica de negocio (JUnit + Mockito)
+- Tests de integración con **Testcontainers (MySQL real)**
+- Ejecución automática en pipeline CI
 
-- `dev` → entorno local
-- `prod` → entorno productivo (Fly.io)
-- `test` → CI/CD Maven - GitHub Actions
+---
+
+## 🌍 Configuración de entornos
+
+Uso de **Spring Profiles**:
+
+- `dev` → entorno local  
+- `test` → ejecución de tests  
+- `integration` → tests con Testcontainers  
+- `prod` → entorno productivo (Fly.io)  
 
 Características:
-- Sin valores sensibles hardcodeados
-- Configuración vía variables de entorno
-- Health check habilitado mediante **Spring Actuator**
+- configuración mediante variables de entorno  
+- sin credenciales hardcodeadas  
+- health check con Spring Actuator  
 
 ---
 
-## 🚀 CI / CD
+## 🚀 CI/CD
 
-El proyecto cuenta con **CI/CD automatizado usando GitHub Actions**:
+Pipeline automatizado con **GitHub Actions**:
 
-Pipeline actual:
-1. Build del proyecto
-2. Ejecución de tests
-3. Deploy automático a Fly.io (si todo pasa correctamente)
+1. Build del proyecto  
+2. Ejecución de tests  
+3. Deploy automático a producción  
 
-Esto garantiza que `main` esté siempre en estado deployable.
+Esto asegura que la rama `main` esté siempre en estado desplegable.
 
 ---
 
-## 📖 Documentación de la API
+## ▶️ Cómo ejecutar el proyecto
+
+```bash
+mvn clean install
+docker compose up
+mvn spring-boot:run
+```
+
+---
+
+## 📌 Documentación de la API
 
 La API está documentada con **Swagger / OpenAPI**, incluyendo:
 
-- Endpoints disponibles
-- Modelos
-- Estados posibles
-- Transiciones del ciclo de vida de una venta
-- Ejemplos de uso
+- endpoints disponibles  
+- modelos de datos  
+- estados y transiciones  
+- ejemplos de uso  
 
-👉 **Swagger UI**  
-Disponible en el entorno productivo (Fly.io)
+👉 [Acceder a Swagger UI](https://supermarket-api-jpdjcp.fly.dev/swagger-ui/index.html)
